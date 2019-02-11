@@ -7,7 +7,10 @@
         <field name="priority" eval="8"/>
         <field name="arch" type="xml">
         <tree string="Product set">
-            <field name="name"/>
+            <field name="partner_id"/>
+            <field name="display_name"/>
+            <field name="code"/>
+            <field name="state"/>
         </tree>
         </field>
     </record>
@@ -16,19 +19,93 @@
         <field name="name">product.set.form</field>
         <field name="model">product.set</field>
         <field name="type">form</field>
-        <field name="priority" eval="8"/>
         <field name="arch" type="xml">
-        <form string="Product set" version="7.0">
+        <form string="Product set">
+            <header>
+                <button name="action_cancel_product_kit" states="freeze,progress" string="Set to Draft" type="object"/>
+                <field name="state" widget="statusbar" statusbar_visible="draft,progress,freeze"/>
+            </header>
             <sheet>
+                <div class="oe_button_box" name="button_box">
+                    <button class="oe_stat_button" type="object" name="toggle_active" icon="fa-archive">
+                        <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                    </button>
+                    <button class="oe_stat_button" type="object" name="action_use_product_kit" icon="fa-hand-o-down">
+                        <field name="state_next"/>
+                    </button>
+                </div>
                 <group>
-                    <field name="name" select="1"/>
-                    <field name="set_line_ids">
-                        <tree string="Product set lines" editable="top">
+                    <group colspan="4">
+                        <field name="image_medium" widget="image" nolabel="1" class="oe_avatar"/>
+                        <div class="oe_title">
+                            <label class="oe_edit_only" for="name" string="Product Set Name"/>
+                            <h1><field name="name" placeholder="Product sets Name"/></h1>
+                            <label class="oe_edit_only" for="code" string="Product Set Code"/>
+                            <h3><field name="code" placeholder="Product sets Name"/></h3>
+                        </div>
+                    </group>
+                    <group colspan="4">
+                        <group>
+                            <field name="partner_id" select="1"/>
+                            <field name="partner_invoice_id"/>
+                            <field name="partner_shipping_id"/>
+                        </group>
+                        <group>
+                            <field name="pricelist_id"/>
+                            <field name="currency_id" invisible="0"/>
+                            <field name="fiscal_position_id"/>
+                            <field name="company_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="subtotal"/>
+                            <field name="pagebreak"/>
+                        </group>
+                    </group>
+                    <field name="set_lines">
+                        <!--
+                        <form string="Product set lines">
+                            <sheet>
+                                <group>
+                                    <field name="product_id" force_save="1"/>
+                                    <div>
+                                        <field name="quantity" class="oe_inline"/>
+                                        <field name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button"/>
+                                    </div>
+                                </group>
+                                <group>
+                                    <field name="price_unit" readonly="1"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </group>
+                            </sheet>
+                        </form>
+                        -->
+                        <tree string="Product set lines" editable="bottom">
                             <field name="sequence" widget="handle"/>
                             <field name="product_id"/>
                             <field name="quantity"/>
+                            <!--
+                            <div>
+                                <field name="quantity" class="oe_inline"/>
+                                <field name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button" readonly="1"/>
+                            </div>
+                            -->
+                            <field name="price_unit"/>
+                            <field name="product_uom"/>
+                            <field name="tax_id" widget="many2many_tags" options="{'no_create': True}" domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]" readonly="0"/>
+                            <field name="price_subtotal" widget="monetary" groups="sale.group_show_price_subtotal"/>
+                            <field name="price_total" widget="monetary" groups="sale.group_show_price_total"/>
+                            <field name="currency_id" invisible="1"/>
                         </tree>
                     </field>
+                    <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                        <field name="amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                        <field name="amount_tax" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                        <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                            <label for="amount_total" />
+                        </div>
+                        <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                    </group>
+                    <div class="oe_clear"/>
                 </group>
             </sheet>
         </form>
@@ -42,7 +119,12 @@
         <field name="priority" eval="8"/>
         <field name="arch" type="xml">
             <search string="Product set">
-                <field name="name" select="True"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="partner_id" select="True"/>
+                <separator/>
+                <filter string="Partner" name="groupby_partner_id" domain="[]"
+                        context="{'group_by' : 'partner_id'}"/>
             </search>
         </field>
     </record>
@@ -73,8 +155,8 @@
     </record>
 
     <menuitem id="menu_product_set_config"
-        parent="sale.menu_sales_config"
-        groups="sales_team.group_sale_manager"
-        sequence="20"
+        parent="sale.product_menu_catalog"
+        groups="sales_team.group_sale_salesman"
+        sequence="60"
         action="act_open_product_set_view"/>
 </odoo>

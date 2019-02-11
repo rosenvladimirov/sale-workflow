@@ -1,102 +1,620 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# * sale_product_set
+#	* sale_product_set
 #
-# Translators:
-# OCA Transbot <transbot@odoo-community.org>, 2017
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 10.0\n"
+"Project-Id-Version: Odoo Server 11.0-20181119\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-23 01:51+0000\n"
-"PO-Revision-Date: 2017-11-23 01:51+0000\n"
-"Last-Translator: OCA Transbot <transbot@odoo-community.org>, 2017\n"
-"Language-Team: Bulgarian (https://www.transifex.com/oca/teams/23907/bg/)\n"
-"Language: bg\n"
+"POT-Creation-Date: 2018-12-12 13:59+0000\n"
+"PO-Revision-Date: 2018-12-12 13:59+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: \n"
+
+#. module: sale_product_set
+#: model:ir.model.fields,help:sale_product_set.field_product_set_state
+msgid " * The 'Draft' status is used when a user is encoding a new and unconfirmed Product set.\n"
+" * The 'Progress' status is used when user use the product set.\n"
+" * The 'Freeze' status is used when user freeze the product set."
+msgstr " * The 'Draft' status is used when a user is encoding a new and unconfirmed Product set.\n"
+" * The 'Progress' status is used when user use the product set.\n"
+" * The 'Freeze' status is used when user freeze the product set."
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_invoice_pset_layouted
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "&amp;bull;"
+msgstr "&amp;bull;"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "&amp;nbsp;<span>on</span>&amp;nbsp;"
+msgstr "&amp;nbsp;<span>на</span>&amp;nbsp;"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "(ID"
+msgstr "(ID"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.prodset_modal
+msgid "<i class=\"fa fa-ban\"/> <span class=\"hidden-xs\">Cancel</span><span class=\"visible-xs-inline\">Cancel</span>"
+msgstr "<i class=\"fa fa-ban\"/> <span class=\"hidden-xs\">Cancel</span><span class=\"visible-xs-inline\">Cancel</span>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.header
+msgid "<i class=\"fa fa-car\"/>\n"
+"                        Product set"
+msgstr "<i class=\"fa fa-car\"/>\n"
+"                        Продуктов набор"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.product_set
+msgid "<i class=\"fa fa-files-o\"/> Duplicate"
+msgstr "<i class=\"fa fa-files-o\"/> Duplicate"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.prodset_modal
+msgid "<i class=\"fa fa-floppy-o\"/> <span class=\"hidden-xs\">Save</span><span class=\"visible-xs-inline\">Save</span>"
+msgstr "<i class=\"fa fa-floppy-o\"/> <span class=\"hidden-xs\">Save</span><span class=\"visible-xs-inline\">Save</span>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.product_set
+msgid "<i class=\"fa fa-pencil-square-o\"/> Edit"
+msgstr "<i class=\"fa fa-pencil-square-o\"/> Edit"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.product_set
+msgid "<i class=\"fa fa-trash-o\"/> Remove"
+msgstr "<i class=\"fa fa-trash-o\"/> Remove"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.product_set
+msgid "<small><i class=\"fa fa-trash-o\"/> Remove</small>"
+msgstr "<small><i class=\"fa fa-trash-o\"/> Премахни</small>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<span>Pro-Forma Invoice # </span>"
+msgstr "<span>Про-Форма фактура # </span>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong style=\"border-right:0; font-size:10px;\">VAT ID:</strong>"
+msgstr "<strong style=\"border-right:0; font-size:10px;\">ДДС Номер:</strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong style=\"font-size:10px;\">Address: </strong>"
+msgstr "<strong style=\"font-size:10px;\">Адрес: </strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong style=\"font-size:10px;\">Company/Person Name: </strong>"
+msgstr "<strong style=\"font-size:10px;\">Фирма/Физическо лице: </strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong style=\"font-size:10px;\">Str.: </strong>"
+msgstr "<strong style=\"font-size:10px;\">ул.: </strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong style=\"font-size:10px;\">VAT ID:</strong>"
+msgstr "<strong style=\"font-size:10px;\">ДДС Номер:</strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong>CUSTOMER</strong>"
+msgstr "<strong>КЛИЕНТ</strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong>Date Ordered:</strong>"
+msgstr "<strong>Дата на поръчката:</strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong>Expiration Date:</strong>"
+msgstr "<strong>Валидна до:</strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong>Fiscal Position Remark:</strong>"
+msgstr "<strong>Фискална позиция отбелязване:</strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong>From:</strong>"
+msgstr "<strong>От:</strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong>Payment Terms:</strong>"
+msgstr "<strong>Условия за плащане:</strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong>Quotation Date:</strong>"
+msgstr "<strong>Дата на Поръчката:</strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong>Receiver:</strong>"
+msgstr "<strong>Получил:</strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong>SUPPLIER</strong>"
+msgstr "<strong>ДОСТАВЧИК</strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong>Salesperson:</strong>"
+msgstr "<strong>Търговец:</strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong>Shipping address:</strong>"
+msgstr "<strong>Адрес на доставка:</strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong>Signature: </strong>"
+msgstr "<strong>Подпис: </strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_invoice_pset_layouted
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong>Subtotal: </strong>"
+msgstr "<strong>Обща стойност: </strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong>Subtotal</strong>"
+msgstr "<strong>Стойност</strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong>The Attention of</strong>"
+msgstr "<strong>На вниманието на</strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong>Total</strong>"
+msgstr "<strong>Общо</strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong>Writer: </strong>"
+msgstr "<strong>Съставил: </strong>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "<strong>Your Reference:</strong>"
+msgstr "<strong>Ваша референция:</strong>"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_active
+msgid "Active"
+msgstr "Активен"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.product_set
+msgid "Add <br/>to Cart"
+msgstr "Add <br/>to Cart"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.product_set
+msgid "Add <span class=\"hidden-xs\">Set</span>"
+msgstr "Добави всичко в Моята количка"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_pagebreak
+msgid "Add pagebreak"
+msgstr "Добавете прекъсване на страницата"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.product_set
+msgid "Add product to my cart but keep it in my product sets"
+msgstr "Добавете продукт в моята кошница, но я запазете в набора от продукти"
 
 #. module: sale_product_set
 #: model:ir.ui.view,arch_db:sale_product_set.product_set_add_form_view
 #: model:ir.ui.view,arch_db:sale_product_set.view_order_stock_form
 msgid "Add set"
-msgstr ""
+msgstr "Добави комплект"
 
 #. module: sale_product_set
 #: model:ir.actions.act_window,name:sale_product_set.act_open_wizard_product_set_add
 msgid "Add set in sale order"
-msgstr ""
+msgstr "Добавете комплект в поръчката за продажба"
 
 #. module: sale_product_set
 #: model:ir.ui.view,arch_db:sale_product_set.product_set_add_form_view
 msgid "Add set in sale order line"
-msgstr ""
+msgstr "Добави комплект в редовете на поръчката"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_subtotal
+msgid "Add subtotal"
+msgstr "Добави Обща стойност"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.product_add_to_set
+msgid "Add to Set"
+msgstr "Добави в комплекта"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.add_to_set
+msgid "Add to Sets"
+msgstr "Добавете към Комплекти"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets_price_subtotal
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets_price_total
+#: model:ir.ui.view,arch_db:sale_product_set.report_invoice_pset_layouted
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "Amount"
+msgstr "Сума"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets_price_subtotal_signed
+msgid "Amount Signed"
+msgstr "Подписано Количество"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_purchase_ok
+msgid "Can be Purchased"
+msgstr "Може да бъде закупен"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_sale_ok
+msgid "Can be Sold"
+msgstr "Може да бъде продаван"
 
 #. module: sale_product_set
 #: model:ir.ui.view,arch_db:sale_product_set.product_set_add_form_view
 msgid "Cancel"
-msgstr ""
+msgstr "Откажи"
 
 #. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "Canceled Order #"
+msgstr "Canceled Order #"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.prodset_modal
+msgid "Car model"
+msgstr "Car model"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_code
+msgid "Code"
+msgstr "Код"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.product_set
+msgid "Code and Name:"
+msgstr "Code and Name:"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.prodset_modal
+msgid "Code<span style=\"color:red\"> *</span>"
+msgstr "Code<span style=\"color:red\"> *</span>"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets_company_id
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_add_company_id
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_company_id
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_line_company_id
+#: model:ir.model.fields,field_description:sale_product_set.field_sale_order_sets_company_id
+msgid "Company"
+msgstr "Фирма"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets_company_currency_id
+msgid "Company Currency"
+msgstr "Валута на фирмата"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets_create_uid
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_add_create_uid
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_create_uid
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_line_create_uid
+#: model:ir.model.fields,field_description:sale_product_set.field_sale_order_sets_create_uid
 msgid "Created by"
 msgstr "Създадено от"
 
 #. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets_create_date
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_add_create_date
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_create_date
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_line_create_date
+#: model:ir.model.fields,field_description:sale_product_set.field_sale_order_sets_create_date
 msgid "Created on"
 msgstr "Създадено на"
 
 #. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets_currency_id
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_add_currency_id
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_currency_id
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_line_currency_id
+#: model:ir.model.fields,field_description:sale_product_set.field_sale_order_sets_currency_id
+msgid "Currency"
+msgstr "Валута"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets_invoice_partner_id
+#: model:ir.model.fields,field_description:sale_product_set.field_sale_order_sets_order_partner_id
+msgid "Customer"
+msgstr "Клиент"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_partner_shipping_id
+msgid "Delivery Address"
+msgstr "Адрес на доставка"
+
+#. module: sale_product_set
+#: model:ir.model.fields,help:sale_product_set.field_product_set_partner_shipping_id
+msgid "Delivery address for current sales order."
+msgstr "Адрес за доставка за текущата поръчка за продажба."
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_invoice_pset_layouted
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "Description"
+msgstr "Описание"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "Disc.(%)"
+msgstr "Отс. (%)"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets_display_name
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_add_display_name
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_display_name
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_line_display_name
+#: model:ir.model.fields,field_description:sale_product_set.field_sale_order_sets_display_name
 msgid "Display Name"
 msgstr "Име за показване"
 
 #. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.product_set
+#: selection:product.set,state:0
+#: selection:product.set,state_next:0
+msgid "Draft"
+msgstr "Чернова"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.prodset_modal
+msgid "Edit Product Set"
+msgstr "Edit Product Set"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_fiscal_position_id
+msgid "Fiscal Position"
+msgstr "Фискална позиция"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_fleet_ids
+msgid "Fleet model"
+msgstr "Fleet model"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.product_set
+#: selection:product.set,state:0
+#: selection:product.set,state_next:0
+msgid "Freeze"
+msgstr "Замрази"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_has_sets
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_protocol_has_sets
+#: model:ir.model.fields,field_description:sale_product_set.field_sale_order_has_sets
+msgid "Has sets"
+msgstr "Has sets"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets_id
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_add_id
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_id
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_line_id
+#: model:ir.model.fields,field_description:sale_product_set.field_sale_order_sets_id
 msgid "ID"
 msgstr "ID"
 
 #. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_image
+msgid "Image"
+msgstr "Изображение"
+
+#. module: sale_product_set
+#: code:addons/sale_product_set/controllers/main.py:165
+#, python-format
+msgid "Invalid Product Set ID. Please ask Administrator to check!"
+msgstr "Invalid Product Set ID. Please ask Administrator to check!"
+
+#. module: sale_product_set
+#: model:ir.model,name:sale_product_set.model_account_invoice
+msgid "Invoice"
+msgstr "Фактура"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_partner_invoice_id
+msgid "Invoice Address"
+msgstr "Адрес за фактура"
+
+#. module: sale_product_set
+#: model:ir.model,name:sale_product_set.model_account_invoice_line
+msgid "Invoice Line"
+msgstr "Ред от фактура"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets_invoice_id
+msgid "Invoice Reference"
+msgstr "Отпратка на фактура"
+
+#. module: sale_product_set
+#: model:ir.model,name:sale_product_set.model_account_invoice_sets
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_protocol_sets_line
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets_line
+#: model:ir.ui.view,arch_db:sale_product_set.invoice_sets_form
+msgid "Invoice Sets Lines"
+msgstr "Invoice Sets Lines"
+
+#. module: sale_product_set
+#: model:ir.model.fields,help:sale_product_set.field_product_set_partner_invoice_id
+msgid "Invoice address for current sales order."
+msgstr "Адрес за фактурата за настоящото нареждане за продажба."
+
+#. module: sale_product_set
+#: model:ir.actions.report,name:sale_product_set.account_invoices_sets
+msgid "Invoices with Sets"
+msgstr "Invoices with Sets"
+
+#. module: sale_product_set
+#: model:ir.actions.report,name:sale_product_set.account_invoices
+msgid "Invoices with detail sets"
+msgstr "Invoices with detail sets"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "Invoicing address:"
+msgstr "Данни за фактура:"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "Invoicing and shipping address:"
+msgstr "Адрес за фактуриране и доставка :"
+
+#. module: sale_product_set
+#: code:addons/sale_product_set/models/sale.py:58
+#, python-format
+msgid "It is forbidden to modify a sales order which is not in draft status"
+msgstr "It is forbidden to modify a sales order which is not in draft status"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets___last_update
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set___last_update
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_add___last_update
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_line___last_update
+#: model:ir.model.fields,field_description:sale_product_set.field_sale_order_sets___last_update
 msgid "Last Modified on"
 msgstr "Последно променено на"
 
 #. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets_write_uid
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_add_write_uid
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_line_write_uid
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_write_uid
+#: model:ir.model.fields,field_description:sale_product_set.field_sale_order_sets_write_uid
 msgid "Last Updated by"
 msgstr "Последно обновено от"
 
 #. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets_write_date
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_add_write_date
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_line_write_date
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_write_date
+#: model:ir.model.fields,field_description:sale_product_set.field_sale_order_sets_write_date
 msgid "Last Updated on"
 msgstr "Последно обновено на"
 
 #. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_image_medium
+msgid "Medium-sized image"
+msgstr "Картинка със среден размер"
+
+#. module: sale_product_set
+#: model:ir.model.fields,help:sale_product_set.field_product_set_image_medium
+msgid "Medium-sized image of the product. It is automatically resized as a 128x128px image, with aspect ratio preserved, only when the image exceeds one of those sizes. Use this field in form views or some kanban views."
+msgstr "Medium-sized image of the product. It is automatically resized as a 128x128px image, with aspect ratio preserved, only when the image exceeds one of those sizes. Use this field in form views or some kanban views."
+
+#. module: sale_product_set
+#: model:ir.model,name:sale_product_set.model_fleet_vehicle_model
+msgid "Model of a vehicle"
+msgstr "Модел на превозно средство"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.product_set
+msgid "My Sets"
+msgstr "Моите комплекти"
+
+#. module: sale_product_set
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_name
 msgid "Name"
-msgstr "Име"
+msgstr "Name"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "Order #"
+msgstr "Поръчка #"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_sale_order_sets_order_id
+msgid "Order Reference"
+msgstr "Отпратка към поръчка"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_sale_order_sets_line
+#: model:ir.ui.view,arch_db:sale_product_set.view_order_stock_form
+msgid "Order Sets Lines"
+msgstr "Редове на комплекта в поръчката"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_add_partner_id
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_partner_id
+#: model:ir.ui.view,arch_db:sale_product_set.view_product_set_search
+msgid "Partner"
+msgstr "Партньор"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.product_set
+msgid "Price:"
+msgstr "Цена:"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_add_pricelist_id
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_pricelist_id
+msgid "Pricelist"
+msgstr "Ценова листа"
+
+#. module: sale_product_set
+#: model:ir.model.fields,help:sale_product_set.field_product_set_add_pricelist_id
+#: model:ir.model.fields,help:sale_product_set.field_product_set_pricelist_id
+msgid "Pricelist for current sales order."
+msgstr "Ценоразпис за текущата поръчка за продажба."
 
 #. module: sale_product_set
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_line_product_id
 msgid "Product"
-msgstr ""
+msgstr "Продукт"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_line_product_set_id
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_protocol_line_product_set_id
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets_product_set_id
+#: model:ir.model.fields,field_description:sale_product_set.field_sale_order_line_product_set_id
+#: model:ir.model.fields,field_description:sale_product_set.field_sale_order_sets_product_set_id
+#: model:ir.model.fields,field_description:sale_product_set.field_stock_move_product_set_id
+msgid "Product Set"
+msgstr "Комплекти от продукти"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.view_product_set_form
+msgid "Product Set Code"
+msgstr "Код на комплекта"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.view_product_set_form
+msgid "Product Set Name"
+msgstr "Име на комплекта"
 
 #. module: sale_product_set
 #: model:ir.actions.act_window,name:sale_product_set.act_open_product_set_view
@@ -106,46 +624,292 @@ msgstr ""
 #: model:ir.ui.view,arch_db:sale_product_set.view_product_set_form
 #: model:ir.ui.view,arch_db:sale_product_set.view_product_set_search
 #: model:ir.ui.view,arch_db:sale_product_set.view_product_set_tree
+#: model:sale.layout_category,name:sale_product_set.sale_layout_cat_product_set
 msgid "Product set"
-msgstr ""
+msgstr "Набор от продукти"
+
+#. module: sale_product_set
+#: model:ir.model.fields,help:sale_product_set.field_product_set_code
+msgid "Product set code"
+msgstr "Код на продуктовия набор"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.view_product_set_form
+msgid "Product set for fleet model"
+msgstr "Product set for fleet model"
 
 #. module: sale_product_set
 #: model:ir.model,name:sale_product_set.model_product_set_line
 msgid "Product set line"
-msgstr ""
+msgstr "Редове в комплекта"
 
 #. module: sale_product_set
 #: model:ir.ui.view,arch_db:sale_product_set.view_product_set_form
 msgid "Product set lines"
-msgstr ""
+msgstr "Редове в комплекта"
 
 #. module: sale_product_set
 #: model:ir.model.fields,help:sale_product_set.field_product_set_name
 msgid "Product set name"
-msgstr ""
+msgstr "Product set name"
 
 #. module: sale_product_set
-#: model:ir.model.fields,field_description:sale_product_set.field_product_set_set_line_ids
+#: model:ir.model.fields,field_description:sale_product_set.field_fleet_vehicle_model_product_set_ids
+#: model:ir.ui.view,arch_db:sale_product_set.fleet_vehicle_model_view_form_product_set
+msgid "Product sets"
+msgstr "Product sets"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.view_product_set_form
+msgid "Product sets Name"
+msgstr "Име на комплекта"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_set_lines
 msgid "Products"
-msgstr ""
+msgstr "Продукти"
 
 #. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.fleet_vehicle_model_view_form_product_set
+msgid "Products sets for fleet vehicle model"
+msgstr "Products sets for fleet vehicle model"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.product_set
+#: selection:product.set,state:0
+#: selection:product.set,state_next:0
+msgid "Progress"
+msgstr "Прогрес"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets_quantity
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_add_quantity
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_line_quantity
+#: model:ir.model.fields,field_description:sale_product_set.field_sale_order_sets_quantity
+#: model:ir.ui.view,arch_db:sale_product_set.report_invoice_pset_layouted
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
 msgid "Quantity"
-msgstr ""
+msgstr "Количество"
 
 #. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.view_order_stock_form
+msgid "Quantity:"
+msgstr "Количество:"
+
+#. module: sale_product_set
+#: model:ir.model,name:sale_product_set.model_sale_order
+msgid "Quotation"
+msgstr "Заявка"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "Quotation #"
+msgstr "Поръчка  #"
+
+#. module: sale_product_set
+#: model:ir.actions.report,name:sale_product_set.action_report_saleorder_sets
+msgid "Quotation / Ordered sets"
+msgstr "Quotation / Ordered sets"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets_sale_order_ids
+msgid "Sales Order"
+msgstr "Нареждане за продажба"
+
+#. module: sale_product_set
+#: model:ir.model,name:sale_product_set.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Ред от нареждане за продажба"
+
+#. module: sale_product_set
+#: model:ir.model,name:sale_product_set.model_sale_order_sets
+msgid "Sales Order Sets"
+msgstr "Комплекти в поръчката"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.invoice_sets_form
+#: model:ir.ui.view,arch_db:sale_product_set.view_order_stock_form
+msgid "Sales Order Sets Lines"
+msgstr "Редове от комплекта в поръчката"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.website_prodset_search_box
+msgid "Search..."
+msgstr "Търси..."
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets_sequence
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_line_sequence
+#: model:ir.model.fields,field_description:sale_product_set.field_sale_order_sets_sequence
 msgid "Sequence"
-msgstr ""
+msgstr "Последователност"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_session
+msgid "Session"
+msgstr "Сесия"
 
 #. module: sale_product_set
 #: model:ir.model.fields,field_description:sale_product_set.field_product_set_line_product_set_id
 msgid "Set"
-msgstr ""
+msgstr "Комплект"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.prodset_modal
+msgid "Set Name<span style=\"color:red\"> *</span>"
+msgstr "Set Name<span style=\"color:red\"> *</span>"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.view_product_set_form
+msgid "Set to Draft"
+msgstr "Пращане в проект"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.product_set
+msgid "Shop By Product Set"
+msgstr "Магазин по продукти"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_image_small
+msgid "Small-sized image"
+msgstr "Картинка с малък размер"
+
+#. module: sale_product_set
+#: model:ir.model.fields,help:sale_product_set.field_product_set_image_small
+msgid "Small-sized image of the product. It is automatically resized as a 64x64px image, with aspect ratio preserved. Use this field anywhere a small image is required."
+msgstr "Small-sized image of the product. It is automatically resized as a 64x64px image, with aspect ratio preserved. Use this field anywhere a small image is required."
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_invoice_pset_layouted
+msgid "Source Document"
+msgstr "Изходен документ"
+
+#. module: sale_product_set
+#: model:ir.model.fields,help:sale_product_set.field_product_set_sale_ok
+msgid "Specify if the product can be selected in a sales order line."
+msgstr "Specify if the product can be selected in a sales order line."
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_state_next
+msgid "State Next"
+msgstr "Следващ статус"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_state
+msgid "Status"
+msgstr "Състояние"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.product_set
+msgid "Status:"
+msgstr "Status:"
+
+#. module: sale_product_set
+#: model:ir.model,name:sale_product_set.model_stock_move
+msgid "Stock Move"
+msgstr "Преместване на стока"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_line_price_subtotal
+msgid "Subtotal"
+msgstr "Междинна сума"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_amount_tax
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_line_price_tax
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_line_tax_id
+#: model:ir.ui.view,arch_db:sale_product_set.report_invoice_pset_layouted
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "Taxes"
+msgstr "Данъци"
+
+#. module: sale_product_set
+#: model:ir.model.fields,help:sale_product_set.field_product_set_image
+msgid "This field holds the image used as image for the product, limited to 1024x1024px."
+msgstr "Това поле съдържа изображението, използвано като изображение за варианта на продукта, ограничено до 1024x1024px."
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_account_invoice_sets_amount_total
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_add_amount_total
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_amount_total
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_line_price_total
+#: model:ir.model.fields,field_description:sale_product_set.field_sale_order_sets_amount_total
+msgid "Total"
+msgstr "Общо"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "Total Price"
+msgstr "Обща цена"
+
+#. module: sale_product_set
+#: model:ir.model.fields,help:sale_product_set.field_account_invoice_sets_price_subtotal_signed
+msgid "Total amount in the currency of the company, negative for credit note."
+msgstr "Обща сума във валутата на фирмата, отрицателна за кредитна бележка."
+
+#. module: sale_product_set
+#: model:ir.model.fields,help:sale_product_set.field_account_invoice_sets_price_total
+msgid "Total amount with taxes"
+msgstr "Обща сума с данъци"
+
+#. module: sale_product_set
+#: model:ir.model.fields,help:sale_product_set.field_account_invoice_sets_price_subtotal
+msgid "Total amount without taxes"
+msgstr "Обща сума без данъци"
+
+#. module: sale_product_set
+#: code:addons/sale_product_set/models/sale.py:34
+#, python-format
+msgid "Uncategorized"
+msgstr "Uncategorized"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_invoice_pset_layouted
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "Unit Price"
+msgstr "Единична цена"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.view_order_stock_form
+msgid "Unit Price:"
+msgstr "Единична цена:"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.report_invoice_pset_layouted
+#: model:ir.ui.view,arch_db:sale_product_set.report_saleorder_pset_document
+msgid "Unit measure"
+msgstr "Мерна единица"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_line_product_uom
+msgid "Unit of Measure"
+msgstr "Мерна единица"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_line_price_unit
+#: model:ir.ui.view,arch_db:sale_product_set.invoice_sets_form
+#: model:ir.ui.view,arch_db:sale_product_set.product_set_add_form_view
+#: model:ir.ui.view,arch_db:sale_product_set.view_order_stock_form
+msgid "Unit price"
+msgstr "Единична цена"
+
+#. module: sale_product_set
+#: model:ir.model.fields,field_description:sale_product_set.field_product_set_amount_untaxed
+msgid "Untaxed Amount"
+msgstr "Необложена сума"
+
+#. module: sale_product_set
+#: model:ir.model.fields,help:sale_product_set.field_product_set_session
+msgid "Website session identifier where this product was setsed."
+msgstr "Идентификатор на сесията на уебсайта, където е бил зададен този продукт."
 
 #. module: sale_product_set
 #: model:ir.model,name:sale_product_set.model_product_set_add
 msgid "Wizard model to add product set into a quotation"
-msgstr ""
+msgstr "Wizard model to add product set into a quotation"
+
+#. module: sale_product_set
+#: model:ir.ui.view,arch_db:sale_product_set.prodset_modal
+msgid "car model..."
+msgstr "Модел на автомобила..."
+

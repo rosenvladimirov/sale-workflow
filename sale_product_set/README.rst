@@ -5,88 +5,25 @@
 Sale Product set
 ================
 
-A **product set** is a list of products which end customers aren't aware, this
-list is defined by sales manager.
 
-This module aims to help salesman to quickly create several sale order lines
-at once in a quotation.
 
-After a *product set* is added to the sale order, each line can be updated or
-removed as any other sale order lines.
 
-This differs from packing products as you don't follow *product set*
-are not linked to sale order lines once they are added.
 
 Usage
 =====
 
-To use this module, you need to:
+How to make sets:
 
-* Define a *product set* as sale manager:
-    - choose products
-    - for each products, define a quantity.
-    - Sort *set* lines, this order will be the default when added into the
-      quotation
+    If this is your first set, just go to the products page and use the new button next to the add to cart button.
+    This will create a set, add the product in it and show a new button on the navbar. You can keep adding products
+    the same way and they will be added to the current set. The "Product set" button on the navbar will become green
+    when you have a set in draft mode. You can only add products to sets that are in draft mode.
 
-.. image:: /sale_product_set/static/description/product_set.png
-    :alt: Set a product set
+How to edit sets:
 
-* On quotation any salesman can click on "Add set" button
-  which will open wizard where users can chose a *product set* and quantity
-  to add at the end of sale order lines. Order defined in *product set* is
-  preserved in sale order.
-
-.. image:: /sale_product_set/static/description/add_set.png
-    :alt: Add set to sale order
-
-* Then you can remove or update added lines as any other sale order lines.
-
-.. image:: /sale_product_set/static/description/sale_order.png
-    :alt: Sale order
-
-
-.. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
-   :alt: Try me on Runbot
-   :target: https://runbot.odoo-community.org/runbot/167/11.0
-
-
-
-Bug Tracker
-===========
-
-Bugs are tracked on `GitHub Issues
-<https://github.com/OCA/sale-workflow/issues>`_. In case of trouble, please
-check there if your issue has already been reported. If you spotted it first,
-help us smash it by providing detailed and welcomed feedback.
-
-Credits
-=======
-
-Images
-------
-
-* Odoo Community Association: `Icon <https://odoo-community.org/logo.png>`_.
-
-
-Contributors
-------------
-
-* Clovis Nzouendjou <clovis@anybox.fr>
-* Pierre Verkest <pverkest@anybox.fr>
-* Denis Leemann <denis.leemann@camptocamp.com>
-* Simone Orsi <simone.orsi@camptocamp.com>
-
-Maintainer
-----------
-
-.. image:: https://odoo-community.org/logo.png
-   :alt: Odoo Community Association
-   :target: https://odoo-community.org
-
-This module is maintained by the OCA.
-
-OCA, or the Odoo Community Association, is a nonprofit organization whose
-mission is to support the collaborative development of Odoo features and
-promote its widespread use.
-
-To contribute to this module, please visit https://odoo-community.org.
+    To edit a set first go to "Product set" from the navbar, choose the set you want to edit and set it to draft mode.
+    Now you can remove products from the set. If you want to add something else, just go to the products page and add
+    the product you wish to add.
+    You can also rename your set using the "Edit" button or make a clone of a set using the "Duplicate" button.
+    When you are done with editing just put the set back in "Progress" mode.
+    To remove the whole set just press the "Delete" button.
