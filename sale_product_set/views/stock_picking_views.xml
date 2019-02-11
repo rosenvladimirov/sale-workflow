@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_picking_form" model="ir.ui.view">
+        <field name="name">stock.picking.form</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[2]/button[@name='put_in_pack']" position="replace">
+                <div class="o_form_statusbar" style="border-bottom: 0px;">
+                    <div class="o_statusbar_buttons">
+                        <button class="btn btn-sm btn-default oe_highlight" name="put_in_pack" type="object" string="Put in Pack" attrs="{'invisible': [('state', 'in', ('done', 'cancel'))]}" groups="stock.group_tracking_lot"/>
+                        <button class="btn btn-sm btn-default oe_highlight" name="%(act_open_wizard_stock_package_add)d" type="action" string="Add from Pack" attrs="{'invisible': [('state', 'in', ('done', 'cancel'))]}" groups="stock.group_tracking_lot"/>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
