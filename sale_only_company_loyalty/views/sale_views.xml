@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sale_order_view_search_inherit_contact_sale" model="ir.ui.view">
+        <field name="name">sale.order.search.inherit.contact.sale</field>
+        <field name="model">sale.order</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="loyalty_program.sale_order_view_search_inherit_loyalty_sale"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group" position="inside">
+                <filter name="contactcustomer" string="Customer contact" domain="[]" context="{'group_by': 'partner_contact_id'}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

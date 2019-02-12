@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_partner_property_loyalty_form" model="ir.ui.view">
+            <field name="name">res.partner.product.property.loyalty.form.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="product.view_partner_property_form"/>
+            <field name="arch" type="xml">
+                <field name="property_product_pricelist" position="before">
+                    <field name="loyalty_program_id"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

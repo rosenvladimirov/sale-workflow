@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_invoice_document_with_homologation" inherit_id="l10n_bg_extend.report_invoice_document" primary="True">
+            <xpath expr="//span[@t-field='l.name']" position="after">
+                <t t-if="l.product_id.show_homologation and (l.product_id.product_tmpl_id.homologation or l.product_id.homologation)">
+                    <br/>
+                    <t t-if="l.product_id.product_tmpl_id.homologation">
+                        <span t-field="l.product_id.product_tmpl_id.homologation"/>
+                    </t>
+                    <t t-if="l.product_id.homologation">
+                        <span t-field="l.product_id.homologation"/>
+                    </t>
+                </t>
+            </xpath>
+        </template>
+    </data>
+</odoo>

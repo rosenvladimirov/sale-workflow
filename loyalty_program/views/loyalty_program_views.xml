@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="view_loyalty_program_graph">
+        <field name="name">loyalty.program.graph</field>
+        <field name="model">loyalty.program</field>
+        <field name="arch" type="xml">
+            <graph string="Loyalty rules">
+                <field name="rule_ids"/>
+                <field name="pp_product" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_loyalty_program_pivot">
+        <field name="name">loyalty.program.pivot</field>
+        <field name="model">loyalty.program</field>
+        <field name="arch" type="xml">
+            <pivot string="Loyalty programs">
+                <field name="rule_ids" type="col"/>
+                <field name="pp_product" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_loyalty_program_form">
+        <field name="name">loyalty.program.form.view</field>
+            <field name="model">loyalty.program</field>
+            <field name="arch" type="xml">
+            <form string="Loyalty Program">
+                <sheet>
+                    <div class="oe_title">
+                        <label class="oe_edit_only" for="name" string="Name" />
+                        <h1><field name="name" class="oe_inline" placeholder="e.g. Discount program"/></h1>
+                        <label class="oe_edit_only" for="code" string="Loyalty Program Code"/>
+                        <h3><field name="code" placeholder="please enter code e.g. LP001"/></h3>
+                    </div>
+                    <notebook>
+                        <page string="Rules">
+                            <field name="rule_ids">
+                                <tree string="Rules">
+                                    <field name="sequence" widget="handle" />
+                                    <field name="name" />
+                                    <field name="product_id" />
+                                    <field name="category_id" />
+                                </tree>
+                                <form string="Loyalty Rule">
+                                    <div class="oe_title">
+                                        <label class="oe_edit_only" for="name" string="Name" />
+                                        <h1><field name="name" class="oe_inline" placeholder="e.g. Rule program"/></h1>
+                                        <label class="oe_edit_only" for="code" string="Loyalty Rule Code"/>
+                                        <h3><field name="code"/></h3>
+                                    </div>
+                                    <group>
+                                        <field name="product_id" />
+                                        <field name="category_id" />
+                                        <field name="pp_product" />
+                                        <field name="pp_currency" />
+                                        <field name="cumulative" />
+                                        <field name="sequence" />
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Rewards">
+                            <field name="reward_ids">
+                                <tree string="Rewards">
+                                    <field name="name" />
+                                    <field name="type" />
+                                    <field name="point_cost" />
+                                </tree>
+                                <form string="Loyalty Reward">
+                                    <div class="oe_title">
+                                        <label class="oe_edit_only" for="name" string="Reward Name"/>
+                                        <h1><field name="name" class="oe_inline"/></h1>
+                                        <label class="oe_edit_only" for="code" string="Loyalty Reward Code"/>
+                                        <h3><field name="code"/></h3>
+                                    </div>
+                                    <field name="image_medium" widget='image' class="oe_avatar oe_right"/>
+                                    <div class="oe_left">
+                                        <group>
+                                            <field name="type" />
+                                        </group>
+                                        <group>
+                                            <field name="gift_product_id"       attrs="{ 'invisible':[('type','!=','gift')], 'required':[('type','==','gift')]}" />
+                                            <field name="discount"              attrs="{ 'invisible':[('type','!=','discount')] }" />
+                                            <field name="discount_product_id"   attrs="{ 'invisible':[('type','!=','discount')], 'required':[('type','==','discount')] }"/>
+                                            <field name="point_product_id"      attrs="{ 'invisible':[('type','!=','resale')],   'required':[('type','==','resale')] }"/>
+                                        </group>
+                                        <group>
+                                            <field name="point_cost"            attrs="{ 'invisible':[('type','=','resale')] }" />
+                                            <field name="minimum_points" />
+                                        </group>
+                                    </div>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_loyalty_program_tree">
+        <field name="name">loyalty.program.form.view</field>
+        <field name="model">loyalty.program</field>
+        <field name="arch" type="xml">
+            <tree string="Loyalty Programs">
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="action_loyalty_program_form">
+        <field name="name">Loyalty Programs</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">loyalty.program</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to create a Loyalty Program.
+            </p><p>
+                Loyalty Programs allows you customer to earn points
+                and rewards when doing business at your shops.
+            </p>
+        </field>
+    </record>
+    <menuitem id="loyalty_menu_root"
+            name="Loaylty"
+            web_icon="loyalty_program,static/description/icon.png"
+            sequence="30"/>
+
+    <menuitem id="loyalty_sale_order_menu"
+            name="Points"
+            parent="loyalty_menu_root"
+            sequence="2"/>
+
+    <menuitem id="loyalty_config"
+            name="Configuration"
+            parent="loyalty_menu_root"
+            sequence="6"
+            groups="sales_team.group_sale_manager"/>
+
+    <menuitem id="menu_loyalty_program" 
+            parent="loyalty_config" 
+            action="action_loyalty_program_form"
+            sequence="1"
+            groups="sales_team.group_sale_salesman" />
+</odoo>

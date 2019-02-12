@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id='fleet_vehicle_model_view_form_product_set' model='ir.ui.view'>
+        <field name="name">fleet.vehicle.model.form.product.set</field>
+        <field name="model">fleet.vehicle.model</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_model_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Product sets" name="product_set_sheet">
+                    <field name="product_set_ids" widget="many2many" option="{'no_create_edit': True}" context="{'default_fleet_ids':[active_id]}">
+                        <tree name="product_set" string="Products sets for fleet vehicle model">
+                            <field name="image_small" widget="image"/>
+                            <field name="name"/>
+                            <field name="code"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

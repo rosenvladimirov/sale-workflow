@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="product_pricelist_item_pset_tree_view" model="ir.ui.view">
+            <field name="name">product.pricelist.item.pset.tree</field>
+            <field name="model">product.pricelist.item</field>
+            <field name="inherit_id" ref="product.product_pricelist_item_tree_view" />
+            <field name="arch" type="xml">
+                <tree string="Pricelist Items">
+                    <field name="categ_id" position="after">
+                        <field name="product_set_id"/>
+                    </field>
+                </tree>
+            </field>
+        </record>
+        <record id="product_pricelist_item_pset_form_view" model="ir.ui.view">
+            <field name="name">product.pricelist.item.pset.form</field>
+            <field name="model">product.pricelist.item</field>
+            <field name="inherit_id" ref="product.product_pricelist_item_form_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//group[1]" position="after">
+                    <separator string="Additional filters"/>
+                    <group name="filters">
+                        <group>
+                            <field name="product_set_id"/>
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
