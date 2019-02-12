@@ -31,6 +31,7 @@
         'views/website_sale_sets_template.xml',
         'views/stock_move_views.xml',
         'views/stock_picking_views.xml',
+        'views/product_pricelist_views.xml',
         'views/invoice_report_templates.xml',
         'views/sale_report_templates.xml',
         'report/sale_report.xml',

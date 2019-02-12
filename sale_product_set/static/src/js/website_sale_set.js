@@ -137,6 +137,23 @@ var ProductSets = Widget.extend({
             }
             $el.data('product-product-id', product_id);
         });
+        $('.oe_website_sale').on('click', 'a.js_add_pset_cart_json', function (ev) {
+            ev.preventDefault();
+            var $link = $(ev.currentTarget);
+            var $input = $link.parent().find("input");
+            var pset_id = +$input.closest('*:has(input[name="pset_id"])').find('input[name="pset_id"]').val();
+            var min = parseFloat($input.data("min") || 0);
+            var max = parseFloat($input.data("max") || Infinity);
+            var quantity = ($link.has(".fa-minus").length ? -1 : 1) + parseInt($input.val(), 10) || 0;
+            var new_qty = quantity > min ? (quantity < max ? quantity : max) : min;
+            console.log("PSET", pset_id, $input);
+            $('input[name="'+$input.attr("name")+'"]').add($input).filter(function () {
+                var $pset = $(this).closest('*:has(input[name="pset_id"])');
+                return !$pset.length || +$pset.find('input[name="pset_id"]').val() === pset_id;
+            }).val(new_qty).change();
+            return false;
+        });
+
         set_loading.then(function() {
             if ($('input.js_product_change').length) { // manage "List View of sets"
                 $('input.js_product_change:checked').first().trigger('change');
@@ -305,14 +322,15 @@ var ProductSets = Widget.extend({
         return false;
     },
     product_set_add: function(e){
-        var current = $(e.currentTarget);
+        var current = $(e.currentTarget).parent().parent();
+        var btn = $(e.currentTarget);
         var product_set = $(e.currentTarget).attr('value');
 
-        console.log("Add", current, product_set, current.find('qty'));
+        console.log("Add", current, product_set, current.find('input[name="add_qty"]'));
         // can be hidden if empty
         $('#my_cart').removeClass('hidden');
-        website_sale_utils.animate_clone($('#my_cart'), current, 25, 40);
-        return this.add_sets_to_cart(product_set, current.find('qty').val() || 1);
+        website_sale_utils.animate_clone($('#my_cart'), btn, 25, 40);
+        return this.add_sets_to_cart(product_set, current.find('input[name="add_qty"]').val() || 1);
     },
     add_to_cart: function(product_id, qty_id) {
         var add_to_cart = ajax.jsonRpc("/shop/cart/update_json", 'call', {

@@ -3,3 +3,4 @@
 
 from . import sale
 from . import website
+from . import mail_channel

@@ -14,7 +14,6 @@ class AccountInvoice(models.Model):
 
     sets_line = fields.One2many('account.invoice.sets', 'invoice_id', string='Invoice Sets Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True)
     has_sets = fields.Boolean(string="Has sets", compute="_compute_has_sets")
-    print_sets = fields.Boolean(string="Group by sets")
 
     @api.multi
     def _compute_has_sets(self):

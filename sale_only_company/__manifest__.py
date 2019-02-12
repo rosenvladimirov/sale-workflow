@@ -11,6 +11,7 @@
     'depends': ['sale', 'website_sale'],
     'data': [
         'views/sale_views.xml',
+        'views/website_sale_template.xml',
     ],
     'demo': [
     ],

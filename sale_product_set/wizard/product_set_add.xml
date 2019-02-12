@@ -12,15 +12,19 @@
                   <field name="product_set_id" domain="['|', '|', ('partner_id', '=', partner_id), ('partner_id', '=', company_id), ('state', '=', 'progress')]"/>
                   <field name="quantity"/>
                   <field name="amount_total" string="Unit price"/>
+                  <field name="split_sets"/>
                   <field name="currency_id" invisible="1"/>
               </group>
               <footer>
                   <button name="sale_add_set" string="Add set"
                           type="object" class="oe_highlight"
-                          invisible="context.get('force_mode', False) == 'purchase'"/>
+                          invisible="context.get('force_mode', False) in ('purchase', 'picking')"/>
                   <button name="purchase_add_set" string="Add set"
                           type="object" class="oe_highlight"
-                          invisible="context.get('force_mode', False) == 'sale'"/>
+                          invisible="context.get('force_mode', False) in ('sale', 'picking')"/>
+                  <button name="picking_add_set" string="Add set"
+                          type="object" class="oe_highlight"
+                          invisible="context.get('force_mode', False) in ('sale', 'purchase')"/>
                   <button special="cancel" string="Cancel" class="oe_link"/>
               </footer>
           </form>

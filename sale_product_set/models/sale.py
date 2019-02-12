@@ -15,12 +15,16 @@ class SaleOrder(models.Model):
 
     sets_line = fields.One2many('sale.order.sets', 'order_id', string='Order Sets Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True)
     has_sets = fields.Boolean(string="Has sets", compute="_compute_has_sets")
-    print_sets = fields.Boolean("Group by sets")
+    print_sets = fields.Boolean("Ungroup by sets")
 
     @api.multi
     def _compute_has_sets(self):
         for record in self:
             record.has_sets = len(record.sets_line) > 0
+
+    @api.multi
+    def order_lines_layouted(self):
+        return self.order_lines_sets_layouted()
 
     @api.multi
     def order_lines_sets_layouted(self):
@@ -40,7 +44,7 @@ class SaleOrder(models.Model):
                     'price_unit': unit_price,
                     'subtotal': category and category.subtotal,
                     'pagebreak': category and category.pagebreak,
-                    'lines': self.print_sets and list(lines) or []
+                    'lines': list(lines),
                 })
             return report_pages_sets
         else:
@@ -59,7 +63,7 @@ class SaleOrder(models.Model):
                     'price_unit': unit_price,
                     'subtotal': category and category.subtotal,
                     'pagebreak': category and category.pagebreak,
-                    'lines': list(lines)
+                    'lines': list(lines),
                 })
             return report_pages_sets
 
@@ -88,7 +92,11 @@ class SaleOrder(models.Model):
         for set in self.env['product.set'].browse(product_set_id):
             amount_untaxed = 0.0
             for set_line in set.set_lines:
-                line = SaleOrderLineSudo.create(self.prepare_sale_order_line_set_data(self.id, set, set_line, quantity, max_sequence=max_sequence))
+                line = self.sudo().order_line.search([('product_id', '=', set_line.product_id.id), ('product_set_id', '=', set.id)], limit=1)
+                if line:
+                    line.write(self.prepare_sale_order_line_set_data(self.id, set, set_line, quantity, max_sequence=max_sequence, old_qty=line.product_uom_qty))
+                else:
+                    line = SaleOrderLineSudo.create(self.prepare_sale_order_line_set_data(self.id, set, set_line, quantity, max_sequence=max_sequence))
                 price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
                 amount_untaxed += line.tax_id.compute_all(price, line.order_id.currency_id, line.product_uom_qty, product=line.product_id, partner=line.order_id.partner_shipping_id)['total_excluded']
             set_old = self.sets_line.search([('order_id', '=', self.id), ('product_set_id', '=', set.id)])
@@ -97,8 +105,8 @@ class SaleOrder(models.Model):
                 set_old.write({
                         'order_id': self.id,
                         'product_set_id': set.id,
-                        'quantity': quantity+set_old.quantity,
-                        'amount_total': set_old.amount_total+self.pricelist_id.currency_id.round(amount_untaxed),
+                        'quantity': quantity+sum(ss.quantity for ss in set_old),
+                        'amount_total': sum(ss.amount_total for ss in set_old)+self.pricelist_id.currency_id.round(amount_untaxed),
                         })
                 res_id = set_old.id
             else:
@@ -106,26 +114,28 @@ class SaleOrder(models.Model):
                 res_id = res.id
         return {"set_line_id": res_id, "quantity": quantity}
 
-    def prepare_sale_order_set_data(self, sale_order_id, set, qty, total):
+    def prepare_sale_order_set_data(self, sale_order_id, set, qty, total, split_sets=False):
         set_lines = self.env['sale.order.sets'].new({
             'order_id': sale_order_id,
             'product_set_id': set.id,
             'quantity': qty,
             'price_unit': total/qty,
             'amount_total': total,
+            'split_sets': split_sets,
         })
         line_sets_values = set_lines._convert_to_write(set_lines._cache)
         return line_sets_values
 
     def prepare_sale_order_line_set_data(self, sale_order_id, set, set_line, qty,
-                                     max_sequence=0):
+                                     max_sequence=0, old_qty=0, split_sets=False):
         sale_line = self.env['sale.order.line'].new({
             'order_id': sale_order_id,
             'product_id': set_line.product_id.id,
-            'product_uom_qty': set_line.quantity * qty,
+            'product_uom_qty': (set_line.quantity * qty)+old_qty,
             'product_uom': set_line.product_id.uom_id.id,
             'sequence': max_sequence + set_line.sequence,
             'product_set_id': set.id,
+            'split_sets': split_sets,
         })
         sale_line.product_id_change()
         line_values = sale_line._convert_to_write(sale_line._cache)
@@ -147,12 +157,7 @@ class SaleOrderLine(models.Model):
 
 
     product_set_id = fields.Many2one('product.set', string='Product Set', change_default=True, ondelete='restrict', copy=True)
-
-    @api.multi
-    def write(self, values):
-        if 'name' in values and self.product_set_id and _('set-code:') not in values['name']:
-            values['name'] = _("%s (set-code: %s)" % (values['name'], self.product_set_id.code))
-        return super(SaleOrderLine, self).write(values)
+    split_sets = fields.Boolean("Splited set")
 
 
 class SaleOrderSets(models.Model):
@@ -171,10 +176,13 @@ class SaleOrderSets(models.Model):
     price_unit = fields.Float('Unit Price', required=True, digits=dp.get_precision('Product Price'), default=0.0)
     amount_total = fields.Monetary(string='Total')
 
+    split_sets = fields.Boolean("Splited set")
+
     @api.multi
     def unlink(self):
-        lines = self.order_id.order_line
-        lines.filtered(lambda x: x.product_set_id.id == self.id).unlink()
+        for set in self:
+            lines = set.order_id.order_line
+            lines.filtered(lambda x: x.product_set_id.id == self.id).unlink()
         return super(SaleOrderSets, self).unlink()
 
 

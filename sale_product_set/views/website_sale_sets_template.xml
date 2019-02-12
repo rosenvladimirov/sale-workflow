@@ -11,7 +11,7 @@
     <template id="add_to_set" inherit_id="website_sale.products_item" active="True" customize_show="True" name="Product Sets" priority="30">
         <xpath expr="//div[@id='btn_group']" position="inside">
             <t t-set="in_set" t-value="product.product_variant_ids &amp; request.env['product.set'].current_set_products().mapped('set_lines').mapped('product_id')"/>
-            <a class="btn btn-default btn-xs o_add_prodset" t-att-disabled='in_set or None' title="Add to Sets" t-att-data-product-product-id="product.product_variant_ids[0].id" data-action="o_prodset"><span class="fa fa-object-group"></span></a>
+            <a class="btn btn-default btn-xs o_add_prodset" t-att-disabled='in_set or None' title="Add to Sets" t-att-data-product-product-id="product.product_variant_ids[0].id" data-action="o_prodset"><span class="fa fa-car"></span></a>
         </xpath>
     </template>
 
@@ -19,7 +19,7 @@
         <xpath expr="//a[@id='add_to_cart']" position="after">
             <t t-if="product.env.ref('sale_product_set.add_to_set').active">
                 <t t-set="in_set" t-value="product.product_variant_ids &amp; request.env['product.set'].current_set_products().mapped('set_lines').mapped('product_id')"/>
-                <a class="btn btn-default btn-lg mt8 o_add_prodset_dyn" t-att-disabled='in_set or None' title="Add to Set" t-att-data-product-product-id="product.product_variant_ids[0].id" data-action="o_prodset"><span class="fa fa-object-group"></span></a>
+                <a class="btn btn-default btn-lg mt8 o_add_prodset_dyn" t-att-disabled='in_set or None' title="Add to Set" t-att-data-product-product-id="product.product_variant_ids[0].id" data-action="o_prodset"><span class="fa fa-car"></span></a>
             </t>
         </xpath>
     </template>
@@ -100,7 +100,7 @@
                                       <!-- <div class="oe_product oe_list" style="border-bottom:0;"> -->
                                       <div class="container">
                                         <div class="row">
-
+                                            <input type="hidden" class="pset_id" name="pset_id" t-att-value="pset.id"/>
                                             <div class="col-md-2">
                                               <div class="oe_product_image">
                                                   <img t-attf-src="/web/image/product.set/#{pset.id}/image/100x100" class="img img-responsive" style="margin:auto;"/>
@@ -147,11 +147,20 @@
                                                 </form>
                                             </section>
                                             </div>
-
                                             <div class="col-md-2">
-                                              <div class="pull-right text-center td-set-btn">
+                                              <div class="pull-right text-center td-set-btn" >
                                                   <input name="product_set_id" t-att-value="pset.id" type="hidden"/>
                                                   <a class="btn btn-default btn-block o_prodset_add mb4" t-att-value="pset.id">Add <span class="hidden-xs">Set</span></a>
+                                              </div>
+
+                                              <div class="css_quantity input-group oe_website_spinner">
+                                                  <a t-attf-href="#" class="mb8 input-group-addon js_add_pset_cart_json hidden-xs">
+                                                    <i class="fa fa-minus"></i>
+                                                  </a>
+                                                  <input type="text" class="js_quantity form-control quantity" data-min="1" name="add_qty" t-att-data-pset-id="pset.id" value="1"/>
+                                                  <a t-attf-href="#" class="mb8 input-group-addon float_left js_add_pset_cart_json hidden-xs">
+                                                    <i class="fa fa-plus"></i>
+                                                  </a>
                                               </div>
                                             </div>
                                         </div>
@@ -235,23 +244,6 @@
                     </div>
                   </div>
 
-                  <div class="clearfix"></div>
-
-                  <div t-attf-class="form-group #{error.get('fleet_ids') and 'has-error' or ''} mb8" style="width:100%">
-                    <div class="col-md-2 col-sm-3 col-xs-12">
-                      <label class="control-label label-optional" for="fleet_ids">Car model</label>
-                    </div>
-                    <div class="col-md-10 col-sm-9 col-xs-12">
-                      <select name="fleet_ids" class="form-control" style="width:100%">
-                        <option value="">car model...</option>
-                        <t t-foreach="cars or []" t-as="car">
-                          <option t-att-value="car.id" style="display:none;" t-att-data-car_id="car.id" t-att-selected="car.id == set.fleet_ids.id">
-                            <t t-esc="car.name"/>
-                          </option>
-                        </t>
-                      </select>
-                    </div>
-                  </div>
                 </div>
 
                 <div class="modal-footer">

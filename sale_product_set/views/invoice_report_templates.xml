@@ -29,15 +29,9 @@
                                 <td class="text-right">
                                     <span t-esc="layout_category['quantity']"/>
                                 </td>
-                                <t t-if="not o.print_sets">
-                                    <t t-set="subtotal" t-value="sum(line.price_subtotal for line in layout_category['lines'])"/>
-                                    <t t-set="unit_price" t-value="subtotal/layout_category['quantity']"/>
-                                </t>
-                                <t t-else="">
-                                    <td class="text-right">
-                                        <span t-esc="layout_category['price_unit']" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
-                                    </td>
-                                </t>
+                                <td class="text-right">
+                                    <span t-esc="layout_category['price_unit']" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                </td>
                             </tr>
                         </t>
 

@@ -35,16 +35,16 @@
                     </button>
                 </div>
                 <group>
-                    <group colspan="4">
+                    <group colspan="4" name="headingdata">
                         <field name="image_medium" widget="image" nolabel="1" class="oe_avatar"/>
                         <div class="oe_title">
                             <label class="oe_edit_only" for="name" string="Product Set Name"/>
                             <h1><field name="name" placeholder="Product sets Name"/></h1>
                             <label class="oe_edit_only" for="code" string="Product Set Code"/>
-                            <h3><field name="code" placeholder="Product sets Name"/></h3>
+                            <h3><field name="code" placeholder="Product sets Code"/></h3>
                         </div>
                     </group>
-                    <group colspan="4">
+                    <group colspan="4" name="partnerdata">
                         <group>
                             <field name="partner_id" select="1"/>
                             <field name="partner_invoice_id"/>
@@ -59,6 +59,9 @@
                         <group>
                             <field name="subtotal"/>
                             <field name="pagebreak"/>
+                        </group>
+                        <group>
+                            <field name="type"/>
                         </group>
                     </group>
                     <field name="set_lines">
@@ -119,8 +122,8 @@
         <field name="priority" eval="8"/>
         <field name="arch" type="xml">
             <search string="Product set">
-                <field name="name"/>
                 <field name="code"/>
+                <field name="name"/>
                 <field name="partner_id" select="True"/>
                 <separator/>
                 <filter string="Partner" name="groupby_partner_id" domain="[]"

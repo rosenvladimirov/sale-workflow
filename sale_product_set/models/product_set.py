@@ -39,9 +39,9 @@ class ProductSet(models.Model):
     set_lines = fields.One2many('product.set.line', 'product_set_id', string="Products", readonly=True, copy=True, states={'draft': [('readonly', False)]})
 
     partner_id = fields.Many2one('res.partner', string='Partner', required=True, readonly=True, index=True, states={'draft': [('readonly', False)]}, default=lambda self: self._context.get('default_partner_id', False) or self.env['res.company']._company_default_get('product.set').partner_id)
-    partner_invoice_id = fields.Many2one('res.partner', string='Invoice Address', readonly=True, states={'draft': [('readonly', False)]}, help="Invoice address for current sales order.")
-    partner_shipping_id = fields.Many2one('res.partner', string='Delivery Address', required=True, readonly=True, states={'draft': [('readonly', False)]}, help="Delivery address for current sales order.")
-    pricelist_id = fields.Many2one('product.pricelist', string='Pricelist', required=True, readonly=True, states={'draft': [('readonly', False)]}, help="Pricelist for current sales order.")
+    partner_invoice_id = fields.Many2one('res.partner', string='Invoice Address', readonly=True, required=True, help="Invoice address for current sales order.")
+    partner_shipping_id = fields.Many2one('res.partner', string='Delivery Address', required=True, help="Delivery address for current sales order.")
+    pricelist_id = fields.Many2one('product.pricelist', string='Pricelist', required=True, readonly=True, help="Pricelist for current sales order.")
     currency_id = fields.Many2one("res.currency", related='pricelist_id.currency_id', string="Currency", readonly=True, required=True)
     fiscal_position_id = fields.Many2one('account.fiscal.position', oldname='fiscal_position', readonly=True, string='Fiscal Position')
     company_id = fields.Many2one('res.company', 'Company', readonly=True, default=lambda self: self.env['res.company']._company_default_get('product.set'))
@@ -75,6 +75,7 @@ class ProductSet(models.Model):
                             ('purchase', 'Purchase'),
                             ],
                             track_visibility='onchange', copy=False)
+
     # image: all image fields are base64 encoded and PIL-supported
     image = fields.Binary(
         "Image", attachment=True,
@@ -114,7 +115,6 @@ class ProductSet(models.Model):
         """
         Trigger the change of fiscal position when the shipping address is modified.
         """
-        self.ensure_one()
         self.fiscal_position_id = self.env['account.fiscal.position'].get_fiscal_position(self.partner_id.id, self.partner_shipping_id.id)
         return {}
 
@@ -136,7 +136,7 @@ class ProductSet(models.Model):
             return
 
         addr = self.partner_id.address_get(['delivery', 'invoice'])
-        _logger.info("Change partner info %s" % addr)
+        #_logger.info("Change partner info %s" % addr)
         values = {
             'fiscal_position_id': self.env['account.fiscal.position'].get_fiscal_position(self.partner_id.id, addr['delivery']),
             'pricelist_id': self.partner_id.property_product_pricelist and self.partner_id.property_product_pricelist.id or False,
@@ -241,7 +241,7 @@ class ProductSet(models.Model):
         domain = []
         if search:
             for srch in search.split(" "):
-                domain += ['|', ('code', 'like', srch), ('name', 'ilike', srch)]
+                domain += ['|', ('code', 'ilike', srch), ('name', 'ilike', srch)]
         return self.sudo().search([
             ("partner_id", "=", self.env.user.partner_id.parent_id and self.env.user.partner_id.parent_id.id or self.env.user.partner_id.id)
             ]+domain, limit=limit, offset=offset).filtered("active").sorted(key=lambda r: (r.name, r.code))
@@ -251,7 +251,7 @@ class ProductSet(models.Model):
         domain = []
         if search:
             for srch in search.split(" "):
-                domain += ['|', ('code', 'like', srch), ('name', 'ilike', srch)]
+                domain += ['|', ('code', 'ilike', srch), ('name', 'ilike', srch)]
         return self.sudo().search_count([
             ("partner_id", "=", self.env.user.partner_id.parent_id and self.env.user.partner_id.parent_id.id or self.env.user.partner_id.id)
             ]+domain)
@@ -323,7 +323,7 @@ class ProductSet(models.Model):
         args = args or []
         domain = []
         if name:
-            domain = ['|', ('code', '=ilike', name), ('name', operator, name + "%")]
+            domain = ['|', ('code', '=ilike', name + "%"), ('name', operator, name)]
             if operator in expression.NEGATIVE_TERM_OPERATORS:
                 domain = ['&', '!'] + domain[1:]
         product_set = self.search(domain + args, limit=limit)
@@ -389,9 +389,9 @@ class ProductSetLine(models.Model):
     @api.multi
     def _get_display_price(self, product):
         if self.product_set_id.pricelist_id.discount_policy == 'with_discount':
-            return product.with_context(pricelist=self.product_set_id.pricelist_id.id).price
+            return product.with_context(dict(self.env.context, pricelist=self.product_set_id.pricelist_id.id, product_set_id=self.product_set_id)).price
         final_price, rule_id = self.product_set_id.pricelist_id.get_product_price_rule(self.product_id, self.quantity or 1.0, self.product_set_id.partner_id)
-        context_partner = dict(self.env.context, partner_id=self.product_set_id.partner_id.id, date=fields.Date.Now)
+        context_partner = dict(self.env.context, partner_id=self.product_set_id.partner_id.id, date=fields.Date.Now, product_set_id=self.product_set_id)
         base_price, currency_id = self.with_context(context_partner)._get_real_price_currency(self.product_id, rule_id, self.quantity, self.product_uom, self.product_set_id.pricelist_id.id)
         if currency_id != self.product_set_id.pricelist_id.currency_id.id:
             base_price = self.env['res.currency'].browse(currency_id).with_context(context_partner).compute(base_price, self.product_set_id.pricelist_id.currency_id)
@@ -407,7 +407,7 @@ class ProductSetLine(models.Model):
             pricelist_item = PricelistItem.browse(rule_id)
             if pricelist_item.pricelist_id.discount_policy == 'without_discount':
                 while pricelist_item.base == 'pricelist' and pricelist_item.base_pricelist_id and pricelist_item.base_pricelist_id.discount_policy == 'without_discount':
-                    price, rule_id = pricelist_item.base_pricelist_id.with_context(uom=uom.id).get_product_price_rule(product, qty, self.product_set_id.partner_id)
+                    price, rule_id = pricelist_item.base_pricelist_id.with_context(uom=uom.id, product_set_id=self.product_set_id).get_product_price_rule(product, qty, self.product_set_id.partner_id)
                     pricelist_item = PricelistItem.browse(rule_id)
 
             if pricelist_item.base == 'standard_price':

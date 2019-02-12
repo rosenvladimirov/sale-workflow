@@ -21,24 +21,9 @@ class StockPackageAdd(models.TransientModel):
         packing_id = self._context['active_id']
         if not packing_id:
             return
-        order_obj = self.env['stock.picking']
-        picking = order_obj.browse(packing_id)
+        picking_obj = self.env['stock.picking']
+        picking = picking_obj.browse(packing_id)
         max_sequence = 0
         if picking.move_line_ids:
             max_sequence = max([line.sequence for line in picking.move_line_ids])
-        stock_move_line = self.env['stock.move.line']
-        for package in self.package_id:
-            for quant in package.quant_ids:
-                line = stock_move_line.create(order_obj.prepare_stock_move_line_package_data(packing_id, package, quant, max_sequence=max_sequence))
-
-    def prepare_stock_move_line_package_data(self, packing_id, package, quant, max_sequence=0):
-        stock_move_line = self.env['stock.move.line'].new({
-            'picking_id': packing_id,
-            'product_id': quant.product_id.id,
-            'ordered_qty': quant.quantity,
-            'product_uom_id': quant.product_uom_id.id,
-            'sequence': max_sequence + set_line.sequence,
-        })
-        stock_move_line.product_id_change()
-        line_values = stock_move_line._convert_to_write(stock_move_line._cache)
-        return line_values
+        picking.move_lines = picking.prepare_stock_move_line_package_data(picking.id, self.package_id)
