@@ -42,7 +42,6 @@ class ProductSetAdd(models.TransientModel):
     def onchange_product_set_id(self):
         for rec in self:
             if not rec.edit_sets:
-                rec.set_lines.unlink()
                 values = []
                 for line in rec.product_set_id.set_lines:
                     _logger.info("Line %s:%s" % (line, rec.set_lines))
@@ -170,7 +169,7 @@ class ProductSetLine(models.TransientModel):
     product_uom = fields.Many2one('product.uom', related="product_id.uom_id", string='Unit of Measure', readonly=True)
     product_uom_alt = fields.Many2one('product.uom', related="product_alt_id.uom_id", string='Unit of Measure', readonly=True)
 
-    product_set_id = fields.Many2one('product.set', string='Set', ondelete='cascade',)
+    product_set_id = fields.Many2one('product.set', string='Set',)
     sequence = fields.Integer(string='Sequence', required=True, default=0,)
     type = fields.Selection("product.set", related='product_set_id.type', string="Type", readonly=True)
 
