@@ -365,6 +365,14 @@ class ProductSetLine(models.Model):
             else:
                 line.update({'price_unit': 0.0})
 
+    def _get_domain(self):
+        if self.type == 'sale':
+            return [('sale_ok', '=', True)]
+        elif self.type == 'purchase':
+            return [('purchase_ok', '=', True)]
+        else:
+            return ["|", ('sale_ok', '=', True), ('purchase_ok', '=', True)]
+
 
     sequence = fields.Integer(string='Sequence', required=True, default=0,)
     product_set_id = fields.Many2one('product.set', string='Set', ondelete='cascade', copy=False)
@@ -372,8 +380,9 @@ class ProductSetLine(models.Model):
     company_id = fields.Many2one(related='product_set_id.company_id', string='Company', store=True, readonly=True)
     currency_id = fields.Many2one(related='product_set_id.currency_id', store=True, string='Currency', readonly=True)
 
-    product_id = fields.Many2one(comodel_name='product.product', domain=[('sale_ok', '=', True)], string='Product', required=True)
-    product_tmpl_id = fields.Many2one(related='product_id.product_tmpl_id', string='Product template', readonly=True)
+    product_id = fields.Many2one(comodel_name='product.product', string='Product', required=True)
+    product_tmpl_id = fields.Many2one(comodel_name='product.template', string='Product template', domain=_get_domain)
+    #product_tmpl_id = fields.Many2one(related='product_id.product_tmpl_id', string='Product template', readonly=True)
 
     # name = fields.Text(string='Description', required=True)
     tax_id = fields.Many2many('account.tax', string='Taxes', domain=['|', ('active', '=', False), ('active', '=', True)])
@@ -384,7 +393,15 @@ class ProductSetLine(models.Model):
     price_subtotal = fields.Monetary(compute='_compute_amount', string='Subtotal', readonly=True, store=True)
     price_tax = fields.Float(compute='_compute_amount', string='Taxes', readonly=True, store=True)
     price_total = fields.Monetary(compute='_compute_amount', string='Total', readonly=True, store=True)
+    type = fields.Selection("product.set", related='product_set_id.type', string="Type", readonly=True)
 
+
+    @api.multi
+    @api.onchange('product_tmpl_id')
+    def onchange_product_tmpl_id(self):
+        for rec in self:
+            rec.product_id = rec.product_tmpl_id.product_variant_id.id
+        return {'domain': {'product_id': [('product_tmpl_id', '=', rec.product_tmpl_id.id)]}}
 
     @api.multi
     def _get_display_price(self, product):

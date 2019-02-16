@@ -40,6 +40,14 @@
                                 <field name="price_unit"/>
                                 <field name="amount_total" string="Subtotal"/>
                                 <field name="currency_id" invisible="1"/>
+                                <field name="set_lines" invisible="1"/>
+                                <button name="%(act_open_wizard_product_set_edit)d"
+                                        type="action"
+                                        string="Modify Sets"
+                                        icon="fa-th"
+                                        class="oe_edit_only"
+                                        context="{'default_product_set_id': product_set_id, 'default_edit_sets': True, 'set_line_ids': set_lines}"
+                                />
                         </tree>
                         <kanban class="o_kanban_mobile">
                             <field name="product_set_id"/>
@@ -71,6 +79,32 @@
                                 </t>
                             </templates>
                         </kanban>
+                        <form string="Product set">
+                            <sheet>
+                                <group>
+                                    <field name="order_partner_id" invisible="1"/>
+                                    <field name="company_id" invisible="1" readonly="1"/>
+                                    <field name="product_set_id"
+                                        domain="['|', ('partner_id', '=', order_partner_id), ('partner_id', '=', company_id)]"
+                                        force_save="1"/>
+                                        <field name="quantity"/>
+                                        <field name="price_unit"/>
+                                        <field name="amount_total" string="Subtotal"/>
+                                        <field name="currency_id" invisible="1"/>
+                                </group>
+                                <field name="set_lines">
+                                    <tree>
+                                        <field name="product_id"/>
+                                        <field name="product_uom_qty"/>
+                                        <field name="product_uom"/>
+                                        <field name="price_unit"/>
+                                        <field name="price_subtotal" widget="monetary" groups="sale.group_show_price_subtotal"/>
+                                        <field name="price_total" widget="monetary" groups="sale.group_show_price_total"/>
+                                        <field name="currency_id" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </sheet>
+                        </form>
                     </field>
                 </page>
             </xpath>

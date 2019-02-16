@@ -14,11 +14,27 @@
                   <field name="amount_total" string="Unit price"/>
                   <field name="split_sets"/>
                   <field name="currency_id" invisible="1"/>
+                  <field name="edit_sets" invisible="1"/>
               </group>
+              <field name="set_lines">
+                   <tree string="Product set lines" create="0" editable="bottom">
+                       <field name="sequence" widget="handle"/>
+                       <field name="product_tmpl_id"/>
+                       <field name="product_id"/>
+                       <field name="quantity"/>
+                       <field name="product_uom"/>
+                       <field name="product_alt_id"/>
+                       <field name="quantity_alt"/>
+                       <field name="product_uom_alt"/>
+                   </tree>
+              </field>
               <footer>
                   <button name="sale_add_set" string="Add set"
                           type="object" class="oe_highlight"
-                          invisible="context.get('force_mode', False) in ('purchase', 'picking')"/>
+                          invisible="context.get('force_mode', False) in ('purchase', 'picking') and edit_sets"/>
+                  <button name="sale_add_set" string="Update set"
+                          type="object" class="oe_highlight"
+                          invisible="context.get('force_mode', False) in ('purchase', 'picking') and not edit_sets"/>
                   <button name="purchase_add_set" string="Add set"
                           type="object" class="oe_highlight"
                           invisible="context.get('force_mode', False) in ('sale', 'picking')"/>
@@ -39,5 +55,12 @@
       <field name="view_id" ref="product_set_add_form_view"/>
       <field name="target">new</field>
   </record>
-
+  <record id="act_open_wizard_product_set_edit" model="ir.actions.act_window">
+      <field name="name">Edit set in sale order</field>
+      <field name="res_model">product.set.add</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="product_set_add_form_view"/>
+      <field name="target">new</field>
+  </record>
 </odoo>

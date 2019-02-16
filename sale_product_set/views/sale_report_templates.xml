@@ -44,19 +44,19 @@
                     </t>
                 </div>
             </div>
-
-            <h2>
-                <t t-if="not (env.context.get('proforma', False) or is_pro_forma)">
-                    <span t-if="doc.state in ['sale','done']">Order # </span>
-                    <span t-if="doc.state in ['draft','sent']">Quotation # </span>
-                    <span t-if="doc.state == 'cancel'">Canceled Order # </span>
-                </t>
-                <t t-if="env.context.get('proforma', False) or is_pro_forma">
-                    <span>Pro-Forma Invoice # </span>
-                </t>
-                <span t-field="doc.name"/>
-            </h2>
-
+            <div class="row">
+                <h2>
+                    <t t-if="not (env.context.get('proforma', False) or is_pro_forma)">
+                        <span t-if="doc.state in ['sale','done']">Order # </span>
+                        <span t-if="doc.state in ['draft','sent']">Quotation # </span>
+                        <span t-if="doc.state == 'cancel'">Canceled Order # </span>
+                    </t>
+                    <t t-if="env.context.get('proforma', False) or is_pro_forma">
+                        <span>Pro-Forma Invoice # </span>
+                    </t>
+                    <span t-field="doc.name"/>
+                </h2>
+            </div>
             <div class="row mt32 mb32" id="informations">
                 <div t-if="doc.client_order_ref" class="col-xs-3">
                     <strong>Your Reference:</strong>
@@ -84,8 +84,8 @@
                 </div>
             </div>
             <t t-if="env.context.get('proforma', False) or is_pro_forma">
+                <br/>
                 <div class="row">
-                    <br/>
                     <div class="col-xs-12">
                         <table class="table table-condensed">
                             <thead class="invoice_head_head">
@@ -135,16 +135,15 @@
                     </div>
                 </div>
             </t>
-
             <!-- Is there a discount on at least one line? -->
             <t t-set="display_discount" t-value="any([l.discount for l in doc.order_line])"/>
             <t t-set="display_pictures" t-value="any([l.product_id.image_small for l in doc.order_line if doc.print_image and l.product_id and l.product_id.image_small])"/>
-
-            <t t-foreach="doc.order_lines_sets_layouted()" t-as="page">
+            <div class="row">
+                <div class="col-xs-12">
+                    <t t-foreach="doc.order_lines_sets_layouted()" t-as="page">
                 <table class="table table-condensed">
                     <thead>
                         <tr>
-
                             <th>&#8470;</th>
                             <t t-if="display_pictures">
                                 <th colspan="2">Description</th>
@@ -154,7 +153,6 @@
                             </t>
                             <th class="text-right">Quantity</th>
                             <th class="text-center">Unit measure</th>
-
                             <th class="text-right">Unit Price</th>
                             <th t-if="display_discount" class="text-right" groups="sale.group_discount_per_so_line">Disc.(%)</th>
                             <th class="text-right">Taxes</th>
@@ -281,7 +279,8 @@
                     <p style="page-break-before:always;"> </p>
                 </t>
             </t>
-
+                </div>
+            </div>
             <div class="clearfix">
                 <div class="row" name="total">
                     <div class="col-xs-4 pull-right">
@@ -327,21 +326,24 @@
                     </div>
                 </div>
             </div>
-
-            <p t-field="doc.note" />
-            <p t-if="doc.payment_term_id.note">
-                <span t-field="doc.payment_term_id.note"/>
-            </p>
-            <p id="fiscal_position_remark" t-if="doc.fiscal_position_id and doc.fiscal_position_id.note">
-                <strong>Fiscal Position Remark:</strong>
-                <span t-field="doc.fiscal_position_id.note"/>
-            </p>
+            <div class="row">
+                <div class="col-xs-12">
+                    <p t-field="doc.note" />
+                    <p t-if="doc.payment_term_id.note">
+                        <span t-field="doc.payment_term_id.note"/>
+                    </p>
+                    <p id="fiscal_position_remark" t-if="doc.fiscal_position_id and doc.fiscal_position_id.note">
+                        <strong>Fiscal Position Remark:</strong>
+                        <span t-field="doc.fiscal_position_id.note"/>
+                    </p>
+                </div>
+            </div>
             <t t-if="env.context.get('proforma', False) or is_pro_forma">
+                <br/>
+                <br/>
+                <br/>
+                <br/>
                 <div class="row" name="signatures">
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
                     <div class="col-xs-12">
                         <table class="table table-condensed" name="deal">
                             <tbody class="signature_deal">
@@ -369,11 +371,11 @@
                 </div>
             </t>
             <t t-if="not is_pro_forma">
+                <br/>
+                <br/>
+                <br/>
+                <br/>
                 <div class="row" name="signatures">
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
                     <div class="col-xs-6 pull-right">
                         <table class="table table-condensed" name="deal">
                             <tbody class="signature_deal">
