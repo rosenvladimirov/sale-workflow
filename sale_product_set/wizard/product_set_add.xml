@@ -23,18 +23,15 @@
                        <field name="product_id"/>
                        <field name="quantity"/>
                        <field name="product_uom"/>
-                       <field name="product_alt_id"/>
-                       <field name="quantity_alt"/>
-                       <field name="product_uom_alt"/>
                    </tree>
               </field>
               <footer>
                   <button name="sale_add_set" string="Add set"
                           type="object" class="oe_highlight"
-                          invisible="context.get('force_mode', False) in ('purchase', 'picking') and edit_sets"/>
+                          invisible="context.get('force_mode', False) in ('purchase', 'picking') and context.get('edit_sets', False)"/>
                   <button name="sale_add_set" string="Update set"
                           type="object" class="oe_highlight"
-                          invisible="context.get('force_mode', False) in ('purchase', 'picking') and not edit_sets"/>
+                          invisible="context.get('force_mode', False) in ('purchase', 'picking') and not context.get('edit_sets', False)"/>
                   <button name="purchase_add_set" string="Add set"
                           type="object" class="oe_highlight"
                           invisible="context.get('force_mode', False) in ('sale', 'picking')"/>

@@ -161,21 +161,14 @@
                                             <t t-if="layout_category_size > 0 or page_size > 0" groups="sale.group_sale_layout">
                                                 <tr class="active">
                                                     <t t-if="layout_category['quantity'] &gt; 0 and layout_category['price_unit'] &gt; 0">
-                                                        <t t-if="display_pictures">
-                                                            <td colspan="3" style="font-weight: bold; border-left: 0px; border-right: 0px; border-bottom: 1px solid black;">&amp;bull;
-                                                                <t t-esc="layout_category['name']"/>
-                                                            </td>
-                                                        </t>
-                                                        <t t-else="">
-                                                            <td colspan="2" style="font-weight: bold; border-left: 0px; border-right: 0px; border-bottom: 1px solid black;">&amp;bull;
-                                                                <t t-esc="layout_category['name']"/>
-                                                            </td>
-                                                        </t>
-                                                        <t t-if="doc.print_sets">
+                                                        <td colspan="2" style="font-weight: bold; border-left: 0px; border-right: 0px; border-bottom: 1px solid black;">&amp;bull;
+                                                            <t t-esc="layout_category['name']"/>
+                                                        </td>
+                                                        <t t-if="o.print_sets">
                                                             <td class="text-right" style="font-weight: bold; border-left: 0px; border-right: 0px; border-bottom: 1px solid black;">
                                                                 <span t-esc="layout_category['quantity']"/>
                                                             </td>
-                                                            <td colspan="5" style="font-weight: bold; border-left: 0px; border-right: 0px; border-bottom: 1px solid black;"/>
+                                                            <td colspan="5" style="font-weight: bold; border-left: 0px; border-right: 1px; border-bottom: 1px solid black;"/>
                                                         </t>
                                                         <t t-else="">
                                                             <t t-set="subtotal" t-value="sum(line.price_subtotal for line in layout_category['lines'])"/>
@@ -187,7 +180,7 @@
                                                                 </td>
                                                                 <td style="font-weight: bold; border-left: 0px; border-right: 0px; border-bottom: 1px solid black;" groups="sale.group_discount_per_so_line"/>
                                                                 <td class="text-right" style="font-weight: bold; border-left: 0px; border-right: 0px; border-bottom: 1px solid black;">
-                                                                    <span t-esc="unit_price" t-options="{'widget': 'monetary', 'display_currency': doc.pricelist_id.currency_id}"/>
+                                                                    <span t-esc="unit_price" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
                                                                 </td>
                                                             </t>
                                                             <t t-else="">
@@ -196,19 +189,19 @@
                                                             </t>
                                                             <td style="font-weight: bold; border-left: 0px; border-right: 0px; border-bottom: 1px solid black;"/>
                                                             <td style="font-weight: bold; border-left: 0px; border-bottom: 1px solid black;">
-                                                                <span t-esc="subtotal" t-options="{'widget': 'monetary', 'display_currency': doc.pricelist_id.currency_id}"/>
+                                                                <span t-esc="subtotal" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
                                                             </td>
                                                         </t>
                                                     </t>
                                                     <t t-else="">
-                                                        <td colspan="9" style="font-weight: bold; border-left: 0px; border-bottom: 1px solid black;">&amp;bull;
+                                                        <td colspan="9" style="font-weight: bold; border-left: 0px; border-right: 1px; border-bottom: 1px solid black;">&amp;bull;
                                                             <t t-esc="layout_category['name']"/>
                                                         </td>
                                                         <t t-set="detail" t-value="1"/>
                                                     </t>
                                                 </tr>
                                             </t>
-                                            <t t-if="doc.print_sets or detail == 1">
+                                            <t t-if="o.print_sets or detail == 1">
                                             <!-- Lines associated -->
                                             <t t-foreach="layout_category['lines']" t-as="l">
                                                 <tr>
@@ -250,23 +243,21 @@
                                             <td/>
                                         </tr>
                                             </t>
-                                            <t t-if="doc.print_sets">
-                                        <t t-if="(layout_category_size > 0 or page_size > 0) and layout_category['subtotal']" groups="sale.group_sale_layout">
-                                            <tr class="text-right">
-                                                <t t-set="subtotal" t-value="sum(line.price_subtotal for line in layout_category['lines'])"/>
-                                                <t t-set="unit_price" t-value="layout_category['quantity'] > 0 and subtotal/layout_category['quantity'] or subtotal"/>
-
-                                                <td colspan="9" class="text-right">
-                                                    <strong>Subtotal: </strong>
-                                                    <t t-if="layout_category['quantity'] &gt; 0">
-                                                    (<span t-esc="layout_category['quantity']"/>*<span t-esc="unit_price" t-options="{'widget': 'monetary', 'display_currency': doc.pricelist_id.currency_id}"/>)
-                                                    </t>
-                                                    <span t-esc="subtotal" t-options="{'widget': 'monetary', 'display_currency': doc.pricelist_id.currency_id}"/>
-                                                </td>
-
-                                            </tr>
-                                        </t>
-                                    </t>
+                                            <t t-if="o.print_sets">
+                                                <t t-if="(layout_category_size > 0 or page_size > 0) and layout_category['subtotal']" groups="sale.group_sale_layout">
+                                                    <tr class="text-right">
+                                                        <t t-set="subtotal" t-value="sum(line.price_subtotal for line in layout_category['lines'])"/>
+                                                        <t t-set="unit_price" t-value="layout_category['quantity'] > 0 and subtotal/layout_category['quantity'] or subtotal"/>
+                                                        <td colspan="9" class="text-right" style="border-right: 1px;">
+                                                            <strong>Subtotal: </strong>
+                                                            <t t-if="layout_category['quantity'] &gt; 0">
+                                                                (<span t-esc="layout_category['quantity']"/>*<span t-esc="unit_price" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>)
+                                                            </t>
+                                                            <span t-esc="subtotal" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </t>
                                         </t>
                                     </tbody>
                                 </table>
@@ -351,7 +342,7 @@
                 </t>
             </t>
         </template>
-
+        <!--
         <template id="report_invoice_sets_with_details">
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="o">
@@ -360,5 +351,6 @@
                 </t>
             </t>
         </template>
+        -->
     </data>
 </odoo>

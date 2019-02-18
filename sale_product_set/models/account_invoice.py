@@ -14,6 +14,7 @@ class AccountInvoice(models.Model):
 
     sets_line = fields.One2many('account.invoice.sets', 'invoice_id', string='Invoice Sets Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True)
     has_sets = fields.Boolean(string="Has sets", compute="_compute_has_sets")
+    print_sets = fields.Boolean("Ungroup by sets")
 
     @api.multi
     def _compute_has_sets(self):
@@ -27,9 +28,6 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def order_lines_sets_layouted(self):
-        """
-        Returns this sales order lines ordered by sale_layout_category sequence. Used to render the report.
-        """
         self.ensure_one()
         if self.has_sets:
             report_pages_sets = [[]]
@@ -37,22 +35,23 @@ class AccountInvoice(models.Model):
                 # If last added category induced a pagebreak, this one will be on a new page
                 if report_pages_sets[-1] and report_pages_sets[-1][-1]['pagebreak']:
                     report_pages_sets.append([])
-                qty = sum(x.quantity for x in self.sets_line if x.id == category.id)
+                qty = sum(x.quantity for x in self.sets_line if x.product_set_id.id == category.id)
                 unit_price = qty > 0.0 and category.subtotal/qty or category.subtotal
                 # Append category to current report page
                 report_pages_sets[-1].append({
-                    'name': category and category.name or 'Uncategorized',
+                    'name': category and category.display_name or _('Uncategorized'),
                     'quantity': qty,
                     'price_unit': unit_price,
                     'subtotal': category and category.subtotal,
                     'pagebreak': category and category.pagebreak,
                     'lines': list(lines)
                 })
+                _logger.info("Category %s" % report_pages_sets)
             return report_pages_sets
         else:
             report_pages_sets = [[]]
             for category, lines in groupby(self.invoice_line_ids, lambda l: l.layout_category_id and not l.product_set_id):
-            # If last added category induced a pagebreak, this one will be on a new page
+                # If last added category induced a pagebreak, this one will be on a new page
                 if report_pages_sets[-1] and report_pages_sets[-1][-1]['pagebreak']:
                     report_pages_sets.append([])
                 qty = sum(x.quantity for x in self.invoice_line_ids if x.layout_category_id.id == category.id)
@@ -60,7 +59,7 @@ class AccountInvoice(models.Model):
                 unit_price = category and qty > 0.0 and subtotal/qty or 0.0
                 # Append category to current report page
                 report_pages_sets[-1].append({
-                    'name': category and category.name or 'Uncategorized',
+                    'name': category and category.name or _('Uncategorized'),
                     'quantity': qty,
                     'price_unit': unit_price,
                     'subtotal': category and category.subtotal,

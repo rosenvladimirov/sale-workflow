@@ -90,15 +90,7 @@ class SaleOrder(models.Model):
             max_sequence = max([line.sequence for line in self.order_line])
 
         for set in self.env['product.set'].browse(product_set_id):
-            amount_untaxed = 0.0
-            for set_line in set.set_lines:
-                line = self.sudo().order_line.search([('order_id', '=', self.id), ('product_id', '=', set_line.product_id.id), ('product_set_id', '=', set.id)], limit=1)
-                if line:
-                    line.write(self.prepare_sale_order_line_set_data(self.id, set, set_line, quantity, max_sequence=max_sequence, old_qty=line.product_uom_qty))
-                else:
-                    line = SaleOrderLineSudo.create(self.prepare_sale_order_line_set_data(self.id, set, set_line, quantity, max_sequence=max_sequence))
-                price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
-                amount_untaxed += line.tax_id.compute_all(price, line.order_id.currency_id, line.product_uom_qty, product=line.product_id, partner=line.order_id.partner_shipping_id)['total_excluded']
+            amount_untaxed = set.amount_untaxed
             set_old = self.sets_line.search([('order_id', '=', self.id), ('product_set_id', '=', set.id)])
             if set_old:
                 #_logger.info("Add set %s:%s" % (self.quantity, set_old.quantity))
@@ -107,6 +99,16 @@ class SaleOrder(models.Model):
             else:
                 res = SetLinesSets.create(self.prepare_sale_order_set_data(self.id, set, quantity, self.pricelist_id.currency_id.round(amount_untaxed)))
                 res_id = res.id
+            for set_line in set.set_lines:
+                line = self.sudo().order_line.search([('order_id', '=', self.id), ('product_id', '=', set_line.product_id.id), ('product_set_id', '=', set.id)], limit=1)
+                if line:
+                    line.write(self.prepare_sale_order_line_set_data(self.id, set, set_line, quantity, set_old.id, max_sequence=max_sequence, old_qty=line.product_uom_qty))
+                else:
+                    line = SaleOrderLineSudo.create(self.prepare_sale_order_line_set_data(self.id, set, set_line, quantity, set_old.id, max_sequence=max_sequence))
+                price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
+                amount_untaxed += line.tax_id.compute_all(price, line.order_id.currency_id, line.product_uom_qty, product=line.product_id, partner=line.order_id.partner_shipping_id)['total_excluded']
+            set_old.write({'price_unit': amount_untaxed/self.quantity,
+                           'amount_total': amount_untaxed})
         return {"set_line_id": res_id, "quantity": quantity}
 
     def prepare_sale_order_set_data(self, sale_order_id, set, qty, total, split_sets=False):
@@ -121,15 +123,16 @@ class SaleOrder(models.Model):
         line_sets_values = set_lines._convert_to_write(set_lines._cache)
         return line_sets_values
 
-    def prepare_sale_order_line_set_data(self, sale_order_id, set, set_line, qty,
-                                     max_sequence=0, old_qty=0, split_sets=False, set_alt=False):
+    def prepare_sale_order_line_set_data(self, sale_order_id, set, set_line, qty, set_id,
+                                     max_sequence=0, old_qty=0, split_sets=False):
         sale_line = self.env['sale.order.line'].new({
             'order_id': sale_order_id,
-            'product_id': set_alt and set_line.product_alt_id.id or set_line.product_id.id,
-            'product_uom_qty': ((set_alt and set_line.quantity_alt or set_line.quantity) * qty)+old_qty,
-            'product_uom': set_alt and set_line.product_alt_id.uom_id.id  or set_line.product_id.uom_id.id,
+            'product_id': set_line.product_id.id,
+            'product_uom_qty': (set_line.quantity * qty)+old_qty,
+            'product_uom': set_line.product_id.uom_id.id,
             'sequence': max_sequence + set_line.sequence,
-            'product_set_id': set_alt and False or set.id,
+            'product_set_id': set.id,
+            'set_id': set_id,
             'split_sets': split_sets,
         })
         sale_line.product_id_change()

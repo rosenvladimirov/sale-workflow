@@ -46,7 +46,7 @@
                                         string="Modify Sets"
                                         icon="fa-th"
                                         class="oe_edit_only"
-                                        context="{'default_product_set_id': product_set_id, 'default_edit_sets': True, 'set_line_ids': set_lines}"
+                                        context="{'default_product_set_id': product_set_id, 'default_edit_sets': 1, 'set_line_ids': set_lines}"
                                 />
                         </tree>
                         <kanban class="o_kanban_mobile">

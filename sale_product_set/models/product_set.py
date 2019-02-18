@@ -74,7 +74,7 @@ class ProductSet(models.Model):
                             ('sale', 'Sales'),
                             ('purchase', 'Purchase'),
                             ],
-                            track_visibility='onchange', copy=False)
+                            track_visibility='onchange', default='boot', copy=False)
 
     # image: all image fields are base64 encoded and PIL-supported
     image = fields.Binary(
@@ -400,8 +400,11 @@ class ProductSetLine(models.Model):
     @api.onchange('product_tmpl_id')
     def onchange_product_tmpl_id(self):
         for rec in self:
-            rec.product_id = rec.product_tmpl_id.product_variant_id.id
-        return {'domain': {'product_id': [('product_tmpl_id', '=', rec.product_tmpl_id.id)]}}
+            if rec.product_tmpl_id:
+                rec.product_id = rec.product_tmpl_id.product_variant_id.id
+                return {'domain': {'product_id': [('product_tmpl_id', '=', rec.product_tmpl_id.id)]}}
+            else:
+                return {'domain': {'product_id': []}}
 
     @api.multi
     def _get_display_price(self, product):

@@ -14,7 +14,18 @@ class ProductSetAdd(models.TransientModel):
     _description = "Wizard model to add product set into a quotation"
 
     def _get_default(self):
-        return self._context.get('set_line_ids')
+        values = []
+        if self._context.get('set_line_ids', False):
+            for line in self.env['sale.order.line'].browse([x[1] for x in self._context.get('set_line_ids')]):
+                values.append((0, False, {
+                    'product_tmpl_id': line.product_id.product_tmpl_id.id,
+                    'product_id': line.product_id.id,
+                    'quantity': line.product_uom_qty,
+                    'product_set_id': line.product_set_id.id,
+                    'sequence': line.sequence,
+                }))
+        #_logger.info("Import lines %s:%s" % (self._context.get('set_line_ids'), values))
+        return values if len(values) > 0 else False
 
     product_set_id = fields.Many2one('product.set', 'Product set', required=True, domain="[('state', '=', 'progress'), ('active', '=', True)]")
     partner_id = fields.Many2one('res.partner', string='Partner', default=lambda self: self.env['res.company']._company_default_get('product.set').partner_id)
@@ -26,7 +37,7 @@ class ProductSetAdd(models.TransientModel):
     amount_total = fields.Monetary(string='Total', related="product_set_id.amount_total", store=True)
     split_sets = fields.Boolean("Split set")
     edit_sets = fields.Boolean("Edit set")
-    set_lines = fields.One2many('product.set.add.line', 'product_set_id', string="Products", copy=True, default=_get_default)
+    set_lines = fields.One2many('product.set.add.line', 'set_id', string="Products", copy=True, default=_get_default)
 
 
     @api.multi
@@ -42,6 +53,7 @@ class ProductSetAdd(models.TransientModel):
     def onchange_product_set_id(self):
         for rec in self:
             if not rec.edit_sets:
+                #rec.set_lines.unlink()
                 values = []
                 for line in rec.product_set_id.set_lines:
                     _logger.info("Line %s:%s" % (line, rec.set_lines))
@@ -49,10 +61,10 @@ class ProductSetAdd(models.TransientModel):
                         'product_tmpl_id': line.product_tmpl_id.id,
                         'product_id': line.product_id.id,
                         'quantity': line.quantity,
-                        #'product_set_id': line.product_set_id.id,
+                        'product_set_id': line.product_set_id.id,
                         'sequence': line.sequence,
                         }))
-                _logger.info("Values %s:%s" % (values, rec.product_set_id.set_lines))
+                #_logger.info("Values %s:%s" % (values, rec.product_set_id.set_lines))
                 rec.update({'set_lines': values})
                 self.set_lines.onchange_product_tmpl_id()
 
@@ -70,35 +82,36 @@ class ProductSetAdd(models.TransientModel):
         sale_order_line = self.env['sale.order.line']
         set_lines = self.env['sale.order.sets']
         for set in self.product_set_id:
+            amount_untaxed = set.amount_untaxed
+            set_old = set_lines.search(
+                [('order_id', '=', so_id), ('product_set_id', '=', set.id), ('split_sets', '=', self.split_sets)])
+            if set_old and not self.split_sets:
+                # _logger.info("Add set %s:%s" % (self.quantity, set_old.quantity))
+                set_old.write(order_obj.prepare_sale_order_set_data(so_id, set, self.quantity + sum(
+                    ss.quantity for ss in set_old), sum(
+                    ss.amount_total for ss in set_old) + self.pricelist_id.currency_id.round(amount_untaxed),
+                                                                    split_sets=self.split_sets))
+            else:
+                set_old = set_lines.create(order_obj.prepare_sale_order_set_data(so_id, set, self.quantity,
+                                                                                 self.pricelist_id.currency_id.round(
+                                                                                     amount_untaxed),
+                                                                                 split_sets=self.split_sets))
             amount_untaxed = 0.0
             for set_line in self.set_lines:
                 if self.edit_sets:
-                    domain = [('order_id', '=', self.id), ('product_set_id', '=', set.id), ('product_id', '=', set_line.product_id.id)]
+                    domain = [('order_id', '=', so_id), ('product_set_id', '=', set.id), ('product_id', '=', set_line.product_id.id)]
                     line = self.order_line.search(domain, limit=1)
-                    if set_line.product_alt_id:
-                        line.write(order_obj.prepare_sale_order_line_set_data(so_id, set, set_line, self.quantity, max_sequence=max_sequence, split_sets=self.split_sets, set_alt=True))
-                    else:
-                        line.write(order_obj.prepare_sale_order_line_set_data(so_id, set, set_line, self.quantity,
+                    line.write(order_obj.prepare_sale_order_line_set_data(so_id, set, set_line, self.quantity, set_old.id,
                                                                               max_sequence=max_sequence,
-                                                                              split_sets=self.split_sets, set_alt=False))
+                                                                              split_sets=self.split_sets))
                 else:
-                    line = sale_order_line.create(order_obj.prepare_sale_order_line_set_data(so_id, set, set_line, self.quantity, max_sequence=max_sequence, split_sets=self.split_sets))
+                    line = sale_order_line.create(order_obj.prepare_sale_order_line_set_data(so_id, set, set_line, self.quantity, set_old.id, max_sequence=max_sequence, split_sets=self.split_sets))
                 price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
-                amount_untaxed += line.tax_id.compute_all(price, line.order_id.currency_id, line.product_uom_qty, product=line.product_id, partner=line.order_id.partner_shipping_id)['total_excluded']
-                set_old = set_lines.search(
-                    [('order_id', '=', so_id), ('product_set_id', '=', set.id), ('split_sets', '=', self.split_sets)])
-                if set_old and not self.split_sets:
-                    # _logger.info("Add set %s:%s" % (self.quantity, set_old.quantity))
-                    set_old.write(order_obj.prepare_sale_order_set_data(so_id, set, self.quantity + sum(
-                        ss.quantity for ss in set_old), sum(
-                        ss.amount_total for ss in set_old) + self.pricelist_id.currency_id.round(amount_untaxed),
-                                                                        split_sets=self.split_sets))
-                else:
-                    set_old = set_lines.create(order_obj.prepare_sale_order_set_data(so_id, set, self.quantity,
-                                                                           self.pricelist_id.currency_id.round(
-                                                                           amount_untaxed),
-                                                                           split_sets=self.split_sets))
-                line.write({'set_id': set_old.id})
+                amount_untaxed += \
+                line.tax_id.compute_all(price, line.order_id.currency_id, line.product_uom_qty, product=line.product_id,
+                                        partner=line.order_id.partner_shipping_id)['total_excluded']
+            set_old.write({'price_unit': amount_untaxed/self.quantity,
+                           'amount_total': amount_untaxed})
 
     @api.multi
     def purchase_add_set(self):
@@ -158,18 +171,13 @@ class ProductSetLine(models.TransientModel):
     _rec_name = 'product_id'
     _order = 'sequence'
 
-
+    set_id = fields.Many2one('product.set.add', string='Product Set', ondelete="cascade")
     product_tmpl_id = fields.Many2one(comodel_name='product.template', string='Product template', readonly=True)
     product_id = fields.Many2one(comodel_name='product.product', string='Product')
-    product_alt_id = fields.Many2one(comodel_name='product.product', string='Product for virtual add')
-
     quantity = fields.Float(string='Quantity', digits=dp.get_precision('Product Unit of Measure'), required=True, default=1)
-    quantity_alt = fields.Float(string='Quantity', digits=dp.get_precision('Product Unit of Measure'))
-
     product_uom = fields.Many2one('product.uom', related="product_id.uom_id", string='Unit of Measure', readonly=True)
-    product_uom_alt = fields.Many2one('product.uom', related="product_alt_id.uom_id", string='Unit of Measure', readonly=True)
 
-    product_set_id = fields.Many2one('product.set', string='Set',)
+    product_set_id = fields.Many2one('product.set', string='Product Set', ondelete="restrict")
     sequence = fields.Integer(string='Sequence', required=True, default=0,)
     type = fields.Selection("product.set", related='product_set_id.type', string="Type", readonly=True)
 
