@@ -8,7 +8,7 @@
     'depends': ['sale_product_set'],
     'data': [
         'views/product_set_views.xml',
-        #'views/report_invoice.xml',
+        'views/report_invoice.xml',
     ],
     'demo': [
     ],

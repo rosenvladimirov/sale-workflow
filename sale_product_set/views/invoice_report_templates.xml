@@ -9,7 +9,8 @@
             <table class="table table-condensed">
                 <thead>
                     <tr>
-                        <th>Description</th>
+                        <th t-translation="off" style="width:5%;">&#8470;</th>
+                        <th style="width:45%;">Description</th>
                         <th class="hidden">Source Document</th>
                         <th class="text-right">Quantity</th>
                         <th class="text-right">Unit measure</th>
@@ -38,13 +39,18 @@
                         <!-- Lines associated -->
                         <t t-foreach="layout_category['lines']" t-as="l">
                             <tr>
+                                <t t-set="lots" t-value="any(x.id for x in l.move_lines.filtered(lambda r: r.lot_id))"/>
+                                <td><span t-esc="l_index+1"/></td>
                                 <td>
                                     <span t-if="l.discount==0.0">
                                         <span t-field="l.name"/>
                                     </span>
-                                    <span t-if="l.discount &lt; 0.0">
+                                    <span t-if="l.discount &gt; 0.0">
                                         <span t-field="l.name"/>   (<span t-esc="l.discount * 100"/><span>%)</span>
                                     </span>
+                                    <t t-if="lots">
+                                        <span>(Lot/SN: </span><span t-esc="'&#59; '.join(map(lambda lot: lot.lot_id and lot.lot_id.name or '', l.move_lines.filtered(lambda r: r.lot_id != False)))"/><span>)</span>
+                                    </t>
                                 </td>
                                 <td class="hidden"><span t-field="l.origin"/></td>
                                 <td class="text-right">

@@ -41,7 +41,7 @@ class ProductSet(models.Model):
     partner_id = fields.Many2one('res.partner', string='Partner', required=True, readonly=True, index=True, states={'draft': [('readonly', False)]}, default=lambda self: self._context.get('default_partner_id', False) or self.env['res.company']._company_default_get('product.set').partner_id)
     partner_invoice_id = fields.Many2one('res.partner', string='Invoice Address', readonly=True, required=True, help="Invoice address for current sales order.")
     partner_shipping_id = fields.Many2one('res.partner', string='Delivery Address', required=True, help="Delivery address for current sales order.")
-    pricelist_id = fields.Many2one('product.pricelist', string='Pricelist', required=True, readonly=True, help="Pricelist for current sales order.")
+    pricelist_id = fields.Many2one('product.pricelist', string='Pricelist', required=True, readonly=True, states={'draft': [('readonly', False)]}, compute_sudo=True, help="Pricelist for current sales order.")
     currency_id = fields.Many2one("res.currency", related='pricelist_id.currency_id', string="Currency", readonly=True, required=True)
     fiscal_position_id = fields.Many2one('account.fiscal.position', oldname='fiscal_position', readonly=True, string='Fiscal Position')
     company_id = fields.Many2one('res.company', 'Company', readonly=True, default=lambda self: self.env['res.company']._company_default_get('product.set'))
@@ -75,6 +75,8 @@ class ProductSet(models.Model):
                             ('purchase', 'Purchase'),
                             ],
                             track_visibility='onchange', default='boot', copy=False)
+    pricelist_item_ids = fields.One2many('product.pricelist.item', 'product_set_id', string='Pricelist Items', compute_sudo=True)
+    has_pricelist = fields.Boolean(string="Has pricelist", compute="_compute_has_pricelist")
 
     # image: all image fields are base64 encoded and PIL-supported
     image = fields.Binary(
@@ -99,6 +101,11 @@ class ProductSet(models.Model):
     def _compute_display_name(self):
         for pset in self:
             pset.display_name = "[%s] %s" % (pset.code, pset.name)
+
+    @api.multi
+    def _compute_has_pricelist(self):
+        for record in self:
+            record.has_pricelist = len(record.pricelist_item_ids.ids) > 0
 
     @api.onchange('fiscal_position_id')
     def _compute_tax_id(self):
@@ -144,6 +151,15 @@ class ProductSet(models.Model):
             'partner_shipping_id': addr['delivery'],
         }
         self.update(values)
+
+    @api.onchange('pricelist_id')
+    def onchange_pricelist_id(self):
+        self.ensure_one()
+        _logger.info("PRICELIST CHANGE %s:%s" % (self, self.pricelist_id))
+        if self.pricelist_id:
+            self.update({'currency_id': self.pricelist_id.currency_id.id})
+            self.set_lines.update({'pricelist_id': self.pricelist_id.id, 'currency_id': self.currency_id.id})
+            self.set_lines._compute_price_unit()
 
     @api.onchange('state')
     def onchange_state(self):
@@ -359,7 +375,7 @@ class ProductSetLine(models.Model):
     @api.depends('product_set_id', 'tax_id', 'company_id', 'product_id')
     def _compute_price_unit(self):
         for line in self:
-            if line.product_set_id.pricelist_id and line.product_set_id.partner_id:
+            if line.product_id and line.pricelist_id and line.product_set_id.partner_id:
                 line.update({'price_unit': 
                               self.env['account.tax']._fix_tax_included_price_company(line._get_display_price(line.product_id), line.product_id.taxes_id, line.tax_id, line.company_id)})
             else:
@@ -377,8 +393,10 @@ class ProductSetLine(models.Model):
     sequence = fields.Integer(string='Sequence', required=True, default=0,)
     product_set_id = fields.Many2one('product.set', string='Set', ondelete='cascade', copy=False)
     #partner_id = fields.Many2one(string='Partner', related="product_set_id.partner_id", store=True)
-    company_id = fields.Many2one(related='product_set_id.company_id', string='Company', store=True, readonly=True)
-    currency_id = fields.Many2one(related='product_set_id.currency_id', store=True, string='Currency', readonly=True)
+    company_id = fields.Many2one(related='product_set_id.company_id', string='Company')
+
+    pricelist_id = fields.Many2one('product.pricelist', string='Pricelist', required=True, compute_sudo=True, help="Pricelist for current sales order.")
+    currency_id = fields.Many2one(related='pricelist_id.currency_id', string='Currency', store=True)
 
     product_id = fields.Many2one(comodel_name='product.product', string='Product', required=True)
     product_tmpl_id = fields.Many2one(comodel_name='product.template', string='Product template', domain=_get_domain)
@@ -400,26 +418,30 @@ class ProductSetLine(models.Model):
     @api.onchange('product_tmpl_id')
     def onchange_product_tmpl_id(self):
         for rec in self:
+            vals = {}
             if rec.product_tmpl_id:
-                rec.product_id = rec.product_tmpl_id.product_variant_id.id
+                vals['product_id'] = rec.product_tmpl_id.product_variant_id.id
+                self.update(vals)
                 return {'domain': {'product_id': [('product_tmpl_id', '=', rec.product_tmpl_id.id)]}}
             else:
                 return {'domain': {'product_id': []}}
 
     @api.multi
     def _get_display_price(self, product):
-        if self.product_set_id.pricelist_id.discount_policy == 'with_discount':
-            return product.with_context(dict(self.env.context, pricelist=self.product_set_id.pricelist_id.id, product_set_id=self.product_set_id)).price
-        final_price, rule_id = self.product_set_id.pricelist_id.get_product_price_rule(self.product_id, self.quantity or 1.0, self.product_set_id.partner_id)
-        context_partner = dict(self.env.context, partner_id=self.product_set_id.partner_id.id, date=fields.Date.Now, product_set_id=self.product_set_id)
-        base_price, currency_id = self.with_context(context_partner)._get_real_price_currency(self.product_id, rule_id, self.quantity, self.product_uom, self.product_set_id.pricelist_id.id)
-        if currency_id != self.product_set_id.pricelist_id.currency_id.id:
-            base_price = self.env['res.currency'].browse(currency_id).with_context(context_partner).compute(base_price, self.product_set_id.pricelist_id.currency_id)
-        # negative discounts (= surcharge) are included in the display price
-        return max(base_price, final_price)
+        PricelistItem = self.env['product.pricelist.item'].sudo()
+        product_context = dict(self.env.context, partner_id=self.product_set_id.partner_id.id, date=fields.Date.context_today(self),
+                                uom=self.product_uom.id, product_set_id=self.product_set_id.id, company_id=self.pricelist_id.company_id.id)
+        final_price, rule_id = self.pricelist_id.with_context(product_context).get_product_price_rule(self.product_id, self.quantity or 1.0, self.product_set_id.partner_id)
+        base_price, currency_id = self.with_context(product_context)._get_real_price_currency(product, rule_id, self.quantity or 1.0, self.product_uom, self.pricelist_id.id)
+        if currency_id != self.pricelist_id.currency_id.id:
+            base_price = self.env['res.currency'].browse(currency_id).with_context(product_context).compute(base_price, self.pricelist_id.currency_id)
+        if rule_id and PricelistItem.browse(rule_id).price_discount >= 0.0:
+            return min(base_price, final_price)
+        else:
+            return max(base_price, final_price)
 
     def _get_real_price_currency(self, product, rule_id, qty, uom, pricelist_id):
-        PricelistItem = self.env['product.pricelist.item']
+        PricelistItem = self.env['product.pricelist.item'].sudo()
         field_name = 'lst_price'
         currency_id = None
         product_currency = None
@@ -454,12 +476,13 @@ class ProductSetLine(models.Model):
             uom_factor = uom._compute_price(1.0, product.uom_id)
         else:
             uom_factor = 1.0
-
+        #_logger.info("PRICELIST GET CURRENCY RODUCT:%s:CURRENCY:%s:%s:%s:%s" % (product_currency.name, product.company_id.name, currency_id.name, self.env.user.company_id.name, self.env.user.company_id.currency_id.name))
         return product[field_name] * uom_factor * cur_factor, currency_id.id
 
     @api.multi
     @api.onchange('product_id')
     def product_id_change(self):
+        self.ensure_one()
         if not self.product_id:
             return {'domain': {'product_uom': []}}
 
@@ -473,8 +496,8 @@ class ProductSetLine(models.Model):
             lang=self.product_set_id.partner_id.lang,
             partner=self.product_set_id.partner_id.id,
             quantity=vals.get('quantity') or self.quantity,
-            date=fields.Date.today(), ###
-            pricelist=self.product_set_id.pricelist_id.id,
+            date=fields.Date.context_today(self), ###
+            pricelist=self.pricelist_id.id,
             uom=self.product_uom.id
         )
 

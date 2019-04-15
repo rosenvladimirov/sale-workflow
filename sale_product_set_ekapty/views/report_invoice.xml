@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <template id="report_invoice_document_with_sets_homologation" inherit_id="sale_product_set.report_invoice_document_sets">
+        <template id="report_invoice_document_with_sets_ekapty" inherit_id="sale_product_set.report_invoice_document_sets">
             <xpath expr="//t[@name='pdescription']" position="after">
-                <t t-if="layout_category['pset'] and layout_category['pset'].homologation">
-                <br/>(<span>Homologation: </span><span t-esc="layout_category['pset'].homologation"/>)
+                <t t-if="layout_category['pset'] and layout_category['pset'].ekapty">
+                <br/>(<span>GMDN: </span><span t-esc="layout_category['pset'].ekapty"/>)
                 </t>
             </xpath>
         </template>
         <!--
-        <template id="report_invoice_document_with_sets_homologation" inherit_id="l10n_gr_extend.report_invoice_document_sets">
+        <template id="report_invoice_document_with_sets_ekapty" inherit_id="l10n_gr_extend.report_invoice_document_sets">
             <xpath expr="//td[@name='description']" position="after">
-                <t t-if="layout_category['pset'] and layout_category['pset'].homologation">
+                <t t-if="layout_category['pset'] and layout_category['pset'].ekapty">
                     <td style="font-weight: bold; border-left: 0px; border-right: 0px; border-bottom: 1px solid black;">
-                        <span t-esc="layout_category['pset'].homologation"/>
+                        <span t-esc="layout_category['pset'].ekapty"/>
                     </td>
                 </t>
                 <t t-else="">

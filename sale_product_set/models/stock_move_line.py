@@ -8,3 +8,4 @@ class StockMoveLine(models.Model):
     _inherit = "stock.move.line"
 
     sequence = fields.Integer(string='Sequence', required=True, default=0,)
+    product_set_id = fields.Many2one('product.set', string='Product Set', change_default=True, ondelete='restrict', copy=True)

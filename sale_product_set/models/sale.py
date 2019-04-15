@@ -45,6 +45,7 @@ class SaleOrder(models.Model):
                     'subtotal': category and category.subtotal,
                     'pagebreak': category and category.pagebreak,
                     'lines': list(lines),
+                    'pset': category,
                 })
             return report_pages_sets
         else:
@@ -64,6 +65,7 @@ class SaleOrder(models.Model):
                     'subtotal': category and category.subtotal,
                     'pagebreak': category and category.pagebreak,
                     'lines': list(lines),
+                    'pset': False,
                 })
             return report_pages_sets
 
@@ -155,9 +157,33 @@ class SaleOrderLine(models.Model):
 
 
     product_set_id = fields.Many2one('product.set', string='Product Set', change_default=True, ondelete='restrict', copy=True)
-    set_id = fields.Many2one('sale.order.sets', string='Product Sets', change_default=True, copy=True, ondelete="cascade")
+    set_id = fields.Many2one('sale.order.sets', string='Product Sets', change_default=True, copy=True)
     split_sets = fields.Boolean("Splited set")
 
+    @api.multi
+    def _get_display_price(self, product):
+        # TO DO: move me in master/saas-16 on sale.order
+        if self.order_id.pricelist_id.discount_policy == 'with_discount':
+            return product.with_context(pricelist=self.order_id.pricelist_id.id, product_set_id=self.product_set_id.id).price
+        product_context = dict(self.env.context, partner_id=self.order_id.partner_id.id, date=self.order_id.date_order, uom=self.product_uom.id, product_set_id=self.product_set_id.id)
+        final_price, rule_id = self.order_id.pricelist_id.with_context(product_context).get_product_price_rule(self.product_id, self.product_uom_qty or 1.0, self.order_id.partner_id)
+        base_price, currency_id = self.with_context(product_context)._get_real_price_currency(product, rule_id, self.product_uom_qty, self.product_uom, self.order_id.pricelist_id.id)
+        if currency_id != self.order_id.pricelist_id.currency_id.id:
+            base_price = self.env['res.currency'].browse(currency_id).with_context(product_context).compute(base_price, self.order_id.pricelist_id.currency_id)
+        # negative discounts (= surcharge) are included in the display price
+        return max(base_price, final_price)
+
+    #@api.onchange('product_id', 'price_unit', 'product_uom', 'product_uom_qty', 'tax_id')
+    #def _onchange_discount(self):
+    #    self = self.with_context(dict(self._context, product_set_id=self.product_set_id.id))
+    #    super(SaleOrderLine, self)._onchange_discount()
+
+    @api.multi
+    def _prepare_procurement_values(self, group_id=False):
+        values = super(SaleOrderLine, self)._prepare_procurement_values(group_id)
+        self.ensure_one()
+        values.update({'product_set_id': self.product_set_id.id})
+        return values
 
 class SaleOrderSets(models.Model):
     _name = 'sale.order.sets'
@@ -176,16 +202,23 @@ class SaleOrderSets(models.Model):
     amount_total = fields.Monetary(string='Total')
 
     split_sets = fields.Boolean("Splited set")
-    set_lines = fields.One2many('sale.order.line', 'set_id', string="Products")
+    set_lines = fields.One2many('sale.order.line', 'set_id', string='Sele order lines', ondelete="cascade")
 
     @api.multi
     def unlink(self):
-        for set in self:
-            lines = set.order_id.order_line
-            lines.filtered(lambda x: x.product_set_id.id == self.id).unlink()
+        sale = self.env['sale.order'].browse([self.order_id.id])
+        sale_lines = self.env['sale.order.line'].browse(self.set_lines.ids)
+        sale_lines.unlink()
+        sale.order_line.invalidate_cache()
         return super(SaleOrderSets, self).unlink()
 
-
-    #@api.multi
-    #@api.onchange('product_set_id')
-    #def product_set_id_change(self):
+    #@api.onchange('quantity')
+    #def onchange_quantity(self):
+    #    self.ensure_one()
+    #    if self.quantity:
+    #        total = 0.0
+    #        for line in self.set_lines:
+    #            quantity = sum(x.quantity for x in self.product_set_id.mapped('set_lines').filtered(lambda r: r.product_id.id == line.product_id.id))
+    #            line.update({'product_uom_qty': self.quantity*quantity})
+    #            total += line.price_subtotal
+    #        self.update({'amount_total': total, 'price_unit': total/self.quantity})

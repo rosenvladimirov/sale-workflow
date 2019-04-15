@@ -44,7 +44,8 @@ class AccountInvoice(models.Model):
                     'price_unit': unit_price,
                     'subtotal': category and category.subtotal,
                     'pagebreak': category and category.pagebreak,
-                    'lines': list(lines)
+                    'lines': list(lines),
+                    'pset': category,
                 })
                 _logger.info("Category %s" % report_pages_sets)
             return report_pages_sets
@@ -64,7 +65,8 @@ class AccountInvoice(models.Model):
                     'price_unit': unit_price,
                     'subtotal': category and category.subtotal,
                     'pagebreak': category and category.pagebreak,
-                    'lines': list(lines)
+                    'lines': list(lines),
+                    'pset': False,
                 })
             return report_pages_sets
 
@@ -84,9 +86,9 @@ class AccountInvoiceLine(models.Model):
                     #_logger.info("Sets %s:%s" % (line, pset))
                     if pset:
                         if order.id not in [x.id for x in pset.sale_order_ids]:
-                            pset.write({'invoice_id': invoice.id, 'amount_total': line.amount_total+pset.amount_total, 'quantity': line.quantity+pset.quantity, 'sale_order_ids': [(6, False, [x.id for x in pset.sale_order_ids] + [order.id])]})
+                            pset.write({'invoice_id': invoice.id, 'amount_total': line.amount_total, 'quantity': line.quantity, 'sale_order_ids': [(6, False, [x.id for x in pset.sale_order_ids] + [order.id])]})
                         else:
-                            pset.write({'invoice_id': invoice.id, 'amount_total': line.amount_total+pset.amount_total, 'quantity': line.quantity+pset.quantity})
+                            pset.write({'invoice_id': invoice.id, 'amount_total': line.amount_total, 'quantity': line.quantity})
                     else:
                         invoice.sets_line.create({'invoice_id': invoice.id, 'product_set_id': line.product_set_id.id, 'sale_order_ids': [(6, False, [order.id])], 'quantity': line.quantity, 'amount_total': line.amount_total})
         super(AccountInvoiceLine, self)._set_additional_fields(invoice)

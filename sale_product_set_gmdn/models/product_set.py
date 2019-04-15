@@ -10,4 +10,4 @@ _logger = logging.getLogger(__name__)
 class ProductSet(models.Model):
     _inherit = 'product.set'
 
-    homologation = fields.Char('Homologation', help="Plase fill the Homologation code", translate=True)
+    gmdn = fields.Char('GMDN', help="Plase fill the GMDN", translate=True)

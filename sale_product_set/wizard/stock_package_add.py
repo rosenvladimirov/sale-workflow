@@ -21,9 +21,15 @@ class StockPackageAdd(models.TransientModel):
         packing_id = self._context['active_id']
         if not packing_id:
             return
-        picking_obj = self.env['stock.picking']
-        picking = picking_obj.browse(packing_id)
-        max_sequence = 0
-        if picking.move_line_ids:
-            max_sequence = max([line.sequence for line in picking.move_line_ids])
-        picking.move_lines = picking.prepare_stock_move_line_package_data(picking.id, self.package_id)
+        picking = self.env['stock.picking'].browse(packing_id)
+        if picking:
+            picking.move_lines = picking.prepare_stock_move_line_package_data(picking.id, self.package_id)
+        else:
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': 'stock.package.add',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_id': self._context['active_id'],
+                'target': 'new',
+                }

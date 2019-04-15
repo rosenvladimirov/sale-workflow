@@ -8,7 +8,8 @@
           <form string="Add set in sale order line">
               <group>
                   <field name="partner_id" invisible="0" readonly="1"/>
-                  <field name="company_id" invisible="1" readonly="1"/>
+                  <field name="company_id" invisible="0" readonly="1"/>
+                  <field name="pricelist_id" invisible="0" readonly="1"/>
                   <field name="product_set_id" domain="['|', '|', ('partner_id', '=', partner_id), ('partner_id', '=', company_id), ('state', '=', 'progress')]"/>
                   <field name="quantity"/>
                   <field name="amount_total" string="Unit price"/>
@@ -17,27 +18,35 @@
                   <field name="edit_sets" invisible="1"/>
               </group>
               <field name="set_lines">
-                   <tree string="Product set lines" create="0" editable="bottom">
+                   <tree string="Product set lines" create="0" editable="bottom" invisible="context.get('force_mode', False) not in ['editsale']">
                        <field name="sequence" widget="handle"/>
                        <field name="product_tmpl_id"/>
                        <field name="product_id"/>
                        <field name="quantity"/>
                        <field name="product_uom"/>
                    </tree>
+                   <tree string="Product set lines" create="1" editable="bottom" invisible="context.get('force_mode', False) in ['editsale']">
+                       <field name="sequence" widget="handle"/>
+                       <field name="product_tmpl_id"/>
+                       <field name="product_id"/>
+                       <field name="quantity"/>
+                       <field name="product_uom"/>
+                       <field name="set_lines" readonly="1"/>
+                   </tree>
               </field>
               <footer>
                   <button name="sale_add_set" string="Add set"
                           type="object" class="oe_highlight"
-                          invisible="context.get('force_mode', False) in ('purchase', 'picking') and context.get('edit_sets', False)"/>
+                          invisible="context.get('force_mode', False) in ('purchase', 'picking', 'editsale')"/>
                   <button name="sale_add_set" string="Update set"
                           type="object" class="oe_highlight"
-                          invisible="context.get('force_mode', False) in ('purchase', 'picking') and not context.get('edit_sets', False)"/>
+                          invisible="context.get('force_mode', False) in ('purchase', 'picking', 'sale')"/>
                   <button name="purchase_add_set" string="Add set"
                           type="object" class="oe_highlight"
-                          invisible="context.get('force_mode', False) in ('sale', 'picking')"/>
+                          invisible="context.get('force_mode', False) in ('sale', 'picking', 'editsale')"/>
                   <button name="picking_add_set" string="Add set"
                           type="object" class="oe_highlight"
-                          invisible="context.get('force_mode', False) in ('sale', 'purchase')"/>
+                          invisible="context.get('force_mode', False) in ('sale', 'purchase', 'editsale')"/>
                   <button special="cancel" string="Cancel" class="oe_link"/>
               </footer>
           </form>
