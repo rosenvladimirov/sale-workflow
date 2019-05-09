@@ -104,7 +104,7 @@ class SaleOrder(models.Model):
             for set_line in set.set_lines:
                 line = self.sudo().order_line.search([('order_id', '=', self.id), ('product_id', '=', set_line.product_id.id), ('product_set_id', '=', set.id)], limit=1)
                 if line:
-                    line.write(self.prepare_sale_order_line_set_data(self.id, set, set_line, quantity, set_old.id, max_sequence=max_sequence, old_qty=line.product_uom_qty))
+                    line.write(self.prepare_sale_order_line_set_data(self.id, set, set_line, quantity, set_old.id, max_sequence=max_sequence, old_qty=line.product_uom_qty, old_pset_qty=line.pset_quantity))
                 else:
                     line = SaleOrderLineSudo.create(self.prepare_sale_order_line_set_data(self.id, set, set_line, quantity, set_old.id, max_sequence=max_sequence))
                 price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
@@ -126,7 +126,7 @@ class SaleOrder(models.Model):
         return line_sets_values
 
     def prepare_sale_order_line_set_data(self, sale_order_id, set, set_line, qty, set_id,
-                                     max_sequence=0, old_qty=0, split_sets=False):
+                                     max_sequence=0, old_qty=0, old_pset_qty=0, split_sets=False):
         sale_line = self.env['sale.order.line'].new({
             'order_id': sale_order_id,
             'product_id': set_line.product_id.id,
@@ -136,6 +136,7 @@ class SaleOrder(models.Model):
             'product_set_id': set.id,
             'set_id': set_id,
             'split_sets': split_sets,
+            'pset_quantity': qty+old_pset_qty,
         })
         sale_line.product_id_change()
         line_values = sale_line._convert_to_write(sale_line._cache)
@@ -159,6 +160,7 @@ class SaleOrderLine(models.Model):
     product_set_id = fields.Many2one('product.set', string='Product Set', change_default=True, ondelete='restrict', copy=True)
     set_id = fields.Many2one('sale.order.sets', string='Product Sets', change_default=True, copy=True)
     split_sets = fields.Boolean("Splited set")
+    pset_quantity = fields.Float(string='PSET Quantity', digits=dp.get_precision('Product Unit of Measure'), default=1.0)
 
     @api.multi
     def _get_display_price(self, product):

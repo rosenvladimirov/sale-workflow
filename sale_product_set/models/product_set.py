@@ -435,7 +435,9 @@ class ProductSetLine(models.Model):
         base_price, currency_id = self.with_context(product_context)._get_real_price_currency(product, rule_id, self.quantity or 1.0, self.product_uom, self.pricelist_id.id)
         if currency_id != self.pricelist_id.currency_id.id:
             base_price = self.env['res.currency'].browse(currency_id).with_context(product_context).compute(base_price, self.pricelist_id.currency_id)
-        if rule_id and PricelistItem.browse(rule_id).price_discount >= 0.0:
+        if rule_id and PricelistItem.browse(rule_id).compute_price == 'fixed':
+            return final_price
+        elif rule_id and PricelistItem.browse(rule_id).price_discount >= 0.0:
             return min(base_price, final_price)
         else:
             return max(base_price, final_price)

@@ -103,15 +103,16 @@ class Picking(models.Model):
     def action_split_pset_row(self):
         for line in self.move_lines:
             if line.sale_line_id and len(line.move_line_ids.ids) > 0:
-                #order = line.sale_line_id.order_id
-                #for order_line in order.order_line.filtered(lambda r: r.product_id == line.product_id and r.product_set_id != False):
                 order_line = line.sale_line_id
-                line.move_line_ids[0].qty_done = order_line.product_uom_qty
-                line.move_line_ids[0].product_set_id = order_line.product_set_id.id
-                if float_compare(line.move_line_ids[0].qty_done, line.move_line_ids[0].product_uom_qty,
-                              precision_rounding=line.move_line_ids[0].product_uom_id.rounding) < 0:
+                if order_line.product_set_id:
+                    #for x in range(1, int(order_line.pset_quantity)+1):
+                    line.move_line_ids[0].package_qty = order_line.pset_quantity
+                    line.move_line_ids[0].qty_done = order_line.product_uom_qty/order_line.pset_quantity
+                    line.move_line_ids[0].product_set_id = order_line.product_set_id.id
+                    #if float_compare(line.move_line_ids[0].qty_done, line.move_line_ids[0].product_uom_qty,
+                    #              precision_rounding=line.move_line_ids[0].product_uom_id.rounding) < 0:
                     res = line._split_move_line()
-                    line.move_line_ids[0].product_set_id = False
+                    #    line.move_line_ids[0].product_set_id = False
         # Check for package
         move_lines = self.move_line_ids.filtered(lambda r: r.product_set_id and r.result_package_id)
         for line in move_lines:
