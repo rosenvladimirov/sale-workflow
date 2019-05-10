@@ -102,14 +102,15 @@ class ProductSetAdd(models.TransientModel):
                                                                     split_sets=self.split_sets))
             else:
                 set_old = set_lines.create(order_obj.prepare_sale_order_set_data(so_id, set, self.quantity,
-                                                                                 self.pricelist_id.currency_id.round(
-                                                                                     amount_untaxed),
+                                                                                 self.pricelist_id.currency_id.round(amount_untaxed),
                                                                                  split_sets=self.split_sets))
             amount_untaxed = 0.0
             for set_line in self.set_lines:
                 if self.edit_sets:
-                    _logger.info("Sale line %s:%s" % (so_id, set_line.set_lines))
-                    line = sale_order_line.search([('product_id', '=', set_line.product_id.id), ('product_set_id', '=', set_line.product_set_id.id), ('id', 'in', [x[1] for x in self._context.get('set_line_ids')])], limit=1)
+                    #_logger.info("Sale line %s:%s" % (so_id, set_line.set_lines))
+                    line = sale_order_line.search([('product_id', '=', set_line.product_id.id),
+                                                   ('product_set_id', '=', set_line.product_set_id.id),
+                                                   ('id', 'in', [x[1] for x in self._context.get('set_line_ids')])], limit=1)
                     if line:
                         line.write(order_obj.prepare_sale_order_line_set_data(line.order_id.id, set, set_line, self.quantity, set_old.id,
                                                                               max_sequence=max_sequence,
@@ -120,7 +121,9 @@ class ProductSetAdd(models.TransientModel):
                                                                               split_sets=self.split_sets))
 
                 else:
-                    line = sale_order_line.create(order_obj.prepare_sale_order_line_set_data(so_id, set, set_line, self.quantity, set_old.id, max_sequence=max_sequence, split_sets=self.split_sets))
+                    line = sale_order_line.create(order_obj.prepare_sale_order_line_set_data(so_id, set, set_line, self.quantity,
+                                                                                             set_old.id, max_sequence=max_sequence,
+                                                                                             split_sets=self.split_sets))
                 price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
                 amount_untaxed += \
                 line.tax_id.compute_all(price, line.order_id.currency_id, line.product_uom_qty, product=line.product_id,
@@ -142,22 +145,45 @@ class ProductSetAdd(models.TransientModel):
         purchase_order_line = self.env['purchase.order.line']
         set_lines = self.env['purchase.order.sets']
         for set in self.product_set_id:
+            amount_untaxed = set.amount_untaxed
+            set_old = set_lines.search(
+                [('order_id', '=', po_id), ('product_set_id', '=', set.id), ('split_sets', '=', self.split_sets)])
+            if set_old and not self.split_sets:
+                if self.edit_sets:
+                    quantity = 0.0
+                    amount_untaxed_old = 0.0
+                else:
+                    quantity = sum(pp.quantity for pp in set_old)
+                    amount_untaxed_old = sum(pp.amount_total for pp in set_old)
+                set_old.write(order_obj.prepare_purchase_order_line_set_data(po_id, set, self.quantity + quantity,
+                                                                    amount_untaxed_old + self.pricelist_id.currency_id.round(amount_untaxed),
+                                                                    split_sets=self.split_sets))
+            else:
+                set_old = set_lines.create(order_obj.prepare_purchase_order_line_set_data(po_id, set, self.quantity,
+                                                                                 self.pricelist_id.currency_id.round(amount_untaxed),
+                                                                                 split_sets=self.split_sets))
             amount_untaxed = 0.0
             for set_line in set.set_lines:
-                line = purchase_order_line.create(order_obj.prepare_purchase_order_line_set_data(po_id, set, set_line, self.quantity, max_sequence=max_sequence))
-                price = line.price_unit
-                amount_untaxed += line.taxes_id.compute_all(price, line.order_id.currency_id, line.product_qty, product=line.product_id, partner=line.order_id.partner_id)['total_excluded']
-            set_old = set_lines.search([('order_id', '=', po_id), ('product_set_id', '=', set.id)])
-            if set_old and not self.split_sets:
-                #_logger.info("Add set %s:%s" % (self.quantity, set_old.quantity))
-                set_old.write({
-                        'order_id': po_id,
-                        'product_set_id': set.id,
-                        'quantity': self.quantity+set_old.quantity,
-                        'amount_total': set_old.amount_total+self.pricelist_id.currency_id.round(amount_untaxed),
-                        })
-            else:
-                set_lines.create(order_obj.prepare_purchase_order_set_data(po_id, set, self.quantity, self.pricelist_id.currency_id.round(amount_untaxed)))
+                if self.edit_sets:
+                    line = purchase_order_line.search([('product_id', '=', set_line.product_id.id),
+                                                       ('product_set_id', '=', set_line.product_set_id.id),
+                                                       ('id', 'in', [x[1] for x in self._context.get('set_line_ids')])], limit=1)
+                    if line:
+                        line.write(order_obj.prepare_purchase_order_line_set_data(line.order_id.id, set, set_line, self.quantity, set_old.id,
+                                                                              max_sequence=max_sequence,
+                                                                              split_sets=self.split_sets))
+                    else:
+                        line = purchase_order_line.create(order_obj.prepare_purchase_order_line_set_data(po_id, set, set_line, self.quantity,
+                                                                                                         max_sequence=max_sequence))
+                else:
+                    line = purchase_order_line.create(order_obj.prepare_purchase_order_line_set_data(po_id, set, set_line,
+                                                                             self.quantity, set_old.id, max_sequence=max_sequence,
+                                                                             split_sets=self.split_sets))
+                    price = line.price_unit
+                    amount_untaxed += line.taxes_id.compute_all(price, line.order_id.currency_id, line.product_qty, product=line.product_id,
+                                                                partner=line.order_id.partner_id)['total_excluded']
+            set_old.write({'price_unit': amount_untaxed/self.quantity,
+                           'amount_total': amount_untaxed})
 
     @api.multi
     def picking_add_set(self):

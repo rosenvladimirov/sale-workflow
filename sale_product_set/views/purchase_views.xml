@@ -36,8 +36,8 @@
                             <field name="product_set_id"
                                 domain="['|', ('partner_id', '=', order_partner_id), ('partner_id', '=', company_id)]"
                                 force_save="1"/>
-                                <field name="quantity"/>
-                                <field name="price_unit"/>
+                                <field name="quantity" readonly="1"/>
+                                <field name="price_unit" readonly="1"/>
                                 <field name="amount_total" string="Subtotal"/>
                                 <field name="currency_id" invisible="1"/>
                         </tree>
