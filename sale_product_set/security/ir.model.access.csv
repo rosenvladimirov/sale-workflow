@@ -1,0 +1,15 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+sale_product_set_manager,Read-Write-Create access on product.set to Sale Manager,model_product_set,sales_team.group_sale_salesman_all_leads,1,1,1,1
+sale_product_set_salesperson,Read access on product.set to Sale Persons,model_product_set,base.group_user,1,0,0,0
+sale_product_set_line_manager,Read-Write-Create access on product.set.line to Sale Manager,model_product_set_line,sales_team.group_sale_salesman_all_leads,1,1,1,1
+sale_product_set_line_user,Read access on product.set to users,model_product_set_line,base.group_user,1,0,0,0
+account_invoice_sets_manager,Read-Write-Create access on account.invoice.sets to Sale Manager,model_account_invoice_sets,sales_team.group_sale_salesman_all_leads,1,1,1,1
+account_invoice_sets_user,Read access on account.invoice.sets to users,model_account_invoice_sets,base.group_user,1,0,0,0
+sale_order_sets_manager,Read-Write-Create access on sale.order.sets to Sale Manager,model_sale_order_sets,sales_team.group_sale_salesman_all_leads,1,1,1,1
+sale_order_sets_user,Read access on sale.order.sets to users,model_sale_order_sets,base.group_user,1,0,0,0
+purchase_order_sets_manager,Read-Write-Create access on purchase.order.sets to Purchase Manager,model_purchase_order_sets,purchase.group_purchase_manager,1,1,1,1
+purchase_order_sets_user,Read access on purchase.order.sets to users,model_purchase_order_sets,purchase.group_purchase_user,1,1,1,1
+sale_product_set_public,Read-Write-Create access on product.set to own public user,model_product_set,base.group_public,1,1,1,1
+sale_product_set_portal,Read-Write-Create access on product.set to own portal,model_product_set,base.group_portal,1,1,1,1
+sale_product_set_line_public,Read-Write-Create access on product.set.line to own public user,model_product_set_line,base.group_public,1,1,1,1
+sale_product_set_line_portal,Read-Write-Create access on product.set.line to own portal,model_product_set_line,base.group_portal,1,1,1,1

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report 
+            id="action_report_saleorder_sets"
+            string="Quotation / Ordered sets"
+            model="sale.order" 
+            report_type="qweb-pdf"
+            file="sale_product_set.report_saleorder_sets" 
+            name="sale_product_set.report_saleorder_sets"
+            print_report_name="(object.state in ('draft', 'sent') and 'Quotation sets - %s' % (object.name)) or 'Ordered Sets - %s' % (object.name)"
+        />
+    </data>
+</odoo>

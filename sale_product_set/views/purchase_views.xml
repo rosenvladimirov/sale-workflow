@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="purchase_order_sets_form" model="ir.ui.view">
+        <field name="name">purchase.order.sets.form</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                    <button class="oe_stat_button"
+                            type="action"
+                            name="%(act_open_wizard_product_set_add)d"
+                            icon="fa-object-group"
+                            attrs="{'invisible': [('state','not in',('draft','sent'))]}"
+                            context="{'default_partner_id': partner_id, 'force_mode': 'purchase'}"
+                            string="Add set"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <field name="has_sets" invisible="1"/>
+                <page name="order_product_sets" string="Order Sets Lines" attrs="{'invisible': [('has_sets', '=', False)]}">
+                    <field name="sets_line" mode="tree,kanban"
+                            attrs="{'readonly': [('state', 'in', ('done','cancel'))]}">
+                        <form string="Purchase Order Sets Lines">
+                            <group>
+                                <field name="order_partner_id" invisible="1"/>
+                                <field name="company_id" invisible="1" readonly="1"/>
+                                <field name="product_set_id" domain="['|', ('partner_id', '=', order_partner_id), ('partner_id', '=', company_id)]"/>
+                                <field name="quantity"/>
+                                <field name="amount_total" string="Unit price"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                        </form>
+                        <tree string="Purchase Order Sets Lines" editable="bottom">
+                            <field name="order_partner_id" invisible="1"/>
+                            <field name="company_id" invisible="1" readonly="1"/>
+                            <field name="sequence" widget="handle"/>
+                            <field name="product_set_id"
+                                domain="['|', ('partner_id', '=', order_partner_id), ('partner_id', '=', company_id)]"
+                                force_save="1"/>
+                                <field name="quantity"/>
+                                <field name="price_unit"/>
+                                <field name="amount_total" string="Subtotal"/>
+                                <field name="currency_id" invisible="1"/>
+                        </tree>
+                        <kanban class="o_kanban_mobile">
+                            <field name="product_set_id"/>
+                            <field name="amount_total"/>
+                            <templates>
+                                <t t-name="kanban-box">
+                                    <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                        <div class="row">
+                                            <div class="col-xs-8">
+                                                <strong><span><t t-esc="record.product_set_id.value"/></span></strong>
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <strong><span class="pull-right text-right">
+                                                <t t-esc="record.amount_total.value"/></span></strong>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 text-muted">
+                                                <span>Quantity: <t t-esc="record.quantity.value"/></span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 text-muted">
+                                                <span>Unit Price: <t t-esc="record.amount_total.value"/></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                </t>
+                            </templates>
+                        </kanban>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
