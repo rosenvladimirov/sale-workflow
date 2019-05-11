@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_product_set_fleet_form" model="ir.ui.view">
+        <field name="name">product.set.fleet.form</field>
+        <field name="model">product.set</field>
+        <field name="inherit_id" ref="sale_product_set.view_product_set_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='headingdata']" position="after">
+                <field name="fleet_ids">
+                    <tree string="Product set for fleet model" editable="bottom">
+                        <field name="image_small" widget="image"/>
+                        <field name="name"/>
+                        <field name="brand_id"/>
+                        <field name="vendors"/>
+                    </tree>
+                </field>
+            </xpath>
+        </field>
+    </record>
+</odoo>

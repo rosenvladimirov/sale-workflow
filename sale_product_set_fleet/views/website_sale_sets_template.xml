@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="assets_frontend" inherit_id="website.assets_frontend" name="Sets assets frontend">
+        <xpath expr="." position="inside">
+            <link type="text/less" rel='stylesheet' href='/sale_product_set/static/src/less/website_sale_set.less'/>
+            <script type="text/javascript" src="/sale_product_set/static/src/js/website_sale_set.js"></script>
+        </xpath>
+    </template>
+
+    <template id="add_to_set" inherit_id="website_sale.products_item" active="True" customize_show="True" name="Product Sets" priority="30">
+        <xpath expr="//div[@id='btn_group']" position="inside">
+            <t t-set="in_set" t-value="product.product_variant_ids &amp; request.env['product.set'].current_set_products().mapped('set_lines').mapped('product_id')"/>
+            <a class="btn btn-default btn-xs o_add_prodset" t-att-disabled='in_set or None' title="Add to Sets" t-att-data-product-product-id="product.product_variant_ids[0].id" data-action="o_prodset"><span class="fa fa-car"></span></a>
+        </xpath>
+    </template>
+
+    <template id="product_add_to_set" name='Add to set in product page' inherit_id="website_sale.product" priority="20">
+        <xpath expr="//a[@id='add_to_cart']" position="after">
+            <t t-if="product.env.ref('sale_product_set.add_to_set').active">
+                <t t-set="in_set" t-value="product.product_variant_ids &amp; request.env['product.set'].current_set_products().mapped('set_lines').mapped('product_id')"/>
+                <a class="btn btn-default btn-lg mt8 o_add_prodset_dyn" t-att-disabled='in_set or None' title="Add to Set" t-att-data-product-product-id="product.product_variant_ids[0].id" data-action="o_prodset"><span class="fa fa-car"></span></a>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="header" inherit_id="website.layout" name="Header Shop Product Set Link">
+        <xpath expr="//header//ul[@id='top_menu']/li[@id='my_cart']" position="after">
+            <t t-if="request.env.ref('sale_product_set.add_to_set').active">
+                <t t-set='setcount' t-value="request.env['product.set'].product_set_count()"/>
+                <li id="my_sets" t-att-style="not setcount and 'display:none;'">
+                    <a id="show_sets" href="/shop/sets">
+                        <i class="fa fa-car"></i>
+                        Product set <sup t-attf-class="my_set_quantity o_animate_blink label label-primary"><t t-esc='setcount'/></sup>
+                    </a>
+                </li>
+            </t>
+        </xpath>
+    </template>
+
+    <!--
+    <template id="search" name="Search Box for Product set">
+        <form t-att-action="keep('/shop'+ ('/category/'+slug(category)) if category else None, search=0)" method="get" t-att-class="search_class">
+            <t t-if="attrib_values">
+                <t t-foreach="attrib_values" t-as="a">
+                    <input type="hidden" name="attrib" t-att-value="'%s-%s' % (a[0], a[1])" />
+                </t>
+            </t>
+            <t t-call="website.website_search_box" />
+        </form>
+    </template>
+    -->
+    <template id="website_prodset_search_box" name="Website Product set Searchbox">
+        <form t-att-action="keep('/shop/sets', search=0)" method="get" t-att-class="prodset_search_class">
+            <div class="input-group">
+                <div class="oe_protset_search">
+                    <input type="text" name="search" class="search-query form-control oe_search_box" placeholder="Search..." t-att-value="search" />
+                </div>
+                <span class="input-group-btn">
+                    <button type="submit" class="btn btn-default oe_search_button"><i class="fa fa-search"/></button>
+                </span>
+            </div>
+        </form>
+    </template>
+
+    <template id="product_set" name="Product Set Page">
+        <t t-call="website.layout">
+            <t t-set="additional_title">Shop By Product Set</t>
+            <div id="wrap" class="js_sale">
+                <div class="oe_structure"/>
+                <div class="container oe_website_sale">
+                    <div class="products_pager">
+                        <div class="row" style="width: 100%;">
+                            <t t-call="sale_product_set.website_prodset_search_box">
+                                <t t-set="prodset_search_class" t-value="'pagination form-inline o_prodset_search'"/>
+                            </t>
+                            <!--
+                            <t t-call="sale_product_set.search">
+                                <t t-set="search_class" t-value="'pagination form-inline o_sale_product_set_search'"/>
+                            </t>
+                            -->
+                            <t t-call="website.pager" />
+                        </div>
+                    </div>
+
+                    <section class="container prodset-section">
+                        <style>
+                            .modal-backdrop {
+                                z-index: -1;
+                            }
+                        </style>
+                        <h3>My Sets</h3>
+                        <div class="checkbox">
+                            <label class='text-muted'><input type="checkbox" id='b2b_set' value="1" t-att-checked="'checked'" />Add product to my cart but keep it in my product sets</label>
+                        </div>
+                        <div class="panel-group" id="accordion">
+                            <t t-foreach="product_sets" t-as="pset">
+                               <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                      <!-- <div class="oe_product oe_list" style="border-bottom:0;"> -->
+                                      <div class="container">
+                                        <div class="row">
+                                            <input type="hidden" class="pset_id" name="pset_id" t-att-value="pset.id"/>
+                                            <div class="col-md-2">
+                                              <div class="oe_product_image">
+                                                  <img t-attf-src="/web/image/product.set/#{pset.id}/image/100x100" class="img img-responsive" style="margin:auto;"/>
+                                              </div>
+                                            </div>
+
+                                            <div class="col-md-8">
+                                            <section>
+                                                <div t-att-id="'#pset-base-%s' % pset.id" t-att-class="'text-info oe_product_set_open' if opened == pset.id else 'text-info'" style="cursor: pointer;">
+                                                    <label>Code and Name: </label>
+                                                    <a style="cursor:pointer" data-toggle="collapse" data-parent="#accordion" t-att-href="'#pset-%s' % pset.id">
+                                                        <label>
+                                                            <i class="fa fa-chevron-down"/> [<t t-esc="pset.code"/>] <t t-esc="pset.name"/>
+                                                        </label>
+                                                    </a>
+                                                </div>
+                                                <div class="oe_product_sets">
+                                                  <label>Price: </label>
+                                                    <label>
+                                                        <t t-esc="pset.amount_total" t-options="{'widget': 'monetary', 'display_currency': pset.currency_id}"/>
+                                                    </label>
+                                                </div>
+
+                                                <div class="nav nav-pills nav-stacked oe_product_sets sets_state">
+                                                    <form class="js_state_product_sets" t-attr-id="'#pset-form-%s' % pset.id" t-att-data="pset.id">
+                                                        <label>Status: </label>
+                                                        <label class="radio-inline">
+                                                            <input type="radio" name="state" t-att-data="pset.id" t-att-value="'draft'" t-att-checked="'checked' if pset.state == 'draft' else None"/>Draft
+                                                        </label>
+                                                        <label class="radio-inline">
+                                                            <input type="radio" name="state" t-att-data="pset.id" t-att-value="'progress'" t-att-checked="'checked' if pset.state == 'progress' else None"/>Progress
+                                                        </label>
+                                                        <label class="radio-inline">
+                                                            <input type="radio" name="state" t-att-data="pset.id" t-att-value="'freeze'" t-att-checked="'checked' if pset.state == 'freeze' else None"/>Freeze
+                                                        </label>
+                                                    </form>
+                                                </div>
+                                                <form class="form-inline">
+                                                    <div class="oe_product_sets sets_edit" t-att-data="pset.id" style="margin-top:16px">
+                                                        <a class="o_prodset_rm no-decoration" style="margin-left:8px"><i class="fa fa-trash-o"/> Remove</a>
+                                                        <a class="o_prodset_edit no-decoration" style="margin-left:8px"><i class="fa fa-pencil-square-o"/> Edit</a>
+                                                        <a class="o_prodset_dublicate no-decoration" style="margin-left:8px"><i class="fa fa-files-o"/> Duplicate</a>
+                                                    </div>
+                                                </form>
+                                            </section>
+                                            </div>
+                                            <div class="col-md-2">
+                                              <div class="pull-right text-center td-set-btn" >
+                                                  <input name="product_set_id" t-att-value="pset.id" type="hidden"/>
+                                                  <a class="btn btn-default btn-block o_prodset_add mb4" t-att-value="pset.id">Add <span class="hidden-xs">Set</span></a>
+                                              </div>
+
+                                              <div class="css_quantity input-group oe_website_spinner">
+                                                  <a t-attf-href="#" class="mb8 input-group-addon js_add_pset_cart_json hidden-xs">
+                                                    <i class="fa fa-minus"></i>
+                                                  </a>
+                                                  <input type="text" class="js_quantity form-control quantity" data-min="1" name="add_qty" t-att-data-pset-id="pset.id" value="1"/>
+                                                  <a t-attf-href="#" class="mb8 input-group-addon float_left js_add_pset_cart_json hidden-xs">
+                                                    <i class="fa fa-plus"></i>
+                                                  </a>
+                                              </div>
+                                            </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div t-att-id="'pset-%s' % pset.id" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <section class="container product-section">
+                                            <table class="table table-bordered table-striped table-hover text-center mt16 table-comparator" id="o_comparelist_table">
+                                                <body>
+                                                    <t t-foreach="pset.set_lines" t-as="prodline">
+                                                        <tr t-att-data-prodline-id='prodline.id' t-att-data-product-id='prodline.product_id.id' t-att-data-prodset-id='pset.id'>
+                                                            <td class='td-img'>
+                                                                <a t-att-href="'/shop/product/%s' % slug(prodline.product_id.product_tmpl_id)">
+                                                                    <img t-attf-src="/web/image/product.product/#{prodline.product_id.id}/image/100x100" class="img img-responsive" style="margin:auto;"/>
+                                                                </a>
+                                                            </td>
+                                                            <td class='text-left'>
+                                                                <strong><a t-att-href="'/shop/product/%s' % slug(prodline.product_id.product_tmpl_id)"><t t-esc="prodline.product_id.display_name" /></a></strong>
+                                                                <small class='hidden-xs'><p t-field="prodline.product_id.description_sale" class="text-muted"/></small>
+                                                                <a class="o_product_set_rm no-decoration"><small><i class='fa fa-trash-o'></i> Remove</small></a>
+                                                            </td>
+                                                            <td style='width:80px'>
+                                                                <t t-esc='prodline.quantity'/>
+                                                            </td>
+                                                            <td style='width:80px'>
+                                                                <t t-esc='prodline.price_subtotal' t-options="{'widget': 'monetary', 'display_currency': prodline.currency_id}"/>
+                                                            </td>
+                                                            <td style='width:80px'>
+                                                                <t t-esc='prodline.price_unit' t-options="{'widget': 'monetary', 'display_currency': prodline.currency_id}"/>
+                                                            </td>
+                                                            <td class='text-center td-product-set-btn'>
+                                                                <input name="product_id" t-att-value="prodline.product_id.id" type="hidden"/>
+                                                                <a class="btn btn-default btn-block o_product_set_add mb4" >Add <br/>to Cart</a>
+                                                            </td>
+                                                        </tr>
+                                                    </t>
+                                                </body>
+                                            </table>
+                                            </section>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </section>
+                    <div class="products_pager">
+                        <t t-call="website.pager" />
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="prodset_modal" name="Edit Product Set">
+        <div id="modal_product_sets" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" style="top:21%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                    <h4 class="modal-title" id="myModalLabel">Edit Product Set</h4>
+                </div>
+                <div class="modal-body container">
+                  <div t-attf-class="form-group #{error.get('name') and 'has-error' or ''} mt8 mb8" style="width:100%">
+                    <div class="col-md-2 col-sm-3 col-xs-12">
+                      <label class="control-label" for="name">Set Name<span style="color:red"> *</span></label>
+                    </div>
+                    <div class="col-md-10 col-sm-9 col-xs-12">
+                      <input type="text" name="name" class="form-control" t-att-value="name" style="width:100%"/>
+                    </div>
+                  </div>
+
+                  <div class="clearfix"></div>
+
+                  <div t-attf-class="form-group #{error.get('code') and 'has-error' or ''} mb8" style="width:100%">
+                    <div class="col-md-2 col-sm-3 col-xs-12">
+                      <label class="control-label" for="code">Code<span style="color:red"> *</span></label>
+                    </div>
+                    <div class="col-md-10 col-sm-9 col-xs-12">
+                      <input type="text" name="code" class="form-control" t-att-value="code" style="width:100%"/>
+                    </div>
+                  </div>
+
+                  <div class="clearfix"></div>
+
+                  <div t-attf-class="form-group #{error.get('fleet_ids') and 'has-error' or ''} mb8" style="width:100%">
+                    <div class="col-md-2 col-sm-3 col-xs-12">
+                      <label class="control-label label-optional" for="fleet_ids">Car model</label>
+                    </div>
+                    <div class="col-md-10 col-sm-9 col-xs-12">
+                      <select name="fleet_ids" class="form-control" style="width:100%">
+                        <option value="">car model...</option>
+                        <t t-foreach="cars or []" t-as="car">
+                          <option t-att-value="car.id" style="display:none;" t-att-data-car_id="car.id" t-att-selected="car.id == set.fleet_ids.id">
+                            <t t-esc="car.name"/>
+                          </option>
+                        </t>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="modal-footer">
+                    <a class="btn btn-default a-submit js_pset_save"><i class="fa fa-floppy-o"/> <span class="hidden-xs">Save</span><span class="visible-xs-inline">Save</span></a>
+                    <a class="btn btn-primary pull-right a-submit"><i class="fa fa-ban"/> <span class="hidden-xs">Cancel</span><span class="visible-xs-inline">Cancel</span></a>
+                </div>
+            </div>
+        </div>
+        </div>
+    </template>
+</odoo>
