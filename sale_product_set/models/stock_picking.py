@@ -116,7 +116,7 @@ class Picking(models.Model):
         # Check for package
         move_lines = self.move_line_ids.filtered(lambda r: r.product_set_id and r.result_package_id)
         for line in move_lines:
-            self.move_line_ids.filtered(lambda r: r.product_set_id == line.product_set_id and not r.result_package_id).write({'result_package_id': line.result_package_id.id})
+            self.move_line_ids.filtered(lambda r: r.product_set_id == line.product_set_id and r.sequence == line.sequence and not r.result_package_id).write({'result_package_id': line.result_package_id.id})
         return {
                 "type": "ir.actions.do_nothing",
                 }

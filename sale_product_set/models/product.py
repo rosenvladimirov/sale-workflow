@@ -36,7 +36,7 @@ class ProductProduct(models.Model):
                                       submenu=submenu)
         if view_type == 'form':
             product_xml = etree.XML(res['arch'])
-            pset_path = "//field[@name='product_putaway_ids']"
+            pset_path = "//field[@name='product_set_ids']"
             pset_fields = product_xml.xpath(pset_path)
             if pset_fields:
                 pset_field = pset_fields[0]
