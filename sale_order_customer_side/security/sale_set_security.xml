@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="all_product_set_line_rule" model="ir.rule">
+            <field name="name">See all Product line sets</field>
+            <field name="model_id" ref="model_product_set_line"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
+        </record>
+
+    </data>
+</odoo>

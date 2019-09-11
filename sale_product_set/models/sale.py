@@ -16,6 +16,7 @@ class SaleOrder(models.Model):
     sets_line = fields.One2many('sale.order.sets', 'order_id', string='Order Sets Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True)
     has_sets = fields.Boolean(string="Has sets", compute="_compute_has_sets")
     print_sets = fields.Boolean("Ungroup by sets")
+    product_set_id = fields.Many2one('product.set', related='sets_line.product_set_id', string='Product Set')
 
     @api.multi
     def _compute_has_sets(self):
@@ -35,11 +36,11 @@ class SaleOrder(models.Model):
                 # If last added category induced a pagebreak, this one will be on a new page
                 if report_pages_sets[-1] and report_pages_sets[-1][-1]['pagebreak']:
                     report_pages_sets.append([])
-                qty = sum(x.quantity for x in self.sets_line if x.product_set_id.id == category.id)
+                qty = sum(x.quantity for x in self.sets_line if x.product_set_id and category and x.product_set_id.id == category.id)
                 unit_price = qty > 0.0 and category.subtotal/qty or category.subtotal
                 # Append category to current report page
                 report_pages_sets[-1].append({
-                    'name': category and category.display_name or _('Uncategorized'),
+                    'name': category and category.print_name or _('Uncategorized'),
                     'quantity': qty,
                     'price_unit': unit_price,
                     'subtotal': category and category.subtotal,
@@ -50,12 +51,13 @@ class SaleOrder(models.Model):
             return report_pages_sets
         else:
             report_pages_sets = [[]]
-            for category, lines in groupby(self.order_line, lambda l: l.layout_category_id and not l.product_set_id):
+            for category, lines in groupby(self.order_line, lambda l: l.layout_category_id):
                 # If last added category induced a pagebreak, this one will be on a new page
                 if report_pages_sets[-1] and report_pages_sets[-1][-1]['pagebreak']:
                     report_pages_sets.append([])
-                qty = sum(x.product_uom_qty for x in self.order_line if (x.layout_category_id and x.layout_category_id.id or False) == category.id)
-                subtotal = sum(x.price_subtotal for x in self.order_line if (x.layout_category_id and x.layout_category_id.id or False) == category.id)
+                #_logger.info("CATEGORY %s:%s" % (category, lines))
+                qty = sum(x.product_uom_qty for x in self.order_line if category and (x.layout_category_id and x.layout_category_id.id or False) == category.id)
+                subtotal = sum(x.price_subtotal for x in self.order_line if category and (x.layout_category_id and x.layout_category_id.id or False) == category.id)
                 unit_price = category and qty > 0.0 and subtotal/qty or 0.0
                 # Append category to current report page
                 report_pages_sets[-1].append({

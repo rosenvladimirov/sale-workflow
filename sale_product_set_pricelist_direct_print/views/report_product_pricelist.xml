@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <template id="report_product_set_pricelist_document" inherit_id="product_pricelist_direct_print.report_product_pricelist_document">
+        <xpath expr="//t[@name='listcategory']" position="replace">
+            <t t-foreach="o.product_set_layouted(products, pricelist, date)" t-as="sets">
+                <t name="settmpl" t-foreach="sets" t-as="product_set_print">
+                    <t t-set="category_products" t-value="product_set_print['lines']"/>
+                    <t t-if="o.order_field == 'name'">
+                        <t t-set="category_products"
+                           t-value="category_products.sorted(lambda x: '%s-%s' % (x.product_tmpl_id.display_name, x.name))"/>
+                    </t>
+                    <t t-if="o.order_field == 'default_code'">
+                        <t t-set="category_products"
+                           t-value="category_products.sorted(lambda x: '%s-%s' % (x.product_tmpl_id.display_name, x.default_code or ''))"/>
+                    </t>
+                    <t t-if="o.order_field == ''">
+                        <t t-set="category_products"
+                           t-value="category_products.sorted(lambda x: x.product_tmpl_id)"/>
+                    </t>
+                    <t t-if="product_set_print['price']">
+                        <t name="setdetails" t-call="sale_product_set_pricelist_direct_print.report_product_set_pricelist_detail"/>
+                    </t>
+                    <t t-else="">
+                        <t name="details" t-call="product_pricelist_direct_print.report_product_pricelist_detail"/>
+                    </t>
+                </t>
+            </t>
+        </xpath>
+    </template>
+    <template id="report_product_set_pricelist_detail">
+        <tr t-if="product_set_print['price'] &gt; 0.0">
+            <td>
+                <strong t-esc="product_set_print['name']"/>
+            </td>
+            <td t-if="o.show_standard_price"/>
+            <td t-if="o.show_sale_price"/>
+            <td class="text-right">
+                <span name="extprice" t-esc="product_set_print['price_subtotal']"/>
+            </td>
+            <!--
+            <td>
+                <span name="vat" t-esc="product_set_print['tax']"/>
+            </td>
+            -->
+            <td class="text-right">
+                <strong name="price" t-esc="product_set_print['price']"/>
+            </td>
+        </tr>
+        <t t-if="o.show_set_detals">
+            <t t-foreach="product_set_print['lines']" t-as="line">
+                <tr>
+                    <td>
+                        <i><span t-field="line.display_name"/></i>
+                    </td>
+                    <td colspan="100">
+                        <i><span t-esc="product_set_print['qty'][line]"/></i>
+                    </td>
+                </tr>
+            </t>
+        </t>
+    </template>
+</odoo>

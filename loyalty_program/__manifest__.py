@@ -16,6 +16,7 @@ and get rewards.
     'depends': ['sale'],
     'data': [
         'security/ir.model.access.csv',
+        'security/loyalty_programs_security.xml',
         'views/loyalty_program_views.xml',
         'views/sale_views.xml',
         'views/res_partner_views.xml',

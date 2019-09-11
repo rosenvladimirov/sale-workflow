@@ -7,7 +7,7 @@
     'category': 'Sale',
     'summary': 'Add filter by product set on Loyalty Programs',
     'author': 'Rosen Vladimirov',
-    'depends': ['sale', 'loyalty_program'],
+    'depends': ['sale', 'loyalty_program', 'sale_product_set'],
     'data': [
         'views/loyalty_program_views.xml',
     ],

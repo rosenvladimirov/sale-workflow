@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_product_set_homologation_tree" model="ir.ui.view">
+        <field name="name">product.set.homologation.tree</field>
+        <field name="model">product.set</field>
+        <field name="type">tree</field>
+        <field name="inherit_id" ref="sale_product_set.view_product_set_tree"/>
+        <field name="arch" type="xml">
+            <field name="state" position="before">
+                <field name="cy_gesy_code"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_product_set_homologation_form" model="ir.ui.view">
+        <field name="name">product.set.homologation.form</field>
+        <field name="model">product.set</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="sale_product_set.view_product_set_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='medical']" position="inside">
+                <group string="[CY] Codes">
+                    <group colspan="4" col="4">
+                        <field name="cy_gesy_code"/>
+                        <field name="cy_registration_code"/>
+                        <field name="cy_future_code"/>
+                        <field name="cy_currency_id" options="{'no_open': True}" invisible="1"/>
+                    </group>
+                    <group>
+                        <div>
+                            <label for="cy_gesy"/>
+                            <field name="cy_gesy" class="oe_inline" nolabel="1"/>
+                        </div>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

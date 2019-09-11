@@ -14,12 +14,30 @@ class SaleOrder(models.Model):
     loyalty_points = fields.Integer(string='Loyalty Points', compute='_loyalty_points', store=True)
     future_loyalty_points = fields.Integer(string='Potential Loyalty Points', compute='_loyalty_points', store=True)
     loyalty_id = fields.Many2one(comodel_name='account.loyalty', string='Loyalty')
+    loyalty_break = fields.Boolean('Used')
+    loyalty_break_date = fields.Date('Date of used')
+
+    @api.onchange('loyalty_break')
+    def _compute_loyalty_break(self):
+        if self.loyalty_break:
+            self.loyalty_points = 0
+            self.future_loyalty_points = 0
+            self.order_line.write({'loyalty_points': 0, 'future_loyalty_points': 0})
+        elif not self.loyalty_break and self.loyalty_break_date:
+            self.loyalty_break_date = None
+            self.loyalty_points =  sum([l.loyalty_points for l in self.order_line])
+            self.future_loyalty_points = sum([l.future_loyalty_points for l in self.order_line])
 
     @api.one
     @api.depends('order_line', 'order_line.product_id', 'order_line.product_uom_qty', 'order_line.price_subtotal')
     def _loyalty_points(self):
-        self.loyalty_points = sum([l.loyalty_points for l in self.order_line])
-        self.future_loyalty_points = sum([l.future_loyalty_points for l in self.order_line])
+        if self.loyalty_break:
+            self.loyalty_points = 0
+            self.future_loyalty_points = 0
+            self.order_line.write({'loyalty_points': 0, 'future_loyalty_points': 0})
+        else:
+            self.loyalty_points =  sum([l.loyalty_points for l in self.order_line])
+            self.future_loyalty_points = sum([l.future_loyalty_points for l in self.order_line])
 
     @api.onchange('loyalty_program_id')
     def _compute_loyalty_program_id(self):
@@ -48,7 +66,7 @@ class SaleOrderLine(models.Model):
     @api.one
     @api.depends('product_id', 'product_uom_qty', 'price_subtotal', 'order_id.loyalty_program_id', 'loyalty_points', 'future_loyalty_points')
     def _loyalty_points(self):
-        if self.order_id.loyalty_program_id:
+        if self.order_id.loyalty_program_id and not self.order_id.loyalty_break:
             if self.qty_invoiced > 0.0:
                 self.loyalty_points = self._calculate_loyalty_points(self.product_id, self.qty_invoiced, self.price_subtotal)
             else:
@@ -57,5 +75,8 @@ class SaleOrderLine(models.Model):
                 self.future_loyalty_points = self._calculate_loyalty_points(self.product_id, self.product_uom_qty, self.price_subtotal)
             else:
                 self.future_loyalty_points = 0
-        _logger.info("Loyalty %s:%s" % (self.loyalty_points, self.future_loyalty_points))
+        else:
+            self.loyalty_points = 0
+            self.future_loyalty_points = 0
+        #_logger.info("Loyalty %s:%s" % (self.loyalty_points, self.future_loyalty_points))
 

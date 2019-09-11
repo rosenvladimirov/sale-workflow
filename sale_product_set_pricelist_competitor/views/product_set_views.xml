@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="product_set_competitorinfo_form_view" model="ir.ui.view">
+            <field name="name">product.set.competitorinfo.form.view</field>
+            <field name="model">product.set.competitorinfo</field>
+            <field name="arch" type="xml">
+                <form string="Competitor Information">
+                    <group>
+                        <group string="Competitor">
+                            <field name="partner_id" domain="[('customer','=',True)]" context="{'search_default_customer':1}"/>
+                            <field name="name" context="{'default_customer': 0, 'search_default_supplier': 1, 'default_supplier': 1}"/>
+                            <field name="product_name"/>
+                            <field name="product_code"/>
+                        </group>
+                        <group string="Price List">
+                            <field name="pricelist_id" groups="product.group_sale_pricelist"/>
+                            <field name="product_set_id" string="Product set" invisible="1"/>
+                            <label for="min_qty"/>
+                            <div>
+                                <field name="min_qty" class="oe_inline"/>
+                            </div>
+                            <!--
+                            <label for="price_stable"/>
+                            <div>
+                                <field name="price_stable" class="oe_inline"/><field name="currency_id" class="oe_inline" groups="base.group_multi_currency"/>
+                            </div>
+                            -->
+                            <label for="price"/>
+                            <div>
+                                <field name="price" class="oe_inline"/><field name="currency_id" class="oe_inline" groups="base.group_multi_currency"/>
+                            </div>
+
+                            <label for="date_start" string="Validity"/>
+                            <div><field name="date_start" class="oe_inline"/> to <field name="date_end" class="oe_inline"/></div>
+
+                        </group>
+                        <group string="Other Information" groups="base.group_multi_company">
+                            <field name="company_id" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="product_set_competitorinfo_search_view" model="ir.ui.view">
+            <field name="name">product.set.competitorinfo.search.view</field>
+            <field name="model">product.set.competitorinfo</field>
+            <field name="arch" type="xml">
+                <search string="Competitor">
+                    <field name="name"/>
+                    <field name="product_set_id"/>
+                    <filter string="Active" name="active" domain="[('date_end', '&gt;=',  (context_today() - datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"/>
+                    <filter string="Archived" name="archived" domain="[('date_end', '&lt;',  (context_today() - datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Product set" name="groupby_product" domain="[]" context="{'group_by': 'product_set_id'}"/>
+                        <filter string="Competitor" name="groupby_competitor" domain="[]" context="{'group_by': 'name'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="product_set_competitorinfo_tree_view" model="ir.ui.view">
+            <field name="name">product.set.competitorinfo.tree.view</field>
+            <field name="model">product.set.competitorinfo</field>
+            <field name="arch" type="xml">
+                <tree string="Competitor Information">
+                    <field name="sequence" widget="handle"/>
+                    <field name="pricelist_id"/>
+                    <field name="name"/>
+                    <field name="product_code"/>
+                    <field name="product_name"/>
+                    <field name="product_set_id" string="Product Set" invisible="1"/>
+                    <!-- <field name="min_qty"/> -->
+                    <!-- <field name="price_stable" string="Stable price"/> -->
+                    <field name="price" string="Price"/>
+                    <!--
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                    -->
+                </tree>
+            </field>
+        </record>
+
+    <record id="product_set_competitorinfo_type_action" model="ir.actions.act_window">
+        <field name="name">Competitor Pricelists</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.set.competitorinfo</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="product_set_form_view" model="ir.ui.view">
+        <field name="name">product.set.product.form</field>
+        <field name="model">product.set</field>
+        <field name="inherit_id" ref="sale_product_set.view_product_set_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='products']" position="after">
+                <page string="Competitor info prices" name="competitors">
+                     <group string="Competitors" name="competitor">
+                        <field name="competitor_ids" context="{'default_product_set_id':context.get('product_set_id',active_id)}" nolabel="1"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    </data>
+</odoo>

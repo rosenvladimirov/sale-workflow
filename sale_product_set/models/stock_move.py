@@ -16,3 +16,8 @@ class StockMove(models.Model):
         vals['product_set_id'] = self.sale_line_id.product_set_id.id
         return vals
 
+    def _prepare_move_line_vals(self, quantity=None, reserved_quant=None):
+        vals = super(StockMove, self)._prepare_move_line_vals(quantity=quantity, reserved_quant=reserved_quant)
+        if self.product_set_id:
+            vals = dict(vals, product_set_id=self.product_set_id.id)
+        return vals

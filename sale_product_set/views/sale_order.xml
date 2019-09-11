@@ -11,7 +11,7 @@
                             name="%(act_open_wizard_product_set_add)d"
                             icon="fa-object-group"
                             attrs="{'invisible': [('state','not in',('draft','sent'))]}"
-                            context="{'default_partner_id': partner_id, 'default_company_id': company_id, 'default_pricelist_id': pricelist_id, 'force_mode': 'sale' }"
+                            context="{'default_partner_id': partner_id, 'default_partner_shipping_id': partner_shipping_id, 'default_fiscal_position_id': fiscal_position_id, 'default_company_id': company_id, 'default_pricelist_id': pricelist_id, 'force_mode': 'sale' }"
                             string="Add set"/>
             </xpath>
             <xpath expr="//notebook" position="inside">
@@ -111,6 +111,19 @@
             <field name="client_order_ref" position="after">
                 <field name="print_sets"/>
             </field>
+        </field>
+    </record>
+    <record id="sale_order_view_search_inherit_sale_product_set" model="ir.ui.view">
+        <field name="name">sale.order.search.inherit.sale.product.set</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <field name="product_id" position="after">
+                <field name="product_set_id"/>
+            </field>
+            <xpath expr="//group" position="inside">
+                <filter name="contactcustomer" string="Customer contact" domain="[]" context="{'group_by': 'partner_contact_id'}"/>
+            </xpath>
         </field>
     </record>
 </odoo>

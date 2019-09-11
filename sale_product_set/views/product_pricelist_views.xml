@@ -41,5 +41,15 @@
                 </xpath>
             </field>
         </record>
+        <record model="ir.ui.view" id="product_pricelist_item_view_search">
+            <field name="name">product.pricelist.item.search</field>
+            <field name="model">product.pricelist.item</field>
+            <field name="inherit_id" ref="product.product_pricelist_item_view_search" />
+            <field name="arch" type="xml">
+                 <xpath expr="//group" position="inside">
+                    <filter string="Product Set" name="groupby_product_set_id" domain="[]" context="{'group_by': 'product_set_id'}"/>
+                 </xpath>
+            </field>
+        </record>
     </data>
 </odoo>

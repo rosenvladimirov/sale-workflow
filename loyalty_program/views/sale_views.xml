@@ -13,6 +13,11 @@
                         <field name="loyalty_points" class="oe_inline"/>/
                         <field name="future_loyalty_points" class="oe_inline"/>
                     </div>
+                    <label for="loyalty_break" string="Used Loyalty"/>
+                    <div>
+                        <field name="loyalty_break" class="oe_inline" nolabel="1"/>
+                        <field name="loyalty_break_date" class="oe_inline" nolabel="1"/>
+                    </div>
                 </field>
             </field>
         </record>
@@ -125,6 +130,8 @@
                     <filter string="Quotations" name="draft" domain="[('state','=','draft'),('loyalty_id','=',False)]"/>
                     <filter string="Quotations Sent" name="sent" domain="[('state','=','sent'),('loyalty_id','=',False)]"/>
                     <filter string="Sales" name="sales" domain="[('state','in',('sale','done')),('loyalty_id','=',False)]"/>
+                    <filter string="Used" name="loyalty_break" domain="[('loyalty_break','=', True)]"/>
+                    <filter string="Non Used" name="loyalty_break_non" domain="[('loyalty_break','=', False)]"/>
                     <separator/>
                     <filter string="Sales with Loyalty programs" name="loyaltysales" domain="[('loyalty_program_id', '!=', False),('loyalty_id','=',False)]" />
                 </xpath>

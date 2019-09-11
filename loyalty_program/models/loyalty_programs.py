@@ -22,6 +22,10 @@ class LoyaltyProgram(models.Model):
 
     rule_ids = fields.One2many(string="Rules", comodel_name="loyalty.rule", inverse_name="loyalty_program_id")
     reward_ids = fields.One2many(string="Rules", comodel_name="loyalty.reward", inverse_name="loyalty_program_id")
+    company_id = fields.Many2one(
+        'res.company', string='Company', readonly=True, required=True,
+        default=lambda self: self.env['res.company']._company_default_get(
+            'loyalty.program'))
 
     @api.multi
     def calculate_loyalty_points(self, product, qty, price, **kwargs):

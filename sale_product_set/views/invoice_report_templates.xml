@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<template id="report_invoice_pset_layouted" inherit_id="l10n_bg_extend.report_invoice_document">
+<template id="report_invoice_pset_layouted" inherit_id="report_theming.report_invoice_document">
     <xpath expr="//table[@name='invoice_line_table']" position="attributes">
         <attribute name="groups">!sale.group_sale_layout</attribute>
     </xpath>

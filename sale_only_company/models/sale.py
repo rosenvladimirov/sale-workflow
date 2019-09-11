@@ -32,9 +32,9 @@ class SaleOrder(models.Model):
                     vals['message_follower_ids'] += self.env['mail.followers']._add_follower_command(self._name, [], {vals['partner_contact_id']: None}, {})[0]
             else:
                 vals['message_follower_ids'] = False
-            #_logger.info("Messages %s" % vals['message_follower_ids'])
+            _logger.info("Messages %s" % vals['message_follower_ids'])
         res = super(SaleOrder, self).create(vals)
-        channel = mail_channel_obj.sudo().channel_get_extend([res.user_id.partner_id and res.user_id.partner_id.id or res.company_id.partner_id.id, res.partner_contact_id.name and res.partner_contact_id.id or res.company_id.partner_id.id])
+        channel = mail_channel_obj.sudo().channel_get_extend(list(set([res.user_id.partner_id and res.user_id.partner_id.id or res.company_id.partner_id.id, res.partner_contact_id.name and res.partner_contact_id.id or res.company_id.partner_id.id])))
         mail_channel = mail_channel_obj.sudo().browse(channel['id'])
         if mail_channel:
             message_content = _('Created a new sale order: %s') % res.name
@@ -43,11 +43,17 @@ class SaleOrder(models.Model):
 
     @api.multi
     def write(self, values):
-        if 'partner_contact_id' in values and values['partner_contact_id'] not in [x.id for x in self.message_follower_ids]:
-            values['message_follower_ids'] = self.env['mail.followers']._add_follower_command(self._name, [], {values['partner_contact_id']: None}, {})[0]
+        if 'partner_contact_id' in values and values['partner_contact_id'] and values['partner_contact_id'] not in [x.partner_id.id for x in self.message_follower_ids]:
+            mail_channel_obj = self.env['mail.channel']
+            channel = mail_channel_obj.sudo().channel_get_extend([values['partner_contact_id']])
+            mail_channel = mail_channel_obj.sudo().browse(channel['id'])
+            if not mail_channel:
+                values['message_follower_ids'] = self.env['mail.followers']._add_follower_command(self._name, [], {values['partner_contact_id']: None}, {})[0]
+                _logger.info("Messages %s:%s:%s" % (
+                values['message_follower_ids'], [x.partner_id.id for x in self.message_follower_ids],
+                values['partner_contact_id']))
             self.message_subscribe([values['partner_contact_id']])
-        result = super(SaleOrder, self).write(values)
-        return result
+        return super(SaleOrder, self).write(values)
 
     @api.onchange('partner_contact_id')
     def onchange_partner_contact_id(self):

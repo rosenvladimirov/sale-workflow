@@ -26,7 +26,7 @@
 
     <template id="header" inherit_id="website.layout" name="Header Shop Product Set Link">
         <xpath expr="//header//ul[@id='top_menu']/li[@id='my_cart']" position="after">
-            <t t-if="request.env.ref('sale_product_set.add_to_set').active">
+            <t t-if="request.env.ref('sale_product_set_website_sale.add_to_set').active">
                 <t t-set='setcount' t-value="request.env['product.set'].product_set_count()"/>
                 <li id="my_sets" t-att-style="not setcount and 'display:none;'">
                     <a id="show_sets" href="/shop/sets">
@@ -71,11 +71,11 @@
                 <div class="container oe_website_sale">
                     <div class="products_pager">
                         <div class="row" style="width: 100%;">
-                            <t t-call="sale_product_set.website_prodset_search_box">
+                            <t t-call="sale_product_set_website_sale.website_prodset_search_box">
                                 <t t-set="prodset_search_class" t-value="'pagination form-inline o_prodset_search'"/>
                             </t>
                             <!--
-                            <t t-call="sale_product_set.search">
+                            <t t-call="sale_product_set_website_sale.search">
                                 <t t-set="search_class" t-value="'pagination form-inline o_sale_product_set_search'"/>
                             </t>
                             -->

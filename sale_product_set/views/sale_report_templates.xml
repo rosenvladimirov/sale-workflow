@@ -97,7 +97,7 @@
                     </div>
                 </div>
                 <t t-if="env.context.get('proforma', False) or is_pro_forma">
-                    <t t-call="l10n_bg_extend.dealpartner"/>
+                    <t t-call="report_theming.dealpartner"/>
                 </t>
             </section>
             <!-- Is there a discount on at least one line? -->
@@ -134,13 +134,13 @@
                                     <tr class="active">
                                         <t t-if="layout_category['quantity'] &gt; 0 and layout_category['price_unit'] &gt; 0">
                                             <t t-if="display_pictures">
-                                                <td colspan="3" style="font-weight: bold; border-left: 0px; border-right: 0px; border-bottom: 1px solid black;">&amp;bull;
+                                                <td colspan="3" style="font-weight: bold; border-left: 0px; border-right: 0px; border-bottom: 1px solid black;" name="plinename">&amp;bull;
                                                     <t t-esc="layout_category['name']"/>
                                                 </td>
                                             </t>
                                             <t t-else="">
-                                                <td colspan="2" style="font-weight: bold; border-left: 0px; border-right: 0px; border-bottom: 1px solid black;">&amp;bull;
-                                                    <t t-esc="layout_category['name']"/>
+                                                <td colspan="2" style="font-weight: bold; border-left: 0px; border-right: 0px; border-bottom: 1px solid black;" name="pslinename">&amp;bull;
+                                                    <t name="pset2" t-esc="layout_category['name']"/>
                                                 </td>
                                             </t>
                                             <t t-if="doc.print_sets">
@@ -173,8 +173,8 @@
                                             </t>
                                         </t>
                                         <t t-else="">
-                                            <td colspan="9" style="font-weight: bold; border-left: 0px; border-bottom: 1px solid black;">&amp;bull;
-                                                <t t-esc="layout_category['name']"/>
+                                            <td colspan="9" style="font-weight: bold; border-left: 0px; border-bottom: 1px solid black;" name="elinename">&amp;bull;
+                                                <t name="pset13" t-esc="layout_category['name']"/>
                                             </td>
                                             <t t-set="detail" t-value="1"/>
                                         </t>
@@ -193,7 +193,9 @@
                                                 <td/>
                                             </t>
                                         </t>
-                                        <td><span t-field="l.name"/></td>
+                                        <td name="linename">
+                                            <span t-field="l.name"/>
+                                        </td>
                                         <td class="text-right">
                                             <span t-field="l.product_uom_qty"/>
                                         </td>
@@ -293,13 +295,13 @@
                     </div>
                 </div>
             </section>
-            <section id="end">
+            <section id="end" groups="report_theming.group_show_signatures">
                 <t t-if="env.context.get('proforma', False) or is_pro_forma">
-                    <t t-call="l10n_bg_extend.signatures"/>
+                    <t t-call="report_theming.signatures"/>
                 </t>
                 <t t-if="not is_pro_forma">
                     <t t-set="o" t-value="doc" />
-                    <t t-call="l10n_bg_extend.signature"/>
+                    <t t-call="report_theming.signature"/>
                 </t>
             </section>
         </div>

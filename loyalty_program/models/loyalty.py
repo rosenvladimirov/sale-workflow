@@ -40,7 +40,10 @@ class AccountLoyalty(models.Model):
 
     loyalty_line_ids = fields.One2many('account.loyalty.line', 'loyalty_id', string='Loyalty Lines',
         readonly=True, states={'draft': [('readonly', False)]}, copy=True)
-
+    company_id = fields.Many2one(
+        'res.company', string='Company', readonly=True, required=True,
+        default=lambda self: self.env['res.company']._company_default_get(
+            'account.loyalty'))
 
 
     def prepare_loyalty_line_set_data(self, loyalty_id, sale_line, sale_lines=False, old_qty=0.0):

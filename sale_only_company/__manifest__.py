@@ -8,13 +8,13 @@
     'summary': 'When made Sales Orders from contact partner, when confirm it to switch to partner',
     'description': """
     """,
-    'depends': ['sale', 'website_sale'],
+    'depends': ['sale'],
     'data': [
         'views/sale_views.xml',
-        'views/website_sale_template.xml',
     ],
     'demo': [
     ],
     'installable': True,
     'auto_install': False,
+    'post_init_hook': '_upadate_email_templates',
 }

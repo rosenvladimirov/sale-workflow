@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_product_pricelist_print" model="ir.ui.view">
+        <field name="name">Product pricelist print</field>
+        <field name="model">product.pricelist.print</field>
+        <field name="inherit_id" ref="product_pricelist_direct_print.view_product_pricelist_print"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page name="productset" string="Product sets">
+                    <field name="product_set_ids"/>
+                </page>
+            </xpath>
+            <field name="show_variants" position="after">
+                <field name="show_set_detals" string="Show set details"/>
+            </field>
+        </field>
+    </record>
+</odoo>

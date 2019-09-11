@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="product_set_properties_description">
+        <t t-if="any(x.has_propertis for x in line)">
+            <div class="o_bulgaria_table">
+                <t style="border:0;" t-foreach="doc.env['product.set'].get_product_properties_print(layout_category['pset'], properties_print)" t-as="set_description">
+                    <div class="o_bulgaria_row">
+                        <div class="o_bulgaria_custom_cell">
+                            <span t-esc="set_description['label']"/>
+                        </div>
+                        <div class="o_bulgaria_cell">
+                            <span t-esc="set_description['value']['value']"/>
+                            <span t-1f="set_description['value']['attrs']" t-esc="set_description['value']['attrs']"/>
+                            <span t-1f="set_description['value']['image']" t-esc="set_description['value']['image']"/>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </t>
+        <t t-else="">
+            <t t-esc="layout_category['name']"/>
+        </t>
+    </template>
+</odoo>

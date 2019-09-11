@@ -22,22 +22,6 @@
                             icon="fa fa-object-group"
                             attrs="{'invisible': [('show_operations', '=', False), ('state','not in', ('assigned')), ('picking_type_code', 'in', ('internal', 'incoming'))]}"/>
             </xpath>
-            <xpath expr="//notebook/page[1]/button[@name='put_in_pack']" position="replace">
-                <div class="o_form_statusbar" style="border-bottom: 0px;">
-                    <div class="o_statusbar_buttons">
-                        <button class="btn btn-sm btn-default oe_highlight" name="put_in_pack" type="object" string="Put in Pack" attrs="{'invisible': [('state', 'in', ('done', 'cancel'))]}" groups="stock.group_tracking_lot"/>
-                        <button class="btn btn-sm btn-default oe_highlight" name="%(act_open_wizard_stock_package_add)d" type="action" string="Add from Pack" attrs="{'invisible': [('state', 'in', ('done', 'cancel'))]}" groups="stock.group_tracking_lot"/>
-                    </div>
-                </div>
-            </xpath>
-            <xpath expr="//notebook/page[2]/button[@name='put_in_pack']" position="replace">
-                <div class="o_form_statusbar" style="border-bottom: 0px;">
-                    <div class="o_statusbar_buttons">
-                        <button class="btn btn-sm btn-default oe_highlight" name="put_in_pack" type="object" string="Put in Pack" attrs="{'invisible': [('state', 'in', ('done', 'cancel'))]}" groups="stock.group_tracking_lot"/>
-                        <button class="btn btn-sm btn-default oe_highlight" name="%(act_open_wizard_stock_package_add)d" type="action" string="Add from Pack" attrs="{'invisible': [('state', 'in', ('done', 'cancel'))]}" groups="stock.group_tracking_lot"/>
-                    </div>
-                </div>
-            </xpath>
             <field name="result_package_id" position="after">
                 <field name="product_set_id"/>
             </field>

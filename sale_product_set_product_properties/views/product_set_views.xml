@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="product_set_form_view" model="ir.ui.view">
+            <field name="name">product.set.product.form</field>
+            <field name="model">product.set</field>
+            <field name="inherit_id" ref="sale_product_set.view_product_set_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='products']" position="after">
+                    <page string="Product Sets Properties" name="properties">
+                        <group colspan="4">
+                            <label for="categ_ids" string="Properties Category" col="1"/>
+                            <field name="categ_ids" nolabel="1" widget="many2many_tags" col="3"/>
+                        </group>
+                        <field name="product_properties_ids" nolabel="1" colspan="4" context="{'default_product_set_id': active_id, 'search_default_product_set_id': active_id}">
+                            <tree>
+                                <field name="sequence" widget="handle"/>
+                                <field name="product_set_id" invisible="1"/>
+                                <field name="name"/>
+                                <field name="type_display"/>
+                                <field name="categ_id" invisible="1"/>
+                                <field name="type_fields" invisible="1"/>
+                                <field name="type_field_model_id" invisible="1"/>
+                                <field name="type_field_target" invisible="1"/>
+                                <field name="type_char" invisible="1"/>
+                                <field name="type_int" invisible="1"/>
+                                <field name="type_int_second" invisible="1"/>
+                                <field name="type_package_id" invisible="1"/>
+                                <field name="type_float" invisible="1"/>
+                                <field name="type_boolean" invisible="1"/>
+                                <field name="dimensions_x" invisible="1"/>
+                                <field name="dimensions_y" invisible="1"/>
+                                <field name="dimensions_z" invisible="1"/>
+                                <field name="type_uom_id" invisible="1"/>
+                                <field name="type_url" widget="image_url" class="oe_image_small" width="100px" height="100px" attrs="{'invisible': [('type_fields', '!=', 'url')]}" invisible="1"/>
+                                <field name="type_display_attrs" invisible="1"/>
+                                <field name="image_small" widget="image" attrs="{'invisible':[('type_fields', '!=', 'package')]}" invisible="1"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
