@@ -6,3 +6,21 @@ from odoo import api, fields, models, _
 import logging
 _logger = logging.getLogger(__name__)
 
+
+class AccountInvoiceLine(models.Model):
+    _inherit = 'account.invoice.line'
+
+    customer_po_ids = fields.Many2many('sale.order.customer', compute="_compute_customer_po_ids", string='Customer PO ref.')
+    has_customer_po = fields.Boolean(compute="_compute_has_customer_po")
+
+    @api.multi
+    def _compute_has_customer_po(self):
+        for record in self:
+            record.has_customer_po = len([x.id for x in record.customer_po_ids]) > 0
+
+    api.multi
+    def _compute_customer_po_ids(self):
+        for record in self:
+            record.customer_po_ids = False
+            for order_line in self.sale_line_ids:
+                record.customer_po_ids |= order_line.customer_po_ids

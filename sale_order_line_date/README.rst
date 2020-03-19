@@ -6,7 +6,7 @@
 Sale order line date
 ====================
 
-This module adds requested date to a sales order lines and propagate it to
+This module adds requested dates to a sales order lines and propagate it to
 stock moves and procurements.
 When the requested date of the whole sale order is modified the requested date
 of the lines change to match.
@@ -17,15 +17,12 @@ Usage
 Create a Quotation or a Sales Order and it fills the requested date in the sale
 order line
 
-.. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
-   :alt: Try me on Runbot
-   :target: https://runbot.odoo-community.org/runbot/167/11.0
 
 Bug Tracker
 ===========
 
 Bugs are tracked on `GitHub Issues
-<https://github.com/OCA/sale-workflow/issues>`_. In case of trouble, please
+<https://github.com/rosenvladimirov/sale-workflow/issues>`_. In case of trouble, please
 check there if your issue has already been reported. If you spotted it first,
 help us smashing it by providing a detailed and welcomed feedback.
 
@@ -39,6 +36,7 @@ Images
 
 Contributors
 ------------
+* Rosen Vladimirov <vladimirov.rosen@gmail.com>
 * Oihane Crucelaegui <oihanecrucelaegi@avanzosc.es>
 * Esther Martín <esthermartin@avanzosc.es>
 * Pedro M. Baeza <pedro.baeza@tecnativa.com>

@@ -3,3 +3,5 @@
 
 from . import sale
 from . import mail_channel
+from . import account
+from . import account_invoice

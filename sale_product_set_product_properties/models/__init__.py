@@ -4,3 +4,5 @@
 from . import product_properties
 from . import product_set
 from . import sale
+from . import account_invoice
+

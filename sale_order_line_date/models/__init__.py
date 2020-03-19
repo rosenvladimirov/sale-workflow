@@ -1,3 +1,4 @@
+# © 2020 Rosen Vladimirov
 # © 2016 OdooMRP team
 # © 2016 AvanzOSC
 # © 2016 Serv. Tecnol. Avanzados - Pedro M. Baeza

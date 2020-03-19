@@ -28,6 +28,8 @@ class ProductProperties(models.Model):
                 field_name.model_obj_id = field_name.product_id.id
             elif not field_name.model_obj_id and field_name.type_field_model == 'product.template':
                 field_name.model_obj_id = field_name.product_tmpl_id.id
+            #elif not field_name.model_obj_id and field_name.type_field_model == 'product.pricelist.item':
+             #   field_name.model_obj_id = field_name.pricelist_rule_id.id
             elif not field_name.model_obj_id and field_name.type_field_model == 'product.set':
                 field_name.model_obj_id = field_name.product_set_id.id
 
@@ -49,3 +51,10 @@ class ProductPropertiesType(models.Model):
                                  'account.invoice.line', 'purchase.order.line', 'stock.move.line', 'product.set'])]
 
     type_field_model_id = fields.Many2one('ir.model', string='Target/Source Odoo model', domain=_get_type_field_model_id)
+
+
+class ProductPropertiesCategory(models.Model):
+    _inherit = "product.properties.category"
+
+    applicability = fields.Selection(selection_add=[
+            ('set', 'Product Set')])

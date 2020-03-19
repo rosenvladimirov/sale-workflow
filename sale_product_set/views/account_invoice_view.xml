@@ -6,9 +6,6 @@
             <field name="model">account.invoice</field>
             <field name="inherit_id" ref="account.invoice_form"/>
             <field name="arch" type="xml">
-            <xpath expr="//page[@name='other_info']//field[@name='name']" position="after">
-                <field name="print_sets"/>
-            </xpath>
             <xpath expr="//notebook" position="inside">
                 <field name="has_sets" invisible="1"/>
                 <!--  attrs="{'invisible': [('has_sets', '=', False)]}" -->
@@ -28,6 +25,16 @@
                     </field>
                 </page>
             </xpath>
+            </field>
+        </record>
+        <record id="invoice_sets_form_print" model="ir.ui.view">
+            <field name="name">account.invoice.sets.print.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="report_theming_properties.invoice_theming_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page[@name='print_properties']/group/group" position="inside">
+                    <field name="print_sets"/>
+                </xpath>
             </field>
         </record>
     </data>

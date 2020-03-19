@@ -8,9 +8,12 @@
     'summary': 'Add summary from customer PO',
     'description': """
     """,
-    'depends': ['sale'],
+    'depends': ['sale', 'stock', 'account', 'web_widget_many2many_tags_open'],
     'data': [
+        'security/ir.model.access.csv',
         'views/sale_views.xml',
+        #'views/stock_picking_views.xml',
+        'views/account_invoice_view.xml',
     ],
     'demo': [
     ],

@@ -1,3 +1,4 @@
+# © 2020 Rosen Vladimirov
 # © 2016 OdooMRP team
 # © 2016 AvanzOSC
 # © 2016 Serv. Tecnol. Avanzados - Pedro M. Baeza
@@ -8,7 +9,8 @@
 {
     "name": "Sale Order Line Date",
     "version": "11.0.1.0.0",
-    "author": "OdooMRP team,"
+    "author": "Rosen Vladimirov,"
+              "OdooMRP team,"
               "AvanzOSC,"
               "Serv. Tecnol. Avanzados - Pedro M. Baeza,"
               "Odoo Community Association (OCA)",

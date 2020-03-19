@@ -6,9 +6,20 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
-                <page name="printsetpreview" string="Prodcut Sets properties">
+                <page name="printsetpreview" string="Prodcut Sets properties" attrs="{'invisible': [('has_sets', '=', False)]}">
                     <field name="products_set_properties" col="4" colspan="4" nolabel="1"/>
                 </page>
+            </xpath>
+
+        </field>
+    </record>
+    <record id="view_order_form_product_properties" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="product_properties.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='printpreview']" position="attributes">
+                <attribute name="attrs">{'invisible': [('has_sets', '=', True)]}</attribute>
             </xpath>
         </field>
     </record>

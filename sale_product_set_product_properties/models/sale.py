@@ -27,3 +27,13 @@ class SaleOrder(models.Model):
         for rec in self:
             if len(rec.order_line.ids) > 0:
                 rec.products_set_properties = rec._get_set_html()['html']
+
+    @api.multi
+    def set_all_print_properties(self):
+        super(SaleOrder, self).set_all_print_properties()
+        print_ids = False
+        for record in self:
+            for r in record.mapped('product_set_id'):
+                print_ids = r.product_properties_ids
+            if print_ids:
+                record.print_properties = [(0, False, {'name': x.name.id, 'order_id': self.id, 'print': True, 'sequence': x.sequence}) for x in print_ids]

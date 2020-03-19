@@ -32,7 +32,7 @@ class SaleOrder(models.Model):
                     vals['message_follower_ids'] += self.env['mail.followers']._add_follower_command(self._name, [], {vals['partner_contact_id']: None}, {})[0]
             else:
                 vals['message_follower_ids'] = False
-            _logger.info("Messages %s" % vals['message_follower_ids'])
+            #_logger.info("Messages %s" % vals['message_follower_ids'])
         res = super(SaleOrder, self).create(vals)
         channel = mail_channel_obj.sudo().channel_get_extend(list(set([res.user_id.partner_id and res.user_id.partner_id.id or res.company_id.partner_id.id, res.partner_contact_id.name and res.partner_contact_id.id or res.company_id.partner_id.id])))
         mail_channel = mail_channel_obj.sudo().browse(channel['id'])
@@ -49,9 +49,6 @@ class SaleOrder(models.Model):
             mail_channel = mail_channel_obj.sudo().browse(channel['id'])
             if not mail_channel:
                 values['message_follower_ids'] = self.env['mail.followers']._add_follower_command(self._name, [], {values['partner_contact_id']: None}, {})[0]
-                _logger.info("Messages %s:%s:%s" % (
-                values['message_follower_ids'], [x.partner_id.id for x in self.message_follower_ids],
-                values['partner_contact_id']))
             self.message_subscribe([values['partner_contact_id']])
         return super(SaleOrder, self).write(values)
 
@@ -79,9 +76,6 @@ class SaleOrder(models.Model):
                 res.update({'domain': {'partner_contact_id': [('customer', '=', True), ('parent_id', '=', self.partner_id.id)]}})
             else:
                 res.update({'domain': {'partner_contact_id': [('customer', '=', True), ('id', '=', self.partner_id.id)]}})
-        #else:
-        #    res.update({'domain': {'partner_contact_id': []}})
-        #_logger.info("Message ids %s" % self.message_follower_ids)
         return res
 
     @api.multi
@@ -90,6 +84,7 @@ class SaleOrder(models.Model):
         self.ensure_one()
         invoice_vals.update({
             'partner_id': self.partner_invoice_id.vat and self.partner_invoice_id.id or self.partner_id.id,
+            'partner_contact_id': self.partner_contact_id and self.partner_contact_id.id or False,
         })
         return invoice_vals
 

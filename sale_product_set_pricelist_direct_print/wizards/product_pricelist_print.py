@@ -31,6 +31,36 @@ class ProductPricelistPrint(models.TransientModel):
             if product_set_items:
                 res['product_set_ids'] = [
                     (6, 0, list(set(product_set_items.mapped('product_set_id').ids)))]
+                product_items = items.filtered(
+                    lambda x: x.applied_on == '0_product_variant' and not x.product_set_id)
+                template_items = items.filtered(
+                    lambda x: x.applied_on == '1_product' and not x.product_set_id)
+                category_items = items.filtered(
+                    lambda x: x.applied_on == '2_product_category')
+                # Convert al pricelist items to their affected variants
+                if product_items:
+                    res['show_variants'] = True
+                    product_ids = product_items.mapped('product_id')
+                    product_ids |= template_items.mapped(
+                        'product_tmpl_id.product_variant_ids')
+                    product_ids |= product_ids.search([
+                        ('sale_ok', '=', True),
+                        ('categ_id', 'in', category_items.mapped('categ_id').ids)
+                    ])
+                    res['product_ids'] = [(6, 0, product_ids.ids)]
+                # Convert al pricelist items to their affected templates
+                if template_items and not product_items:
+                    product_tmpl_ids = template_items.mapped('product_tmpl_id')
+                    product_tmpl_ids |= product_tmpl_ids.search([
+                        ('sale_ok', '=', True),
+                        ('categ_id', 'in', category_items.mapped('categ_id').ids)
+                    ])
+                    res['product_tmpl_ids'] = [
+                        (6, 0, product_tmpl_ids.ids)]
+                # Only category items, we just set the categories
+                if category_items and not product_items and not template_items:
+                    res['categ_ids'] = [
+                        (6, 0, category_items.mapped('categ_id').ids)]
             _logger.info("SETS %s" % res)
         return res
 
@@ -75,7 +105,8 @@ class ProductPricelistPrint(models.TransientModel):
                 qty_set_products[seto][set_line.product_id] += set_line.quantity
             pages[seto] = seto.set_lines.mapped('product_id')
             all_set_products |= pages[seto]
-        pages[product_set_obj] = products-all_set_products
+        pages[product_set_obj] = products
+        #pages[product_set_obj] = products-all_set_products
         #_logger.info("SETS %s" % pages)
         report_pages = [[]]
         for k, v in pages.items():
@@ -106,6 +137,7 @@ class ProductPricelistPrint(models.TransientModel):
                 'price': price_total,
                 'tax': price_tax,
                 'price_subtotal': price_subtotal,
+                'pset': k,
                 }
                 report_pages[-1].append(values)
             else:
@@ -117,6 +149,7 @@ class ProductPricelistPrint(models.TransientModel):
                 'price': False,
                 'tax': False,
                 'price_subtotal': False,
+                'pset': False,
                 }
                 report_pages[-1].append(values)
         #_logger.info("SETS %s" % report_pages[-1])

@@ -20,6 +20,14 @@ class ProductSet(models.Model):
 
     massedit = fields.Boolean()
 
+    @api.onchange('product_prop_static_id')
+    def _onchange_product_prop_static_id(self):
+        for prod in self:
+            if prod.product_prop_static_id:
+                prod.categ_ids = False
+                prod.prod.categ_ids = (6, False, [x.id for x in self.env['product.properties.category'].search([('applicability', '=', 'set')])])
+                prod._onchange_categ_ids()
+
     @api.onchange('categ_ids')
     def _onchange_categ_ids(self):
         for prod in self:
@@ -100,17 +108,19 @@ class ProductSet(models.Model):
         self.has_product_properties = len(self.product_properties_ids.ids) > 0
 
     def get_product_properties_print(self, product, properties_print=False, lot_ids=False, description=False):
+        if not product:
+            return False
         res = {}
         ret = []
         print_ids = [x.name.id for x in properties_print if x.print]
         for prop_line in product.product_properties_ids:
             if properties_print and prop_line.name.id in print_ids:
                 if lot_ids and prop_line.name.type_fields == 'lot':
-                    res[prop_line.name.name] = {'value': lots_ids and '-'.join([x.name for x in lot_ids]) or '', 'attrs': False, 'image': False}
+                    res[prop_line.name.name] = {'value': lot_ids and '-'.join([x.name for x in lot_ids]) or '', 'attrs': False, 'image': False}
                 elif lot_ids and prop_line.name.type_fields == 'use_date':
-                    res[prop_line.name.name] = {'value': lots_ids and '-'.join(['%s:%s' % (x.name, x.use_date) for x in lot_ids]) or '', 'attrs': False, 'image': False}
+                    res[prop_line.name.name] = {'value': lot_ids and '-'.join(['%s:%s' % (x.name, x.use_date) for x in lot_ids]) or '', 'attrs': False, 'image': False}
                 elif lot_ids and prop_line.name.type_fields == 'gs1':
-                    res[prop_line.name.name] = {'value': lots_ids and '-'.join([x.gs1 for x in lot_ids]) or '', 'attrs': False, 'image': False}
+                    res[prop_line.name.name] = {'value': lot_ids and '-'.join([x.gs1 for x in lot_ids]) or '', 'attrs': False, 'image': False}
                 else:
                     res[prop_line.name.name] = {'value': prop_line.type_display, 'attrs': prop_line.type_display_attrs, 'image': prop_line.image_small}
         for k, v in res.items():
@@ -119,6 +129,18 @@ class ProductSet(models.Model):
         #_logger.info("RETURN %s" % ret)
         return ret
 
+    @api.model
+    def create(self, vals):
+        res = super(ProductSet, self).create(vals)
+        if "product_properties_ids" not in vals:
+            category = self.env['product.properties.category'].search([('applicability', '=', 'set')])
+            for prod in res.with_context(block=True):
+                ret = []
+                for categ in category:
+                    ret += prod._get_default_product_properties_ids(categ.lines_ids, categ_id=categ, product=prod)
+                if ret:
+                    res.product_properties_ids = ret
+        return res
 
     @api.multi
     def write(self, vals):

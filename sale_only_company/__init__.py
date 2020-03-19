@@ -5,7 +5,7 @@ from . import models
 from odoo.api import Environment, SUPERUSER_ID
 
 
-def Environment_upadate_email_templates(cr, registry):
+def _upadate_email_templates(cr, registry):
     env = Environment(cr, SUPERUSER_ID, {})
     model_id = env['ir.model'].search([('name', '=', 'sale.order')])
     id = env.ref('sale.email_template_edi_sale')

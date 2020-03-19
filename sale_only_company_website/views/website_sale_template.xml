@@ -2,11 +2,12 @@
 <odoo>
     <template id="assets_frontend" inherit_id="website.assets_frontend" name="Sale only company assets frontend">
         <xpath expr="." position="inside">
-            <script type="text/javascript" src="/sale_only_company/static/src/js/website_sale_set.js"></script>
+            <link type="text/less" href="/sale_only_company_website/static/src/less/website_sale_set.less" rel="stylesheet"/>
+            <script type="text/javascript" src="/sale_only_company_website/static/src/js/website_sale_set.js"></script>
         </xpath>
     </template>
 
-    <template id="products_no_public" inherit_id="website_sale.products">
+    <template id="products_no_public" inherit_id="website_sale.products" active="False" customize_show="True" name="Block shop page for public users">
         <xpath expr="//t[@t-call='website.layout']" position="after">
             <t t-call="website.layout" groups="base.group_public">
                 <div class="oe_structure" />
@@ -14,7 +15,7 @@
                     <div class="row">
                         <div class="col-md-10 col-md-offset-1 hvrShadow" style="margin-top:10%">
                             <h2 class="text-center text-muted">
-                                <font class="text-gamma">Warning! This e-commerse catalogue is for personell company partners!</font>
+                                <font class="text-gamma">Warning! This e-commerse catalogue is for personal company partners!</font>
                             </h2>
                             <p>
                                 <div style="text-align:center">
@@ -35,6 +36,1118 @@
             <attribute name="groups">!base.group_public</attribute>
         </xpath>
     </template>
+
+    <template id="product_quantity_public" inherit_id="website_sale.product" customize_show="True" active="False" name="Select Quantity For public">
+      <xpath expr="//a[@id='add_to_cart']" position="replace">
+          <span groups="!base.group_public">
+            <div class="css_quantity input-group oe_website_spinner" contenteditable="false">
+                <a t-attf-href="#" class="mb8 input-group-addon js_add_cart_json">
+                    <i class="fa fa-minus"></i>
+                </a>
+                <input type="text" class="form-control quantity" data-min="1" name="add_qty" value="1"/>
+                <a t-attf-href="#" class="mb8 input-group-addon float_left js_add_cart_json">
+                    <i class="fa fa-plus"></i>
+                </a>
+            </div>
+            <a id="add_to_cart" class="btn btn-primary btn-lg mt8 js_check_product a-submit" href="#">Add to Cart</a>
+          </span>
+      </xpath>
+    </template>
+
+    <template id="auth_signup.signup" name="Become to partner">
+        <t t-if="token">
+            <t t-call="web.login_layout">
+                <form class="oe_signup_form" role="form" method="post" t-if="not message">
+                  <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                    <t t-call="auth_signup.fields">
+                        <t t-set="only_passwords" t-value="bool(token and not invalid_token)"/>
+                    </t>
+
+                    <p class="alert alert-danger" t-if="error">
+                        <t t-esc="error"/>
+                    </p>
+                    <input type="hidden" name="redirect" t-att-value="redirect"/>
+                    <input type="hidden" name="token" t-att-value="token"/>
+                    <div class="clearfix oe_login_buttons">
+                        <a t-attf-href="/web/login?{{ keep_query() }}" class="btn btn-link pull-right">Already have an account?</a>
+                        <button type="submit" class="btn btn-primary pull-left o_signup_btn"> Sign up</button>
+                    </div>
+
+                </form>
+            </t>
+        </t>
+        <t t-else="">
+          <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+              <section class="s_title">
+                <div class="container">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <h1 class="text-center">Become Partner</h1>
+                        <h3 class="text-left text-muted"><p><span t-esc="res_company.website_login_note"/></p></h3>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section class="container o_website_form_builder readable">
+                <form accept-charset="UTF-8" action="/website_form/" class="col-md-12 mt32 s_website_form required" data-model_name="crm.lead" data-force_action="" data-success_page="" enctype="multipart/form-data" method="post">
+                  <div class="o_website_form_fields">
+                    <div class="hidden o_default_snippet_text o_not_editable"> This placeholder prevents its parent from disappearing when emptied </div>
+                    <div class="form-field form-field-char form-group o_required css_non_editable_mode_hidden" data-model-field="true" data-optional="false">
+                      <label class="control-label required" for="name">Lead</label>
+                      <input class="form-control o_website_form_input" type="text" name="name" required="required" value="become-partner"/>
+                    </div>
+                    <div class="form-group form-field  form-field-char o_required" data-model-field="true" data-optional="true">
+                      <label class="control-label required" for="partner_name">
+                        <span>Company name</span>
+                      </label>
+                      <input class="form-control o_website_form_input" type="text" required="required" name="partner_name"/>
+                      <p class="help-block">
+                            The name of the future partner company that will be created while converting the lead into opportunity
+                        </p>
+                    </div>
+                    <div class="form-group form-field  form-field-char" data-model-field="true" data-optional="true">
+                      <label class="control-label required" for="vat">
+                        <span>UIC/VAT</span>
+                      </label>
+                      <input class="form-control o_website_form_input" type="text" required="required" name="vat"/>
+                      <p class="help-block">Tax ID. Fill it in if the business is taxed. Used by some of the legal statements.</p>
+                    </div>
+                    <div class="form-group form-field  form-field-char o_required" data-model-field="true" data-optional="true">
+                      <label class="control-label required" for="city">
+                        <span>City</span>
+                      </label>
+                      <input class="form-control o_website_form_input" type="text" required="required" name="city"/>
+                    </div>
+                    <div class="form-group form-field  form-field-char o_required" data-model-field="true" data-optional="true">
+                      <label class="control-label required" for="zip">
+                        <span>ZIP</span>
+                      </label>
+                      <input class="form-control o_website_form_input" type="text" name="zip"/>
+                    </div>
+                    <div class="form-group form-field  form-field-char o_required" data-model-field="true" data-optional="true">
+                      <label class="control-label required" for="street">
+                        <span>Street</span>
+                      </label>
+                      <input class="form-control o_website_form_input" type="text" required="required" name="street"/>
+                    </div>
+                    <div class="form-group form-field  form-field-many2one o_required" data-model-field="true" data-optional="true">
+                      <label class="control-label" for="country_id">
+                        <span>Country</span>
+                      </label>
+                      <select class="form-control o_website_form_input" name="country_id">
+                        <option/>
+                        <option value="1"> Andorra </option>
+                        <option value="187"> Réunion </option>
+                        <option value="2"> Обединени Арабски Емирства </option>
+                        <option value="3"> Афганистан </option>
+                        <option value="4"> Антигуа и Барбуда </option>
+                        <option value="5"> Ангуила </option>
+                        <option value="6"> Албания </option>
+                        <option value="7"> Армения </option>
+                        <option value="8"> Ангола </option>
+                        <option value="9"> Антарктика </option>
+                        <option value="10"> Аржентина </option>
+                        <option value="11"> Американска Самоа </option>
+                        <option value="12"> Австрия </option>
+                        <option value="13"> Австралия </option>
+                        <option value="14"> Аруба </option>
+                        <option value="15"> Оландски острови </option>
+                        <option value="16"> Азербайджан </option>
+                        <option value="17"> Bosnia and Herzegovina </option>
+                        <option value="18"> Барбадос </option>
+                        <option value="19"> Бангладеш </option>
+                        <option value="20"> Белгия </option>
+                        <option value="21"> Буркина Фасо </option>
+                        <option value="23"> Бахрейн </option>
+                        <option value="24"> Бурунди </option>
+                        <option value="25"> Бенин </option>
+                        <option value="26"> Saint Barthélémy </option>
+                        <option value="27"> Бермуда </option>
+                        <option value="28"> Бруней Даруссалам </option>
+                        <option value="29"> Боливия </option>
+                        <option value="30"> Bonaire, Sint Eustatius and Saba </option>
+                        <option value="31"> Бразилия </option>
+                        <option value="32"> Бахамски острови </option>
+                        <option value="33"> Бутан </option>
+                        <option value="34"> о-в Буве </option>
+                        <option value="35"> Ботсвана </option>
+                        <option value="36"> Беларус </option>
+                        <option value="37"> Белиз </option>
+                        <option value="38"> Канада </option>
+                        <option value="39"> Кокосови острови </option>
+                        <option value="40"> Централноафриканска Република </option>
+                        <option value="41"> Democratic Republic of the Congo </option>
+                        <option value="42"> Конго </option>
+                        <option value="43"> Швейцария </option>
+                        <option value="44"> Côte d'Ivoire </option>
+                        <option value="45"> о-ви Кук </option>
+                        <option value="46"> Чили </option>
+                        <option value="47"> Камерун </option>
+                        <option value="48"> Китай </option>
+                        <option value="49"> Колумбия </option>
+                        <option value="50"> Коста Рика </option>
+                        <option value="51"> Куба </option>
+                        <option value="52"> Кабо Верде </option>
+                        <option value="53"> Curaçao </option>
+                        <option value="54"> о. Рождество </option>
+                        <option value="55"> Кипър </option>
+                        <option value="56"> Чехия </option>
+                        <option value="57"> Германия </option>
+                        <option value="58"> Джибути </option>
+                        <option value="59"> Дания </option>
+                        <option value="60"> Доминика </option>
+                        <option value="61"> Доминиканска република </option>
+                        <option value="62"> Алжир </option>
+                        <option value="63"> Еквадор </option>
+                        <option value="64"> Естония </option>
+                        <option value="65"> Египет </option>
+                        <option value="66"> Западна Сахара </option>
+                        <option value="67"> Еритрея </option>
+                        <option value="68"> Испания </option>
+                        <option value="69"> Етиопия </option>
+                        <option value="70"> Финландия </option>
+                        <option value="71"> Фиджи </option>
+                        <option value="72"> Фолклендски острови </option>
+                        <option value="73"> Микронезия </option>
+                        <option value="74"> Фарьорски острови </option>
+                        <option value="75"> Франция </option>
+                        <option value="76"> Габон </option>
+                        <option value="77"> Гренада </option>
+                        <option value="78"> Грузия </option>
+                        <option value="79"> French Guiana </option>
+                        <option value="80"> Гана </option>
+                        <option value="81"> Гибралтар </option>
+                        <option value="82"> Guernsey </option>
+                        <option value="83"> Гренландия </option>
+                        <option value="84"> Гамбия </option>
+                        <option value="85"> Гвинея </option>
+                        <option value="86"> Guadeloupe </option>
+                        <option value="87"> Екваториална Гвинея </option>
+                        <option value="88"> Гърция </option>
+                        <option value="89"> South Georgia and the South Sandwich Islands </option>
+                        <option value="90"> Гватемала </option>
+                        <option value="91"> Guam </option>
+                        <option value="92"> Guinea-Bissau </option>
+                        <option value="93"> Гаяна </option>
+                        <option value="94"> Хонконг </option>
+                        <option value="95"> Heard Island and McDonald Islands </option>
+                        <option value="96"> Хондурас </option>
+                        <option value="97"> Хърватска </option>
+                        <option value="98"> Хаити </option>
+                        <option value="99"> Унгария </option>
+                        <option value="100"> Индонезия </option>
+                        <option value="101"> Ирландия </option>
+                        <option value="102"> Израел </option>
+                        <option value="103"> Остров Ман </option>
+                        <option value="104"> Индия </option>
+                        <option value="105"> Британска индоокеанска територия </option>
+                        <option value="106"> Ирак </option>
+                        <option value="107"> Иран </option>
+                        <option value="108"> Исландия </option>
+                        <option value="109"> Италия </option>
+                        <option value="110"> Джърси (остров) </option>
+                        <option value="111"> Ямайка </option>
+                        <option value="112"> Йордания </option>
+                        <option value="113"> Япония </option>
+                        <option value="114"> Кения </option>
+                        <option value="115"> Kyrgyzstan </option>
+                        <option value="116"> Cambodia </option>
+                        <option value="117"> Кирибати </option>
+                        <option value="118"> Коморски острови </option>
+                        <option value="119"> Saint Kitts and Nevis </option>
+                        <option value="120"> Северна Корея </option>
+                        <option value="121"> Южна Корея </option>
+                        <option value="122"> Кувейт </option>
+                        <option value="123"> Кайманови острови </option>
+                        <option value="124"> Казахстан </option>
+                        <option value="125"> Лаос </option>
+                        <option value="126"> Ливан </option>
+                        <option value="127"> Сейнт Лусия </option>
+                        <option value="128"> Лихтенщайн </option>
+                        <option value="129"> Шри Ланка </option>
+                        <option value="130"> Либерия </option>
+                        <option value="131"> Лесото </option>
+                        <option value="132"> Литва </option>
+                        <option value="133"> Люксембург </option>
+                        <option value="134"> Латвия </option>
+                        <option value="135"> Либия </option>
+                        <option value="136"> Мароко </option>
+                        <option value="137"> Монако </option>
+                        <option value="138"> Moldova </option>
+                        <option value="139"> Черна гора </option>
+                        <option value="140"> Сен Мартен (Френска част) </option>
+                        <option value="141"> Мадагаскар </option>
+                        <option value="142"> Маршалови острови </option>
+                        <option value="143"> Бивша Югославска Република Македония (БЮРМ) </option>
+                        <option value="144"> Мали </option>
+                        <option value="145"> Мианмар </option>
+                        <option value="146"> Монголия </option>
+                        <option value="147"> Макао </option>
+                        <option value="148"> Северни Мариански острови </option>
+                        <option value="149"> Martinique </option>
+                        <option value="150"> Мавритания </option>
+                        <option value="151"> Монсерат </option>
+                        <option value="152"> Малта </option>
+                        <option value="153"> Мавриций </option>
+                        <option value="154"> Малдиви </option>
+                        <option value="155"> Малави </option>
+                        <option value="156"> Мексико </option>
+                        <option value="157"> Малайзия </option>
+                        <option value="158"> Мозамбик </option>
+                        <option value="159"> Намибия </option>
+                        <option value="160"> New Caledonia </option>
+                        <option value="161"> Нигер </option>
+                        <option value="162"> Остров Норфолк </option>
+                        <option value="163"> Нигерия </option>
+                        <option value="164"> Никарагуа </option>
+                        <option value="166"> Норвегия </option>
+                        <option value="167"> Непал </option>
+                        <option value="168"> Науру </option>
+                        <option value="169"> Ниуе </option>
+                        <option value="170"> Нова Зеландия </option>
+                        <option value="171"> Оман </option>
+                        <option value="172"> Панама </option>
+                        <option value="173"> Перу </option>
+                        <option value="174"> French Polynesia </option>
+                        <option value="175"> Папуа Нова Гвинея </option>
+                        <option value="176"> Филипини </option>
+                        <option value="177"> Пакистан </option>
+                        <option value="178"> Полша </option>
+                        <option value="179"> Сен Пиер и Микелон </option>
+                        <option value="180"> Pitcairn Islands </option>
+                        <option value="181"> Пуерто Рико </option>
+                        <option value="182"> State of Palestine </option>
+                        <option value="183"> Португалия </option>
+                        <option value="184"> Палау </option>
+                        <option value="185"> Парагвай </option>
+                        <option value="186"> Катар </option>
+                        <option value="188"> Румъния </option>
+                        <option value="189"> Сърбия </option>
+                        <option value="190"> Руска федерация </option>
+                        <option value="191"> Руанда </option>
+                        <option value="192"> Саудитска Арабия </option>
+                        <option value="193"> Соломонови острови </option>
+                        <option value="194"> Сейшелски о-ви </option>
+                        <option value="195"> Судан </option>
+                        <option value="196"> Швеция </option>
+                        <option value="197"> Сингапур </option>
+                        <option value="198"> Saint Helena, Ascension and Tristan da Cunha </option>
+                        <option value="199"> Словения </option>
+                        <option value="200"> Svalbard and Jan Mayen </option>
+                        <option value="201"> Словакия </option>
+                        <option value="202"> Сиера Леоне </option>
+                        <option value="203"> Сан Марино </option>
+                        <option value="204"> Сенегал </option>
+                        <option value="205"> Сомалия </option>
+                        <option value="206"> Суринам </option>
+                        <option value="207"> Северен Судан </option>
+                        <option value="208"> São Tomé and Príncipe </option>
+                        <option value="209"> Салвадор </option>
+                        <option value="210"> Сен Мартен (Холандска част) </option>
+                        <option value="211"> Сирия </option>
+                        <option value="212"> Свазиленд </option>
+                        <option value="213"> о-ви Търкс и Кайкос </option>
+                        <option value="214"> Чад </option>
+                        <option value="215"> Френски южни територии </option>
+                        <option value="216"> Того </option>
+                        <option value="217"> Тайланд </option>
+                        <option value="218"> Таджикистан </option>
+                        <option value="219"> Токелау </option>
+                        <option value="220"> Туркменистан </option>
+                        <option value="221"> Тунис </option>
+                        <option value="222"> Тонга </option>
+                        <option value="223"> Timor-Leste </option>
+                        <option value="224"> Турция </option>
+                        <option value="225"> Тринидад и Тобаго </option>
+                        <option value="226"> Тувалу </option>
+                        <option value="227"> Тайван </option>
+                        <option value="228"> Танзания </option>
+                        <option value="229"> Украйна </option>
+                        <option value="230"> Уганда </option>
+                        <option value="232"> САЩ Малки далечни острови </option>
+                        <option value="233"> Съединени щати </option>
+                        <option value="234"> Уругвай </option>
+                        <option value="235"> Узбекистан </option>
+                        <option value="236"> Ватикан </option>
+                        <option value="237"> Saint Vincent and the Grenadines </option>
+                        <option value="238"> Венецуела </option>
+                        <option value="239"> Вирджински острови (Великобритания) </option>
+                        <option value="240"> Вирджински острови (САЩ) </option>
+                        <option value="241"> Виетнам </option>
+                        <option value="242"> Вануату </option>
+                        <option value="243"> Wallis and Futuna </option>
+                        <option value="244"> Самоа </option>
+                        <option value="245"> Йемен </option>
+                        <option value="246"> Майот </option>
+                        <option value="247"> Южна Африка </option>
+                        <option value="248"> Замбия </option>
+                        <option value="249"> Зимбабве </option>
+                        <option value="231"> Великобритания </option>
+                        <option value="165"> Холандия </option>
+                        <option value="22" selected="selected"> България </option>
+                      </select>
+                    </div>
+                    <div class="form-group form-field  form-field-many2one o_required" data-model-field="true" data-optional="true">
+                      <label class="control-label required" for="state_id">
+                        <span>State/Province</span>
+                      </label>
+                      <select class="form-control o_website_form_input" required="required" name="state_id">
+                        <option/>
+                        <option value="1"> Australian Capital Territory </option>
+                        <option value="2"> New South Wales </option>
+                        <option value="3"> Northern Territory </option>
+                        <option value="4"> Queensland </option>
+                        <option value="5"> South Australia </option>
+                        <option value="6"> Tasmania </option>
+                        <option value="7"> Victoria </option>
+                        <option value="8"> Western Australia </option>
+                        <option value="9"> Alabama </option>
+                        <option value="10"> Alaska </option>
+                        <option value="11"> Arizona </option>
+                        <option value="12"> Arkansas </option>
+                        <option value="13"> California </option>
+                        <option value="14"> Colorado </option>
+                        <option value="15"> Connecticut </option>
+                        <option value="16"> Delaware </option>
+                        <option value="17"> District of Columbia </option>
+                        <option value="18"> Florida </option>
+                        <option value="19"> Georgia </option>
+                        <option value="20"> Hawaii </option>
+                        <option value="21"> Idaho </option>
+                        <option value="22"> Illinois </option>
+                        <option value="23"> Indiana </option>
+                        <option value="24"> Iowa </option>
+                        <option value="25"> Kansas </option>
+                        <option value="26"> Kentucky </option>
+                        <option value="27"> Louisiana </option>
+                        <option value="28"> Maine </option>
+                        <option value="29"> Montana </option>
+                        <option value="30"> Nebraska </option>
+                        <option value="31"> Nevada </option>
+                        <option value="32"> New Hampshire </option>
+                        <option value="33"> New Jersey </option>
+                        <option value="34"> New Mexico </option>
+                        <option value="35"> New York </option>
+                        <option value="36"> North Carolina </option>
+                        <option value="37"> North Dakota </option>
+                        <option value="38"> Ohio </option>
+                        <option value="39"> Oklahoma </option>
+                        <option value="40"> Oregon </option>
+                        <option value="41"> Maryland </option>
+                        <option value="42"> Massachusetts </option>
+                        <option value="43"> Michigan </option>
+                        <option value="44"> Minnesota </option>
+                        <option value="45"> Mississippi </option>
+                        <option value="46"> Missouri </option>
+                        <option value="47"> Pennsylvania </option>
+                        <option value="48"> Rhode Island </option>
+                        <option value="49"> South Carolina </option>
+                        <option value="50"> South Dakota </option>
+                        <option value="51"> Tennessee </option>
+                        <option value="52"> Texas </option>
+                        <option value="53"> Utah </option>
+                        <option value="54"> Vermont </option>
+                        <option value="55"> Virginia </option>
+                        <option value="56"> Washington </option>
+                        <option value="57"> West Virginia </option>
+                        <option value="58"> Wisconsin </option>
+                        <option value="59"> Wyoming </option>
+                        <option value="60"> American Samoa </option>
+                        <option value="61"> Federated States of Micronesia </option>
+                        <option value="62"> Guam </option>
+                        <option value="63"> Marshall Islands </option>
+                        <option value="64"> Northern Mariana Islands </option>
+                        <option value="65"> Palau </option>
+                        <option value="66"> Puerto Rico </option>
+                        <option value="67"> Virgin Islands </option>
+                        <option value="68"> Armed Forces Americas </option>
+                        <option value="69"> Armed Forces Europe </option>
+                        <option value="70"> Armed Forces Pacific </option>
+                        <option value="71"> Acre </option>
+                        <option value="72"> Alagoas </option>
+                        <option value="73"> Amapá </option>
+                        <option value="74"> Amazonas </option>
+                        <option value="75"> Bahia </option>
+                        <option value="76"> Ceará </option>
+                        <option value="77"> Distrito Federal </option>
+                        <option value="78"> Espírito Santo </option>
+                        <option value="79"> Goiás </option>
+                        <option value="80"> Maranhão </option>
+                        <option value="81"> Mato Grosso </option>
+                        <option value="82"> Mato Grosso do Sul </option>
+                        <option value="83"> Minas Gerais </option>
+                        <option value="84"> Pará </option>
+                        <option value="85"> Paraíba </option>
+                        <option value="86"> Paraná </option>
+                        <option value="87"> Pernambuco </option>
+                        <option value="88"> Piauí </option>
+                        <option value="89"> Rio de Janeiro </option>
+                        <option value="90"> Rio Grande do Norte </option>
+                        <option value="91"> Rio Grande do Sul </option>
+                        <option value="92"> Rondônia </option>
+                        <option value="93"> Roraima </option>
+                        <option value="94"> Santa Catarina </option>
+                        <option value="95"> São Paulo </option>
+                        <option value="96"> Sergipe </option>
+                        <option value="97"> Tocantins </option>
+                        <option value="98"> Republic of Adygeya </option>
+                        <option value="99"> Altai Republic </option>
+                        <option value="100"> Altai Krai </option>
+                        <option value="101"> Amur Oblast </option>
+                        <option value="102"> Arkhangelsk Oblast </option>
+                        <option value="103"> Astrakhan Oblast </option>
+                        <option value="104"> Republic of Bashkortostan </option>
+                        <option value="105"> Belgorod Oblast </option>
+                        <option value="106"> Bryansk Oblast </option>
+                        <option value="107"> Republic of Buryatia </option>
+                        <option value="108"> Chechen Republic </option>
+                        <option value="109"> Chelyabinsk Oblast </option>
+                        <option value="110"> Chukotka Autonomous Okrug </option>
+                        <option value="111"> Chuvash Republic </option>
+                        <option value="112"> Republic of Dagestan </option>
+                        <option value="113"> Republic of Ingushetia </option>
+                        <option value="114"> Irkutsk Oblast </option>
+                        <option value="115"> Ivanovo Oblast </option>
+                        <option value="116"> Kamchatka Krai </option>
+                        <option value="117"> Kabardino-Balkarian Republic </option>
+                        <option value="118"> Kaliningrad Oblast </option>
+                        <option value="119"> Republic of Kalmykia </option>
+                        <option value="120"> Kaluga Oblast </option>
+                        <option value="121"> Karachay–Cherkess Republic </option>
+                        <option value="122"> Republic of Karelia </option>
+                        <option value="123"> Kemerovo Oblast </option>
+                        <option value="124"> Khabarovsk Krai </option>
+                        <option value="125"> Republic of Khakassia </option>
+                        <option value="126"> Khanty-Mansi Autonomous Okrug </option>
+                        <option value="127"> Kirov Oblast </option>
+                        <option value="128"> Komi Republic </option>
+                        <option value="129"> Kostroma Oblast </option>
+                        <option value="130"> Krasnodar Krai </option>
+                        <option value="131"> Krasnoyarsk Krai </option>
+                        <option value="132"> Kurgan Oblast </option>
+                        <option value="133"> Kursk Oblast </option>
+                        <option value="134"> Leningrad Oblast </option>
+                        <option value="135"> Lipetsk Oblast </option>
+                        <option value="136"> Magadan Oblast </option>
+                        <option value="137"> Mari El Republic </option>
+                        <option value="138"> Republic of Mordovia </option>
+                        <option value="139"> Moscow Oblast </option>
+                        <option value="140"> Moscow </option>
+                        <option value="141"> Murmansk Oblast </option>
+                        <option value="142"> Nizhny Novgorod Oblast </option>
+                        <option value="143"> Novgorod Oblast </option>
+                        <option value="144"> Novosibirsk Oblast </option>
+                        <option value="145"> Omsk Oblast </option>
+                        <option value="146"> Orenburg Oblast </option>
+                        <option value="147"> Oryol Oblast </option>
+                        <option value="148"> Penza Oblast </option>
+                        <option value="149"> Perm Krai </option>
+                        <option value="150"> Primorsky Krai </option>
+                        <option value="151"> Pskov Oblast </option>
+                        <option value="152"> Rostov Oblast </option>
+                        <option value="153"> Ryazan Oblast </option>
+                        <option value="154"> Sakha Republic (Yakutia) </option>
+                        <option value="155"> Sakhalin Oblast </option>
+                        <option value="156"> Samara Oblast </option>
+                        <option value="157"> Saint Petersburg </option>
+                        <option value="158"> Saratov Oblast </option>
+                        <option value="159"> Republic of North Ossetia–Alania </option>
+                        <option value="160"> Smolensk Oblast </option>
+                        <option value="161"> Stavropol Krai </option>
+                        <option value="162"> Sverdlovsk Oblast </option>
+                        <option value="163"> Tambov Oblast </option>
+                        <option value="164"> Republic of Tatarstan </option>
+                        <option value="165"> Tomsk Oblast </option>
+                        <option value="166"> Tula Oblast </option>
+                        <option value="167"> Tver Oblast </option>
+                        <option value="168"> Tyumen Oblast </option>
+                        <option value="169"> Tyva Republic </option>
+                        <option value="170"> Udmurtia </option>
+                        <option value="171"> Ulyanovsk Oblast </option>
+                        <option value="172"> Vladimir Oblast </option>
+                        <option value="173"> Volgograd Oblast </option>
+                        <option value="174"> Vologda Oblast </option>
+                        <option value="175"> Voronezh Oblast </option>
+                        <option value="176"> Yamalo-Nenets Autonomous Okrug </option>
+                        <option value="177"> Yaroslavl Oblast </option>
+                        <option value="178"> Jewish Autonomous Oblast </option>
+                        <option value="179"> Alta Verapaz </option>
+                        <option value="180"> Baja Verapaz </option>
+                        <option value="181"> Chimaltenango </option>
+                        <option value="182"> Chiquimula </option>
+                        <option value="183"> El Progreso </option>
+                        <option value="184"> Escuintla </option>
+                        <option value="185"> Guatemala </option>
+                        <option value="186"> Huehuetenango </option>
+                        <option value="187"> Izabal </option>
+                        <option value="188"> Jalapa </option>
+                        <option value="189"> Jutiapa </option>
+                        <option value="190"> Petén </option>
+                        <option value="191"> Quetzaltenango </option>
+                        <option value="192"> Quiché </option>
+                        <option value="193"> Retalhuleu </option>
+                        <option value="194"> Sacatepéquez </option>
+                        <option value="195"> San Marcos </option>
+                        <option value="196"> Santa Rosa </option>
+                        <option value="197"> Sololá </option>
+                        <option value="198"> Suchitepéquez </option>
+                        <option value="199"> Totonicapán </option>
+                        <option value="200"> Zacapa </option>
+                        <option value="201"> Aichi </option>
+                        <option value="202"> Akita </option>
+                        <option value="203"> Aomori </option>
+                        <option value="204"> Chiba </option>
+                        <option value="205"> Ehime </option>
+                        <option value="206"> Fukui </option>
+                        <option value="207"> Fukuoka </option>
+                        <option value="208"> Fukushima </option>
+                        <option value="209"> Gifu </option>
+                        <option value="210"> Gunma </option>
+                        <option value="211"> Hiroshima </option>
+                        <option value="212"> Hokkaidō </option>
+                        <option value="213"> Hyōgo </option>
+                        <option value="214"> Ibaraki </option>
+                        <option value="215"> Ishikawa </option>
+                        <option value="216"> Iwate </option>
+                        <option value="217"> Kagawa </option>
+                        <option value="218"> Kagoshima </option>
+                        <option value="219"> Kanagawa </option>
+                        <option value="220"> Kōchi </option>
+                        <option value="221"> Kumamoto </option>
+                        <option value="222"> Kyōto </option>
+                        <option value="223"> Mie </option>
+                        <option value="224"> Miyagi </option>
+                        <option value="225"> Miyazaki </option>
+                        <option value="226"> Nagano </option>
+                        <option value="227"> Nagasaki </option>
+                        <option value="228"> Nara </option>
+                        <option value="229"> Niigata </option>
+                        <option value="230"> Ōita </option>
+                        <option value="231"> Okayama </option>
+                        <option value="232"> Okinawa </option>
+                        <option value="233"> Ōsaka </option>
+                        <option value="234"> Saga </option>
+                        <option value="235"> Saitama </option>
+                        <option value="236"> Shiga </option>
+                        <option value="237"> Shimane </option>
+                        <option value="238"> Shizuoka </option>
+                        <option value="239"> Tochigi </option>
+                        <option value="240"> Tokushima </option>
+                        <option value="241"> Tottori </option>
+                        <option value="242"> Toyama </option>
+                        <option value="243"> Tōkyō </option>
+                        <option value="244"> Wakayama </option>
+                        <option value="245"> Yamagata </option>
+                        <option value="246"> Yamaguchi </option>
+                        <option value="247"> Yamanashi </option>
+                        <option value="248"> Aveiro </option>
+                        <option value="249"> Beja </option>
+                        <option value="250"> Braga </option>
+                        <option value="251"> Bragança </option>
+                        <option value="252"> Castelo Branco </option>
+                        <option value="253"> Coimbra </option>
+                        <option value="254"> Évora </option>
+                        <option value="255"> Faro </option>
+                        <option value="256"> Guarda </option>
+                        <option value="257"> Leiria </option>
+                        <option value="258"> Lisboa </option>
+                        <option value="259"> Portalegre </option>
+                        <option value="260"> Porto </option>
+                        <option value="261"> Santarém </option>
+                        <option value="262"> Setúbal </option>
+                        <option value="263"> Viana do Castelo </option>
+                        <option value="264"> Vila Real </option>
+                        <option value="265"> Viseu </option>
+                        <option value="266"> Açores </option>
+                        <option value="267"> Madeira </option>
+                        <option value="268"> Dakahlia </option>
+                        <option value="269"> Red Sea </option>
+                        <option value="270"> Beheira </option>
+                        <option value="271"> Faiyum </option>
+                        <option value="272"> Gharbia </option>
+                        <option value="273"> Alexandria </option>
+                        <option value="274"> Ismailia </option>
+                        <option value="275"> Giza </option>
+                        <option value="276"> Monufia </option>
+                        <option value="277"> Minya </option>
+                        <option value="278"> Cairo </option>
+                        <option value="279"> Qalyubia </option>
+                        <option value="280"> Luxor </option>
+                        <option value="281"> New Valley </option>
+                        <option value="282"> Al Sharqia </option>
+                        <option value="283"> 6th of October </option>
+                        <option value="284"> Suez </option>
+                        <option value="285"> Aswan </option>
+                        <option value="286"> Asyut </option>
+                        <option value="287"> Beni Suef </option>
+                        <option value="288"> Port Said </option>
+                        <option value="289"> Damietta </option>
+                        <option value="290"> Helwan </option>
+                        <option value="291"> South Sinai </option>
+                        <option value="292"> Kafr el-Sheikh </option>
+                        <option value="293"> Matrouh </option>
+                        <option value="294"> Qena </option>
+                        <option value="295"> North Sinai </option>
+                        <option value="296"> Sohag </option>
+                        <option value="297"> Eastern Cape </option>
+                        <option value="298"> Free State </option>
+                        <option value="299"> Gauteng </option>
+                        <option value="300"> KwaZulu-Natal </option>
+                        <option value="301"> Limpopo </option>
+                        <option value="302"> Mpumalanga </option>
+                        <option value="303"> Northern Cape </option>
+                        <option value="304"> North West </option>
+                        <option value="305"> Western Cape </option>
+                        <option value="306"> Agrigento </option>
+                        <option value="307"> Alessandria </option>
+                        <option value="308"> Ancona </option>
+                        <option value="309"> Aosta </option>
+                        <option value="310"> Arezzo </option>
+                        <option value="311"> Ascoli Piceno </option>
+                        <option value="312"> Asti </option>
+                        <option value="313"> Avellino </option>
+                        <option value="314"> Bari </option>
+                        <option value="315"> Barletta-Andria-Trani </option>
+                        <option value="316"> Belluno </option>
+                        <option value="317"> Benevento </option>
+                        <option value="318"> Bergamo </option>
+                        <option value="319"> Biella </option>
+                        <option value="320"> Bologna </option>
+                        <option value="321"> Bolzano </option>
+                        <option value="322"> Brescia </option>
+                        <option value="323"> Brindisi </option>
+                        <option value="324"> Cagliari </option>
+                        <option value="325"> Caltanissetta </option>
+                        <option value="326"> Campobasso </option>
+                        <option value="327"> Carbonia-Iglesias </option>
+                        <option value="328"> Caserta </option>
+                        <option value="329"> Catania </option>
+                        <option value="330"> Catanzaro </option>
+                        <option value="331"> Chieti </option>
+                        <option value="332"> Como </option>
+                        <option value="333"> Cosenza </option>
+                        <option value="334"> Cremona </option>
+                        <option value="335"> Crotone </option>
+                        <option value="336"> Cuneo </option>
+                        <option value="337"> Enna </option>
+                        <option value="338"> Fermo </option>
+                        <option value="339"> Ferrara </option>
+                        <option value="340"> Firenze </option>
+                        <option value="341"> Foggia </option>
+                        <option value="342"> Forlì-Cesena </option>
+                        <option value="343"> Frosinone </option>
+                        <option value="344"> Genova </option>
+                        <option value="345"> Gorizia </option>
+                        <option value="346"> Grosseto </option>
+                        <option value="347"> Imperia </option>
+                        <option value="348"> Isernia </option>
+                        <option value="349"> La Spezia </option>
+                        <option value="350"> L'Aquila </option>
+                        <option value="351"> Latina </option>
+                        <option value="352"> Lecce </option>
+                        <option value="353"> Lecco </option>
+                        <option value="354"> Livorno </option>
+                        <option value="355"> Lodi </option>
+                        <option value="356"> Lucca </option>
+                        <option value="357"> Macerata </option>
+                        <option value="358"> Mantova </option>
+                        <option value="359"> Massa-Carrara </option>
+                        <option value="360"> Matera </option>
+                        <option value="361"> Medio Campidano </option>
+                        <option value="362"> Messina </option>
+                        <option value="363"> Milano </option>
+                        <option value="364"> Modena </option>
+                        <option value="365"> Monza e Brianza </option>
+                        <option value="366"> Napoli </option>
+                        <option value="367"> Novara </option>
+                        <option value="368"> Nuoro </option>
+                        <option value="369"> Ogliastra </option>
+                        <option value="370"> Olbia-Tempio </option>
+                        <option value="371"> Oristano </option>
+                        <option value="372"> Padova </option>
+                        <option value="373"> Palermo </option>
+                        <option value="374"> Parma </option>
+                        <option value="375"> Pavia </option>
+                        <option value="376"> Perugia </option>
+                        <option value="377"> Pesaro e Urbino </option>
+                        <option value="378"> Pescara </option>
+                        <option value="379"> Piacenza </option>
+                        <option value="380"> Pisa </option>
+                        <option value="381"> Pistoia </option>
+                        <option value="382"> Pordenone </option>
+                        <option value="383"> Potenza </option>
+                        <option value="384"> Prato </option>
+                        <option value="385"> Ragusa </option>
+                        <option value="386"> Ravenna </option>
+                        <option value="387"> Reggio Calabria </option>
+                        <option value="388"> Reggio Emilia </option>
+                        <option value="389"> Rieti </option>
+                        <option value="390"> Rimini </option>
+                        <option value="391"> Roma </option>
+                        <option value="392"> Rovigo </option>
+                        <option value="393"> Salerno </option>
+                        <option value="394"> Sassari </option>
+                        <option value="395"> Savona </option>
+                        <option value="396"> Siena </option>
+                        <option value="397"> Siracusa </option>
+                        <option value="398"> Sondrio </option>
+                        <option value="399"> Sud Sardegna </option>
+                        <option value="400"> Taranto </option>
+                        <option value="401"> Teramo </option>
+                        <option value="402"> Terni </option>
+                        <option value="403"> Torino </option>
+                        <option value="404"> Trapani </option>
+                        <option value="405"> Trento </option>
+                        <option value="406"> Treviso </option>
+                        <option value="407"> Trieste </option>
+                        <option value="408"> Udine </option>
+                        <option value="409"> Varese </option>
+                        <option value="410"> Venezia </option>
+                        <option value="411"> Verbano-Cusio-Ossola </option>
+                        <option value="412"> Vercelli </option>
+                        <option value="413"> Verona </option>
+                        <option value="414"> Vibo Valentia </option>
+                        <option value="415"> Vicenza </option>
+                        <option value="416"> Viterbo </option>
+                        <option value="417"> A Coruña (La Coruña) </option>
+                        <option value="418"> Araba/Álava </option>
+                        <option value="419"> Albacete </option>
+                        <option value="420"> Alacant (Alicante) </option>
+                        <option value="421"> Almería </option>
+                        <option value="422"> Asturias </option>
+                        <option value="423"> Ávila </option>
+                        <option value="424"> Badajoz </option>
+                        <option value="425"> Illes Balears (Islas Baleares) </option>
+                        <option value="426"> Barcelona </option>
+                        <option value="427"> Burgos </option>
+                        <option value="428"> Cáceres </option>
+                        <option value="429"> Cádiz </option>
+                        <option value="430"> Cantabria </option>
+                        <option value="431"> Castelló (Castellón) </option>
+                        <option value="432"> Ceuta </option>
+                        <option value="433"> Ciudad Real </option>
+                        <option value="434"> Córdoba </option>
+                        <option value="435"> Cuenca </option>
+                        <option value="436"> Girona (Gerona) </option>
+                        <option value="437"> Granada </option>
+                        <option value="438"> Guadalajara </option>
+                        <option value="439"> Gipuzkoa (Guipúzcoa) </option>
+                        <option value="440"> Huelva </option>
+                        <option value="441"> Huesca </option>
+                        <option value="442"> Jaén </option>
+                        <option value="443"> La Rioja </option>
+                        <option value="444"> Las Palmas </option>
+                        <option value="445"> León </option>
+                        <option value="446"> Lleida (Lérida) </option>
+                        <option value="447"> Lugo </option>
+                        <option value="448"> Madrid </option>
+                        <option value="449"> Málaga </option>
+                        <option value="450"> Melilla </option>
+                        <option value="451"> Murcia </option>
+                        <option value="452"> Navarra (Nafarroa) </option>
+                        <option value="453"> Ourense (Orense) </option>
+                        <option value="454"> Palencia </option>
+                        <option value="455"> Pontevedra </option>
+                        <option value="456"> Salamanca </option>
+                        <option value="457"> Santa Cruz de Tenerife </option>
+                        <option value="458"> Segovia </option>
+                        <option value="459"> Sevilla </option>
+                        <option value="460"> Soria </option>
+                        <option value="461"> Tarragona </option>
+                        <option value="462"> Teruel </option>
+                        <option value="463"> Toledo </option>
+                        <option value="464"> València (Valencia) </option>
+                        <option value="465"> Valladolid </option>
+                        <option value="466"> Bizkaia (Vizcaya) </option>
+                        <option value="467"> Zamora </option>
+                        <option value="468"> Zaragoza </option>
+                        <option value="469"> Johor </option>
+                        <option value="470"> Kedah </option>
+                        <option value="471"> Kelantan </option>
+                        <option value="472"> Kuala Lumpur </option>
+                        <option value="473"> Labuan </option>
+                        <option value="474"> Melaka </option>
+                        <option value="475"> Negeri Sembilan </option>
+                        <option value="476"> Pahang </option>
+                        <option value="477"> Perak </option>
+                        <option value="478"> Perlis </option>
+                        <option value="479"> Pulau Pinang </option>
+                        <option value="480"> Putrajaya </option>
+                        <option value="481"> Sabah </option>
+                        <option value="482"> Sarawak </option>
+                        <option value="483"> Selangor </option>
+                        <option value="484"> Terengganu </option>
+                        <option value="485"> Aguascalientes </option>
+                        <option value="486"> Baja California </option>
+                        <option value="487"> Baja California Sur </option>
+                        <option value="488"> Chihuahua </option>
+                        <option value="489"> Colima </option>
+                        <option value="490"> Campeche </option>
+                        <option value="491"> Coahuila </option>
+                        <option value="492"> Chiapas </option>
+                        <option value="493"> Ciudad de México </option>
+                        <option value="494"> Durango </option>
+                        <option value="495"> Guerrero </option>
+                        <option value="496"> Guanajuato </option>
+                        <option value="497"> Hidalgo </option>
+                        <option value="498"> Jalisco </option>
+                        <option value="499"> Michoacán </option>
+                        <option value="500"> Morelos </option>
+                        <option value="501"> México </option>
+                        <option value="502"> Nayarit </option>
+                        <option value="503"> Nuevo León </option>
+                        <option value="504"> Oaxaca </option>
+                        <option value="505"> Puebla </option>
+                        <option value="506"> Quintana Roo </option>
+                        <option value="507"> Querétaro </option>
+                        <option value="508"> Sinaloa </option>
+                        <option value="509"> San Luis Potosí </option>
+                        <option value="510"> Sonora </option>
+                        <option value="511"> Tabasco </option>
+                        <option value="512"> Tlaxcala </option>
+                        <option value="513"> Tamaulipas </option>
+                        <option value="514"> Veracruz </option>
+                        <option value="515"> Yucatán </option>
+                        <option value="516"> Zacatecas </option>
+                        <option value="517"> Auckland </option>
+                        <option value="518"> Bay of Plenty </option>
+                        <option value="519"> Canterbury </option>
+                        <option value="520"> Gisborne </option>
+                        <option value="521"> Hawke's Bay </option>
+                        <option value="522"> Manawatu-Wanganui </option>
+                        <option value="523"> Marlborough </option>
+                        <option value="524"> Nelson </option>
+                        <option value="525"> Northland </option>
+                        <option value="526"> Otago </option>
+                        <option value="527"> Southland </option>
+                        <option value="528"> Taranaki </option>
+                        <option value="529"> Tasman </option>
+                        <option value="530"> Waikato </option>
+                        <option value="531"> Wellington </option>
+                        <option value="532"> West Coast </option>
+                        <option value="533"> Alberta </option>
+                        <option value="534"> British Columbia </option>
+                        <option value="535"> Manitoba </option>
+                        <option value="536"> New Brunswick </option>
+                        <option value="537"> Newfoundland and Labrador </option>
+                        <option value="538"> Northwest Territories </option>
+                        <option value="539"> Nova Scotia </option>
+                        <option value="540"> Nunavut </option>
+                        <option value="541"> Ontario </option>
+                        <option value="542"> Prince Edward Island </option>
+                        <option value="543"> Quebec </option>
+                        <option value="544"> Saskatchewan </option>
+                        <option value="545"> Yukon </option>
+                        <option value="546"> Abu Dhabi </option>
+                        <option value="547"> Ajman </option>
+                        <option value="548"> Dubai </option>
+                        <option value="549"> Fujairah </option>
+                        <option value="550"> Ras al-Khaimah </option>
+                        <option value="551"> Sharjah </option>
+                        <option value="552"> Umm al-Quwain </option>
+                        <option value="553"> Buenos Aires City </option>
+                        <option value="554"> Buenos Aires </option>
+                        <option value="555"> Catamarca </option>
+                        <option value="556"> Chaco </option>
+                        <option value="557"> Chobut </option>
+                        <option value="558"> Córdoba </option>
+                        <option value="559"> Corrientes </option>
+                        <option value="560"> Ente Ríos </option>
+                        <option value="561"> Formosa </option>
+                        <option value="562"> Jujuy </option>
+                        <option value="563"> La Pampa </option>
+                        <option value="564"> La Rioja </option>
+                        <option value="565"> Mendoza </option>
+                        <option value="566"> Misiones </option>
+                        <option value="567"> Neuquén </option>
+                        <option value="568"> Río Negro </option>
+                        <option value="569"> Salta </option>
+                        <option value="570"> San Juan </option>
+                        <option value="571"> San Luis </option>
+                        <option value="572"> Santa Cruz </option>
+                        <option value="573"> Santa Fe </option>
+                        <option value="574"> Santiago Del Estero </option>
+                        <option value="575"> Tierra del Fuego </option>
+                        <option value="576"> Tucumán </option>
+                        <option value="577"> Andaman and Nicobar </option>
+                        <option value="578"> Andhra Pradesh </option>
+                        <option value="579"> Arunachal Pradesh </option>
+                        <option value="580"> Assam </option>
+                        <option value="581"> Bihar </option>
+                        <option value="582"> Chandigarh </option>
+                        <option value="583"> Chattisgarh </option>
+                        <option value="584"> Dadra and Nagar Haveli </option>
+                        <option value="585"> Daman and Diu </option>
+                        <option value="586"> Delhi </option>
+                        <option value="587"> Goa </option>
+                        <option value="588"> Gujarat </option>
+                        <option value="589"> Haryana </option>
+                        <option value="590"> Himachal Pradesh </option>
+                        <option value="591"> Jammu and Kashmir </option>
+                        <option value="592"> Jharkhand </option>
+                        <option value="593"> Karnataka </option>
+                        <option value="594"> Kerala </option>
+                        <option value="595"> Lakshadweep </option>
+                        <option value="596"> Madhya Pradesh </option>
+                        <option value="597"> Maharashtra </option>
+                        <option value="598"> Manipur </option>
+                        <option value="599"> Meghalaya </option>
+                        <option value="600"> Mizoram </option>
+                        <option value="601"> Nagaland </option>
+                        <option value="602"> Orissa </option>
+                        <option value="603"> Puducherry </option>
+                        <option value="604"> Punjab </option>
+                        <option value="605"> Rajasthan </option>
+                        <option value="606"> Sikkim </option>
+                        <option value="607"> Tamil Nadu </option>
+                        <option value="608"> Telangana </option>
+                        <option value="609"> Tripura </option>
+                        <option value="610"> Uttar Pradesh </option>
+                        <option value="611"> Uttarakhand </option>
+                        <option value="612"> West Bengal </option>
+                        <option value="613"> Aceh </option>
+                        <option value="614"> Bali </option>
+                        <option value="615"> Bangka Belitung </option>
+                        <option value="616"> Banten </option>
+                        <option value="617"> Bengkulu </option>
+                        <option value="618"> Gorontalo </option>
+                        <option value="619"> Jakarta </option>
+                        <option value="620"> Jambi </option>
+                        <option value="621"> Jawa Barat </option>
+                        <option value="622"> Jawa Tengah </option>
+                        <option value="623"> Jawa Timur </option>
+                        <option value="624"> Kalimantan Barat </option>
+                        <option value="625"> Kalimantan Selatan </option>
+                        <option value="626"> Kalimantan Tengah </option>
+                        <option value="627"> Kalimantan Timur </option>
+                        <option value="628"> Kalimantan Utara </option>
+                        <option value="629"> Kepulauan Riau </option>
+                        <option value="630"> Lampung </option>
+                        <option value="631"> Maluku </option>
+                        <option value="632"> Maluku Utara </option>
+                        <option value="633"> Nusa Tenggara Barat </option>
+                        <option value="634"> Nusa Tenggara Timur </option>
+                        <option value="635"> Papua </option>
+                        <option value="636"> Papua Barat </option>
+                        <option value="637"> Riau </option>
+                        <option value="638"> Sulawesi Barat </option>
+                        <option value="639"> Sulawesi Selatan </option>
+                        <option value="640"> Sulawesi Tengah </option>
+                        <option value="641"> Sulawesi Tenggara </option>
+                        <option value="642"> Sulawesi Utara </option>
+                        <option value="643"> Sumatra Barat </option>
+                        <option value="644"> Sumatra Selatan </option>
+                        <option value="645"> Sumatra Utara </option>
+                        <option value="646"> Yogyakarta </option>
+                        <option value="647"> Antioquia </option>
+                        <option value="648"> Atlántico </option>
+                        <option value="649"> D.C. </option>
+                        <option value="650"> Bolívar </option>
+                        <option value="651"> Boyacá </option>
+                        <option value="652"> Caldas </option>
+                        <option value="653"> Caquetá </option>
+                        <option value="654"> Cauca </option>
+                        <option value="655"> Cesar </option>
+                        <option value="656"> Córdoba </option>
+                        <option value="657"> Cundinamarca </option>
+                        <option value="658"> Chocó </option>
+                        <option value="659"> Huila </option>
+                        <option value="660"> La Guajira </option>
+                        <option value="661"> Magdalena </option>
+                        <option value="662"> Meta </option>
+                        <option value="663"> Nariño </option>
+                        <option value="664"> Norte de Santander </option>
+                        <option value="665"> Quindio </option>
+                        <option value="666"> Risaralda </option>
+                        <option value="667"> Santander </option>
+                        <option value="668"> Sucre </option>
+                        <option value="669"> Tolima </option>
+                        <option value="670"> Valle del Cauca </option>
+                        <option value="671"> Arauca </option>
+                        <option value="672"> Casanare </option>
+                        <option value="673"> Putumayo </option>
+                        <option value="674"> Archipiélago de San Andrés, Providencia y Santa Catalina </option>
+                        <option value="675"> Amazonas </option>
+                        <option value="676"> Guainía </option>
+                        <option value="677"> Guaviare </option>
+                        <option value="678"> Vaupés </option>
+                        <option value="679"> Vichada </option>
+                        <option value="763"> Trøndelag </option>
+                        <option value="757"> Област Стара Загора </option>
+                        <option value="758"> Област Търговище </option>
+                        <option value="759"> Област Хасково </option>
+                        <option value="760"> Област Шумен </option>
+                        <option value="761"> Област Ямбол </option>
+                        <option value="735"> Област Благоевград </option>
+                        <option value="736"> Област Бургас </option>
+                        <option value="737"> Област Варна </option>
+                        <option value="738"> Област Велико Търново </option>
+                        <option value="739"> Област Видин </option>
+                        <option value="764"> Glamshult </option>
+                        <option value="766"> Hamburg </option>
+                        <option value="740"> Област Враца </option>
+                        <option value="741"> Област Габрово </option>
+                        <option value="742"> Област Добрич </option>
+                        <option value="743"> Област Кърджали </option>
+                        <option value="744"> Област Кюстендил </option>
+                        <option value="745"> Област Ловеч </option>
+                        <option value="746"> Област Монтана </option>
+                        <option value="747"> Област Пазарджик </option>
+                        <option value="748"> Област Перник </option>
+                        <option value="749"> Област Плевен </option>
+                        <option value="750"> Област Пловдив </option>
+                        <option value="751"> Област Разград </option>
+                        <option value="752"> Област Русе </option>
+                        <option value="753"> Област Силистра </option>
+                        <option value="754"> Област Сливен </option>
+                        <option value="755"> Област Смолян </option>
+                        <option value="756" selected="selected"> Област София </option>
+                      </select>
+                    </div>
+                    <div class="form-group form-field  form-field-char o_required" data-model-field="true" data-optional="true">
+                      <label class="control-label required" for="contact_name">
+                        <span>Contact name</span>
+                      </label>
+                      <input class="form-control o_website_form_input" type="text" required="required" name="contact_name"/>
+                    </div>
+                    <div class="form-group form-field  form-field-char o_required" data-model-field="true" data-optional="true">
+                      <label class="control-label required" for="phone">
+                        <span>Phone</span>
+                      </label>
+                      <input class="form-control o_website_form_input" type="text" required="required" name="phone"/>
+                    </div>
+                    <div class="form-group form-field  form-field-char o_required" data-model-field="true" data-optional="true">
+                      <label class="control-label required" for="email_from">
+                        <span>E-mail</span>
+                      </label>
+                      <input class="form-control o_website_form_input" type="text" required="required" name="email_from"/>
+                      <p class="help-block">
+                            Email address of the contact
+                        </p>
+                    </div>
+                    <div class="form-group form-field  form-field-char" data-model-field="true" data-optional="true">
+                      <label class="control-label" for="website">
+                        <span>Web-page</span>
+                      </label>
+                      <input class="form-control o_website_form_input" type="text" name="website"/>
+                      <p class="help-block">Website of the contact</p>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <button type="button" class="btn btn-lg btn-primary o_default_snippet_text o_website_form_send" data-original-title="" title="">
+                        Send
+                    </button>
+                    <span id="o_website_form_result"/>
+                  </div>
+                </form>
+              </section>
+            </div>
+        </t>
+        </t>
+    </template>
+
     <template id="website_only_company_search_box" name="Website Comapany only Searchbox">
         <form t-att-action="keep('/shop/checkout/', search=0)" method="get" t-att-class="company_only_search_class">
             <div class="input-group">

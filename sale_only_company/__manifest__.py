@@ -11,6 +11,8 @@
     'depends': ['sale'],
     'data': [
         'views/sale_views.xml',
+        'views/account_invoice_views.xml',
+        'views/account_view.xml',
     ],
     'demo': [
     ],

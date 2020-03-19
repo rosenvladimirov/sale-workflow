@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="invoice_doctor_form" model="ir.ui.view">
+            <field name="name">account.invoice.doctor.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <field name="partner_id" position="before">
+                    <field name="partner_contact_id" domain="[('customer','=',True)]" context="{'search_default_customer':1}" options='{"always_reload": True}'/>
+                </field>
+                <field name="account_id" position="before">
+                    <field name="partner_contact_id" groups="account.group_account_user"/>
+                </field>
+            </field>
+        </record>
+        <record id="view_invoice_line_form" model="ir.ui.view">
+            <field name="name">account.invoice.line.form</field>
+            <field name="model">account.invoice.line</field>
+            <field name="inherit_id" ref="account.view_invoice_line_form"/>
+            <field name="arch" type="xml">
+                <field name="partner_id" position="after">
+                    <field name="partner_contact_id"/>
+                </field>
+            </field>
+        </record>
+        <record id="invoice_supplier_form" model="ir.ui.view">
+            <field name="name">account.invoice.supplier.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_supplier_form"/>
+            <field name="arch" type="xml">
+                <field name="partner_id" position="before">
+                    <field name="partner_contact_id" domain="[('supplier','=',True)]" context="{'search_default_supplier':1}" options='{"always_reload": True}'/>
+                </field>
+                <field name="account_id" position="before">
+                    <field name="partner_contact_id" groups="account.group_account_user"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

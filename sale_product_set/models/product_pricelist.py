@@ -23,8 +23,8 @@ class Pricelist(models.Model):
 
     count_items = fields.Integer(compute=_count_items, string="Items")
 
-    def _filter(self, product, qty, partner, rule):
-        res = super(Pricelist, self)._filter(product, qty, partner, rule)
+    def filter(self, product, qty, partner, rule):
+        res = super(Pricelist, self).filter(product, qty, partner, rule)
         if res != None:
             return res
         if rule.product_set_id:
@@ -54,6 +54,7 @@ class Pricelist(models.Model):
                 pricelist.applied_on = '0_product_variant'
                 pricelist.categ_id = False
                 pricelist.product_tmpl_id = False
+
 
 class PricelistItem(models.Model):
     _inherit = "product.pricelist.item"

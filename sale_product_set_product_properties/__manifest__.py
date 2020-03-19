@@ -18,9 +18,8 @@ Product set informations about Product properties
             'views/sale_views.xml',
             'views/product_set_views.xml',
             'views/product_properties_linename_templates.xml',
-            'views/sale_report_templates.xml',
-            #'views/sale_report_templates.xml',
-            ],
+            'views/report_sale_templates.xml',
+    ],
     'demo': [],
     'installable': True,
 }

@@ -33,7 +33,6 @@ class MailGroup(models.Model):
             if pin:
                 self.env['mail.channel.partner'].search([('partner_id', '=', channel_partner_to_add[0]), ('channel_id', '=', channel.id)]).write({'is_pinned': True})
         else:
-            #_logger.info("Mail chanel %s:%s" % (self.env['res.partner'].sudo().browse(channel_partner_to_add).mapped('name'), channel_partner_to_add))
             # create a new one
             channel = self.create({
                 'channel_partner_ids': [(4, partner_id) for partner_id in channel_partner_to_add],

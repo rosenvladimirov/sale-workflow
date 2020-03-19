@@ -33,6 +33,7 @@ class SaleOrder(models.Model):
         if self.has_sets:
             report_pages_sets = [[]]
             for category, lines in groupby(self.order_line, lambda l: l.product_set_id):
+                #_logger.info("LINES %s" % list(lines))
                 # If last added category induced a pagebreak, this one will be on a new page
                 if report_pages_sets[-1] and report_pages_sets[-1][-1]['pagebreak']:
                     report_pages_sets.append([])
@@ -40,14 +41,16 @@ class SaleOrder(models.Model):
                 unit_price = qty > 0.0 and category.subtotal/qty or category.subtotal
                 # Append category to current report page
                 report_pages_sets[-1].append({
-                    'name': category and category.print_name or _('Uncategorized'),
-                    'quantity': qty,
-                    'price_unit': unit_price,
-                    'subtotal': category and category.subtotal,
-                    'pagebreak': category and category.pagebreak,
-                    'lines': list(lines),
-                    'pset': category,
-                })
+                        'name': category and category.print_name or _('Uncategorized'),
+                        'quantity': qty,
+                        'price_unit': unit_price,
+                        'subtotal': category and category.subtotal,
+                        'pagebreak': category and category.pagebreak,
+                        'lines': list(lines),
+                        'vat':  ', '.join(map(lambda x: (x.description or x.name), [l.tax_id for l in list(lines)])),
+                        'pset': category,
+                    })
+            _logger.info("LINES %s" % report_pages_sets)
             return report_pages_sets
         else:
             report_pages_sets = [[]]

@@ -1,4 +1,6 @@
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
+# -*- coding: utf-8 -*-
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
+
 from odoo import models, fields, api, _
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 from itertools import groupby
@@ -11,6 +13,7 @@ class Picking(models.Model):
     _inherit = "stock.picking"
 
     has_sets = fields.Boolean(string="Has sets", compute="_compute_has_sets")
+    print_sets = fields.Boolean("Ungroup by sets")
 
     @api.multi
     def _compute_has_sets(self):
@@ -47,10 +50,6 @@ class Picking(models.Model):
             if res_stock_move_line.get(product, False):
                 move['move_line_ids'] = res_stock_move_line[product]
             res.append((0, 0, move._convert_to_write(move._cache)))
-        #if self._context.get('force_validate') and res:
-        #    self.action_confirm()
-        #    self.action_assign()
-        #_logger.info("Lines %s" % (res))
         return res
 
     def prepare_stock_move_pset_data(self, picking_id, product, qty, old_qty=0):

@@ -30,8 +30,8 @@
     </template>
     <template id="report_product_set_pricelist_detail">
         <tr t-if="product_set_print['price'] &gt; 0.0">
-            <td>
-                <strong t-esc="product_set_print['name']"/>
+            <td name="plinename">
+                <strong t-esc="product_set_print['pset'].display_name"/>
             </td>
             <td t-if="o.show_standard_price"/>
             <td t-if="o.show_sale_price"/>

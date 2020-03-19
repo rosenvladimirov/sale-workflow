@@ -3,3 +3,4 @@
 
 from . import loyalty_programs
 from . import sale
+from . import product_set

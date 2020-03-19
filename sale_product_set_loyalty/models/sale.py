@@ -11,6 +11,14 @@ class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
     @api.multi
-    def _calculate_loyalty_points(self, product, qty, price, **kwargs):
+    def calculate_loyalty_points(self, product, qty, price, **kwargs):
         kwargs.update(dict(product_set=self.product_set_id))
+        _logger.info("SALE LOIALTY %s" % kwargs)
         return self.order_id.loyalty_program_id.calculate_loyalty_points(product, qty, price, **kwargs)
+
+    @api.onchange('product_set_id')
+    def product_set_id_change(self):
+        result = super(SaleOrderLine, self).product_id_change()
+        if self.order_id.loyalty_program_id:
+            self.set_loyalty_points()
+        return result

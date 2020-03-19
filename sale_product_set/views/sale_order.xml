@@ -5,6 +5,7 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
+            <!--
             <xpath expr="//div[@name='button_box']" position="inside">
                     <button class="oe_stat_button"
                             type="action"
@@ -13,6 +14,19 @@
                             attrs="{'invisible': [('state','not in',('draft','sent'))]}"
                             context="{'default_partner_id': partner_id, 'default_partner_shipping_id': partner_shipping_id, 'default_fiscal_position_id': fiscal_position_id, 'default_company_id': company_id, 'default_pricelist_id': pricelist_id, 'force_mode': 'sale' }"
                             string="Add set"/>
+            </xpath>
+            -->
+            <xpath expr="//notebook/page[1]/field" position="after">
+                <div class="o_form_statusbar" style="border-bottom: 0px;" name="button_box_sale">
+                    <div class="o_statusbar_buttons" name="buttons_sale">
+                        <button class="btn btn-sm btn-default oe_highlight"
+                            type="action"
+                            name="%(act_open_wizard_product_set_add)d"
+                            attrs="{'invisible': [('state','not in',('draft','sent'))]}"
+                            context="{'default_partner_id': partner_id, 'default_partner_shipping_id': partner_shipping_id, 'default_fiscal_position_id': fiscal_position_id, 'default_company_id': company_id, 'default_pricelist_id': pricelist_id, 'force_mode': 'sale' }"
+                            string="Add set"/>
+                    </div>
+                </div>
             </xpath>
             <xpath expr="//notebook" position="inside">
                 <field name="has_sets" invisible="1"/>
@@ -79,7 +93,7 @@
                                 </t>
                             </templates>
                         </kanban>
-                        <form string="Product set">
+                        <!-- <form string="Product set">
                             <sheet>
                                 <group>
                                     <field name="order_partner_id" invisible="1"/>
@@ -95,7 +109,7 @@
                                 <field name="set_lines">
                                     <tree>
                                         <field name="product_id"/>
-                                        <field name="product_uom_qty"/>
+                                        <field name="quantity"/>
                                         <field name="product_uom"/>
                                         <field name="price_unit"/>
                                         <field name="price_subtotal" widget="monetary" groups="sale.group_show_price_subtotal"/>
@@ -104,13 +118,20 @@
                                     </tree>
                                 </field>
                             </sheet>
-                        </form>
+                        </form> -->
                     </field>
                 </page>
             </xpath>
-            <field name="client_order_ref" position="after">
+        </field>
+    </record>
+    <record id="view_order_form" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="report_theming_properties.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[@name='print_properties']/group/group" position="inside">
                 <field name="print_sets"/>
-            </field>
+            </xpath>
         </field>
     </record>
     <record id="sale_order_view_search_inherit_sale_product_set" model="ir.ui.view">

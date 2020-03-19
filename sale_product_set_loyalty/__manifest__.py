@@ -10,6 +10,7 @@
     'depends': ['sale', 'loyalty_program', 'sale_product_set'],
     'data': [
         'views/loyalty_program_views.xml',
+        'views/product_set_views.xml',
     ],
     'installable': True,
     'auto_install': False,

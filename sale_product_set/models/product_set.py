@@ -14,7 +14,9 @@ _logger = logging.getLogger(__name__)
 
 class ProductSet(models.Model):
     _name = 'product.set'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Product set'
+    _order = "name"
 
     @api.depends('set_lines.price_total')
     def _amount_all(self):
@@ -247,7 +249,6 @@ class ProductSetLine(models.Model):
     _rec_name = 'product_id'
     _order = 'sequence'
 
-
     @api.depends('quantity', 'price_unit', 'tax_id')
     def _compute_amount(self):
         for line in self:
@@ -284,7 +285,6 @@ class ProductSetLine(models.Model):
         else:
             return ["|", ('sale_ok', '=', True), ('purchase_ok', '=', True)]
 
-
     sequence = fields.Integer(string='Sequence', required=True, default=0,)
     product_set_id = fields.Many2one('product.set', string='Set', ondelete='cascade', copy=False)
     #partner_id = fields.Many2one(string='Partner', related="product_set_id.partner_id", store=True)
@@ -307,7 +307,6 @@ class ProductSetLine(models.Model):
     price_tax = fields.Float(compute='_compute_amount', string='Taxes', readonly=True, store=True)
     price_total = fields.Monetary(compute='_compute_amount', string='Total', readonly=True, store=True)
     type = fields.Selection("product.set", related='product_set_id.type', string="Type", readonly=True)
-
 
     @api.multi
     @api.onchange('product_tmpl_id')
