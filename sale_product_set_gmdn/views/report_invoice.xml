@@ -12,12 +12,12 @@
         <template id="report_invoice_document_with_sets_gmdn" inherit_id="l10n_gr_extend.report_invoice_document_sets">
             <xpath expr="//td[@name='description']" position="after">
                 <t t-if="layout_category['pset'] and layout_category['pset'].gmdn">
-                    <td class="o_bulgaria_cells_sprv">
+                    <td class="o_bulgaria_cells">
                         <span t-esc="layout_category['pset'].gmdn"/>
                     </td>
                 </t>
                 <t t-else="">
-                    <td class="o_bulgaria_cells_sprv"/>
+                    <td class="o_bulgaria_cells"/>
                 </t>
             </xpath>
         </template>
