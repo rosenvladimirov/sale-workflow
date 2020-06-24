@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="sale_order_import_purchase_order_form_view" model="ir.ui.view">
+        <field name="name">sale.order.import.purchase.order.form.view</field>
+        <field name="model">sale.order.import.purchase.order</field>
+        <field name="arch" type="xml">
+          <form string="Import lines from purchase order">
+              <field name="_barcode_scanned" widget="barcode_handler"/>
+              <group>
+                  <field name="sale_order_id" invisible="1"/>
+                  <field name="import_po_id" invisible="1"/>
+                  <field name="import_po_name" options="{'barcode_events': True}" widget="field_float_scannable"/>
+              </group>
+              <footer>
+                  <button name="import_purchase_order" string="Import From PO"
+                          type="object" class="oe_highlight"/>
+                  <button special="cancel" string="Cancel" class="oe_link"/>
+              </footer>
+          </form>
+        </field>
+    </record>
+
+    <record id="act_sale_order_import_purchase_order" model="ir.actions.act_window">
+        <field name="name">Import from picking in stock move line</field>
+        <field name="res_model">sale.order.import.purchase.order</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="sale_order_import_purchase_order_form_view"/>
+        <field name="target">new</field>
+    </record>
+
+    <act_window name="Import from PO"
+        res_model="sale.order.import.purchase.order"
+        src_model="sale.order"
+        view_mode="form"
+        target="new"
+        view_type="form"
+        key2="client_action_multi"
+        context="{'sale_order_id': active_id}"
+        id="action_sale_order_import_purchase_order"
+        view_id="sale_order_import_purchase_order_form_view"/>
+
+</odoo>

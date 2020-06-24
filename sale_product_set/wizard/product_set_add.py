@@ -105,13 +105,13 @@ class ProductSetAdd(models.TransientModel):
             so_id = self._context['order_id']
         if not so_id:
             return
-        order_obj = self.env['sale.order']
+        order_obj = self.env['sale.order'].sudo()
         so = order_obj.browse(so_id)
         max_sequence = 0
         if so.order_line:
             max_sequence = max([line.sequence for line in so.order_line])
-        sale_order_line = self.env['sale.order.line']
-        set_lines = self.env['sale.order.sets']
+        sale_order_line = self.env['sale.order.line'].sudo()
+        set_lines = self.env['sale.order.sets'].sudo()
         for set in self.product_set_id:
             amount_untaxed = set.amount_untaxed
             set_old = set_lines.search(
@@ -160,13 +160,13 @@ class ProductSetAdd(models.TransientModel):
         po_id = self._context['active_id']
         if not po_id:
             return
-        order_obj = self.env['purchase.order']
+        order_obj = self.env['purchase.order'].sudo()
         po = order_obj.browse(po_id)
         max_sequence = 0
         if po.order_line:
             max_sequence = max([line.sequence for line in po.order_line])
-        purchase_order_line = self.env['purchase.order.line']
-        set_lines = self.env['purchase.order.sets']
+        purchase_order_line = self.env['purchase.order.line'].sudo()
+        set_lines = self.env['purchase.order.sets'].sudo()
         for set in self.product_set_id:
             amount_untaxed = set.amount_untaxed
             set_old = set_lines.search(
@@ -216,11 +216,13 @@ class ProductSetAdd(models.TransientModel):
         if not picking_id:
             return
         picking = self.env['stock.picking'].browse(picking_id)
+        picking = picking.sudo()
         #for set in self.product_set_id:
             #for set_line in self.set_lines:
-        picking.move_lines = picking.with_context(dict(self._context, force_validate=True)).prepare_stock_move_line_pset_data(picking_id, self.set_lines, self.quantity)
+        picking.move_lines = picking.with_context(dict(self._context, force_validate=True)).prepare_stock_move_line_pset_data(picking_id, self.set_lines, self.quantity, self.product_set_id)
         picking.action_confirm()
         picking.action_assign()
+
 
 class ProductSetLine(models.TransientModel):
     _name = 'product.set.add.line'

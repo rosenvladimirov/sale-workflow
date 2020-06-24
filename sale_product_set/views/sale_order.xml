@@ -23,7 +23,7 @@
                             type="action"
                             name="%(act_open_wizard_product_set_add)d"
                             attrs="{'invisible': [('state','not in',('draft','sent'))]}"
-                            context="{'default_partner_id': partner_id, 'default_partner_shipping_id': partner_shipping_id, 'default_fiscal_position_id': fiscal_position_id, 'default_company_id': company_id, 'default_pricelist_id': pricelist_id, 'force_mode': 'sale' }"
+                            context="{'default_partner_id': partner_id, 'default_partner_shipping_id': partner_shipping_id, 'default_fiscal_position_id': fiscal_position_id, 'default_company_id': company_id, 'default_pricelist_id': pricelist_id, 'force_mode': 'sale', 'company_test': True }"
                             string="Add set"/>
                     </div>
                 </div>
@@ -60,7 +60,7 @@
                                         string="Modify Sets"
                                         icon="fa-th"
                                         class="oe_edit_only"
-                                        context="{'default_product_set_id': product_set_id, 'default_edit_sets': 1, 'set_line_ids': set_lines, 'order_id': parent.id, 'force_mode': 'editsale'}"
+                                        context="{'default_product_set_id': product_set_id, 'default_edit_sets': 1, 'set_line_ids': set_lines, 'order_id': parent.id, 'force_mode': 'editsale', 'company_test': True}"
                                 />
                         </tree>
                         <kanban class="o_kanban_mobile">
@@ -121,6 +121,12 @@
                         </form> -->
                     </field>
                 </page>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="after">
+              <field name="product_set_id"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/form/group/group/field[@name='tax_id']" position="before">
+              <field name="product_set_id" readonly="1"/>
             </xpath>
         </field>
     </record>

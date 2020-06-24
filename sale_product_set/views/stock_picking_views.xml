@@ -22,6 +22,11 @@
                             icon="fa fa-object-group"
                             attrs="{'invisible': [('show_operations', '=', False), ('state','not in', ('assigned')), ('picking_type_code', 'in', ('internal', 'incoming'))]}"/>
             </xpath>
+            <xpath expr="//notebook/page[3]" position="after">
+              <page name="pset" string="Product sets">
+                <field name="sets_line"/>
+              </page>
+            </xpath>
             <field name="result_package_id" position="after">
                 <field name="product_set_id"/>
             </field>

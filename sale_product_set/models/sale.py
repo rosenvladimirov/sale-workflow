@@ -192,6 +192,7 @@ class SaleOrderLine(models.Model):
         values.update({'product_set_id': self.product_set_id.id})
         return values
 
+
 class SaleOrderSets(models.Model):
     _name = 'sale.order.sets'
     _description = 'Sales Order Sets'

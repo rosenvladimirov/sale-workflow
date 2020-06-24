@@ -47,7 +47,7 @@ class AccountInvoice(models.Model):
                     'lines': list(lines),
                     'pset': category,
                 })
-                _logger.info("Category %s" % report_pages_sets)
+                #_logger.info("Category %s" % report_pages_sets)
             return report_pages_sets
         else:
             report_pages_sets = [[]]
@@ -69,6 +69,7 @@ class AccountInvoice(models.Model):
                     'pset': False,
                 })
             return report_pages_sets
+
 
 class AccountInvoiceLine(models.Model):
     _inherit = "account.invoice.line"

@@ -4,39 +4,75 @@
     <template id="report_product_set_pricelist_document" inherit_id="product_pricelist_direct_print.report_product_pricelist_document">
         <xpath expr="//t[@name='listcategory']" position="replace">
             <t t-foreach="o.product_set_layouted(products, pricelist, date)" t-as="sets">
+                <t t-set="group" t-value="''"/>
                 <t name="settmpl" t-foreach="sets" t-as="product_set_print">
+                    <t t-set="force_price" t-value="False"/>
                     <t t-set="category_products" t-value="product_set_print['lines']"/>
                     <t t-if="o.order_field == 'name'">
                         <t t-set="category_products"
-                           t-value="category_products.sorted(lambda x: '%s-%s' % (x.product_tmpl_id.display_name, x.name))"/>
+                           t-value="sorted(product_set_print['lines'], key=lambda x: x and '%s-%s' % (x.product_tmpl_id.display_name, x.name)) or ''"/>
                     </t>
                     <t t-if="o.order_field == 'default_code'">
                         <t t-set="category_products"
-                           t-value="category_products.sorted(lambda x: '%s-%s' % (x.product_tmpl_id.display_name, x.default_code or ''))"/>
+                           t-value="sorted(product_set_print['lines'], key=lambda x: x and '%s-%s' % (x.product_tmpl_id.display_name, x.default_code or '') or '')"/>
                     </t>
                     <t t-if="o.order_field == ''">
                         <t t-set="category_products"
-                           t-value="category_products.sorted(lambda x: x.product_tmpl_id)"/>
+                           t-value="sorted(product_set_print['lines'], key=lambda x: x.product_tmpl_id.id)"/>
+                    </t>
+                    <t t-if="group != product_set_print['group']">
+                        <tr>
+                            <td colspan="100" class="o_bulgaria_custom_name_pricelist text-left">
+                                <t t-if="product_set_print['group_color'] != 0">
+                                    <span t-att-class="'o_bulgaria_color_%s' % product_set_print['group_color']">&amp;bull;</span>
+                                </t>
+                                <t t-else="">
+                                    <span>&amp;bull;</span>
+                                </t>
+                                <strong name="group" t-esc="product_set_print['group_name']"/>
+                            </td>
+                        </tr>
                     </t>
                     <t t-if="product_set_print['price']">
                         <t name="setdetails" t-call="sale_product_set_pricelist_direct_print.report_product_set_pricelist_detail"/>
                     </t>
                     <t t-else="">
-                        <t name="details" t-call="product_pricelist_direct_print.report_product_pricelist_detail"/>
+                        <t name="details" t-call="sale_product_set_pricelist_direct_print.report_product_pricelist_detail"/>
                     </t>
+                    <t t-set="group" t-value="product_set_print['group']"/>
                 </t>
             </t>
         </xpath>
     </template>
     <template id="report_product_set_pricelist_detail">
         <tr t-if="product_set_print['price'] &gt; 0.0">
-            <td name="plinename">
-                <strong t-esc="product_set_print['pset'].display_name"/>
-            </td>
+            <t t-set="force_price" t-value="product_set_print['price']"/>
+            <t t-if="o.display_pictures">
+                <t t-if="product_set_print['pset'].image_small and o.image_sizes == 'image_small'">
+                    <td class="o_bulgaria_image_small"><span t-field="product_set_print['pset'].image_small" t-field-options='{"widget": "image"}'/></td>
+                </t>
+                <t t-if="product_set_print['pset'].image_medium and o.image_sizes == 'image_medium'">
+                    <td class="o_bulgaria_image_medium"><span t-field="product_set_print['pset'].image_medium" t-field-options='{"widget": "image"}'/></td>
+                </t>
+                <t t-if="product_set_print['pset'].image and o.image_sizes == 'image'">
+                    <td class="o_bulgaria_image"><span t-field="product_set_print['pset'].image" t-field-options='{"widget": "image"}'/></td>
+                </t>
+                <t t-if="not product_set_print['pset'].image">
+                    <td/>
+                </t>
+                <td>
+                    <strong name="picplinename" t-esc="product_set_print['pset'].display_name"/>
+                </td>
+            </t>
+            <t t-else="">
+                <td>
+                    <strong name="plinename" t-esc="product_set_print['pset'].display_name"/>
+                </td>
+            </t>
             <td t-if="o.show_standard_price"/>
             <td t-if="o.show_sale_price"/>
-            <td class="text-right">
-                <span name="extprice" t-esc="product_set_print['price_subtotal']"/>
+            <td t-if="o.show_sale_wh_vat_price" class="text-right">
+                <span name="extprice" t-esc="product_set_print['price_subtotal']" t-options="{'widget': 'monetary', 'display_currency': pricelist.currency_id}"/>
             </td>
             <!--
             <td>
@@ -44,17 +80,168 @@
             </td>
             -->
             <td class="text-right">
-                <strong name="price" t-esc="product_set_print['price']"/>
+                <strong name="price" t-esc="product_set_print['price']" t-options="{'widget': 'monetary', 'display_currency': pricelist.currency_id}"/>
             </td>
         </tr>
         <t t-if="o.show_set_detals">
-            <t t-foreach="product_set_print['lines']" t-as="line">
+            <t t-foreach="category_products" t-as="line">
                 <tr>
-                    <td>
-                        <i><span t-field="line.display_name"/></i>
-                    </td>
+                    <t t-if="o.display_pictures">
+                        <t t-if="line.image_small and o.image_sizes == 'image_small'">
+                            <td class="o_bulgaria_image_small"><span t-field="line.image_small" t-field-options='{"widget": "image"}'/></td>
+                        </t>
+                        <t t-if="line.image_medium and o.image_sizes == 'image_medium'">
+                            <td class="o_bulgaria_image_medium"><span t-field="line.image_medium" t-field-options='{"widget": "image"}'/></td>
+                        </t>
+                        <t t-if="line.image and o.image_sizes == 'image'">
+                            <td class="o_bulgaria_image"><span t-field="line.image" t-field-options='{"widget": "image"}'/></td>
+                        </t>
+                        <t t-if="not line.image">
+                            <td/>
+                        </t>
+                    </t>
+                    <t t-else="">
+                        <td>
+                            <i><span name="dplinename" t-field="line.display_name"/></i>
+                        </td>
+                    </t>
                     <td colspan="100">
                         <i><span t-esc="product_set_print['qty'][line]"/></i>
+                    </td>
+                </tr>
+            </t>
+        </t>
+    </template>
+    <template id="report_product_pricelist_detail">
+        <t t-set="product_print" t-value="product_set_print"/>
+        <!--
+        <tr t-if="product_print['has_variant_with_price']">
+            <td colspan="100">
+                <i><strong t-esc="'(%s) %s' % (product_print['lines'][0].product_tmpl_id.id, product_print['name'])"/></i>
+            </td>
+        </tr>
+        -->
+        <t t-if="product_print['single_product']">
+            <t t-foreach="category_products" t-as="line">
+                <t t-set="price" t-value="o.get_price(line, pricelist=pricelist, date=o.date)[0]"/>
+                <t t-set="force_price" t-value="price[2]"/>
+                <tr t-if="price[0]">
+                    <t t-if="o.display_pictures">
+                        <t t-if="line.image_small and o.image_sizes == 'image_small'">
+                            <td class="o_bulgaria_image_small"><span t-field="line.image_small" t-field-options='{"widget": "image"}'/></td>
+                        </t>
+                        <t t-if="line.image_medium and o.image_sizes == 'image_medium'">
+                            <td class="o_bulgaria_image_medium"><span t-field="line.image_medium" t-field-options='{"widget": "image"}'/></td>
+                        </t>
+                        <t t-if="line.image and o.image_sizes == 'image'">
+                            <td class="o_bulgaria_image"><span t-field="line.image" t-field-options='{"widget": "image"}'/></td>
+                        </t>
+                        <t t-if="not line.image">
+                            <td/>
+                        </t>
+                        <td>
+                            <strong name="piclinename" t-field="line.display_name"/>
+                        </td>
+                    </t>
+                    <t t-else="">
+                        <td>
+                            <strong name="linename" t-field="line.display_name"/>
+                        </td>
+                    </t>
+                    <td t-if="o.show_standard_price" class="text-right">
+                        <span name="stdprice" t-field="line.standard_price"/>
+                    </td>
+                    <td t-if="o.show_sale_price" class="text-right">
+                        <span name="listprice" t-field="line.list_price"/>
+                    </td>
+                    <td t-if="o.show_sale_wh_vat_price" class="text-right">
+                        <span name="subprice1" t-esc="price[3]" t-options="{'widget': 'monetary', 'display_currency': pricelist.currency_id}"/>
+                    </td>
+                    <td t-if="pricelist" class="text-right">
+                        <strong name="price1" t-esc="price[2]" t-options="{'widget': 'monetary', 'display_currency': pricelist.currency_id}"/>
+                    </td>
+                </tr>
+            </t>
+        </t>
+        <t t-else="">
+            <t t-if="product_print['has_variant_with_price']">
+                <t t-foreach="category_products" t-as="line">
+                    <tr t-if="line.check_for_price(pricelist, date)">
+                        <t t-set="price" t-value="o.get_price(line, pricelist=pricelist, date=o.date)[0]"/>
+                        <t t-if="o.display_pictures and o.image_sizes == 'image_small'">
+                            <t t-if="line.image_small">
+                                <td class="o_bulgaria_image_small">><span t-field="line.image_small" t-field-options='{"widget": "image"}'/></td>
+                            </t>
+                            <t t-if="line.image_medium and o.image_sizes == 'image_medium'">
+                                <td class="o_bulgaria_image_medium">><span t-field="line.image_medium" t-field-options='{"widget": "image"}'/></td>
+                            </t>
+                            <t t-if="line.image and o.image_sizes == 'image'">
+                                <td class="o_bulgaria_image">><span t-field="line.image" t-field-options='{"widget": "image"}'/></td>
+                            </t>
+                            <t t-if="not line.image">
+                                <td/>
+                            </t>
+                            <td>
+                                <strong name="picvlinename" t-field="line.display_name"/>
+                            </td>
+                        </t>
+                        <t t-else="">
+                            <td>
+                                <strong name="vlinename" t-field="line.display_name"/>
+                            </td>
+                        </t>
+                        <td t-if="o.show_standard_price" class="text-right">
+                            <span t-field="line.standard_price"/>
+                        </td>
+                        <td t-if="o.show_sale_price" class="text-right">
+                            <span t-field="line.list_price"/>
+                        </td>
+                        <td t-if="o.show_sale_wh_vat_price" class="text-right">
+                            <span name="subprice2" t-esc="price[3]" t-options="{'widget': 'monetary', 'display_currency': pricelist.currency_id}"/>
+                        </td>
+                        <td t-if="pricelist" class="text-right">
+                            <strong name="price2" t-esc="price[2]" t-options="{'widget': 'monetary', 'display_currency': pricelist.currency_id}"/>
+                        </td>
+                    </tr>
+                </t>
+            </t>
+            <t t-else="">
+                <t t-set="line" t-value="product_print['lines'][0]"/>
+                <t t-set="price" t-value="o.get_price(line.product_tmpl_id.product_variant_id, pricelist=pricelist, date=o.date)[0]"/>
+                <tr t-if="price[0]">
+                    <t t-if="o.display_pictures">
+                        <t t-if="line.product_tmpl_id.image_small and o.image_sizes == 'image_small'">
+                            <td class="o_bulgaria_image_small"><span t-field="line.product_tmpl_id.image_small" t-field-options='{"widget": "image"}'/></td>
+                        </t>
+                        <t t-if="line.product_tmpl_id.image_medium and o.image_sizes == 'image_medium'">
+                            <td class="o_bulgaria_image_medium"><span t-field="line.product_tmpl_id.image_medium" t-field-options='{"widget": "image"}'/></td>
+                        </t>
+                        <t t-if="line.product_tmpl_id.image and o.image_sizes == 'image'">
+                            <td class="o_bulgaria_image"><span t-field="line.product_tmpl_id.image" t-field-options='{"widget": "image"}'/></td>
+                        </t>
+                        <t t-if="not line.product_tmpl_id.image">
+                            <td/>
+                        </t>
+                        <td>
+                            <strong name="pictlinename" t-field="line.display_name"/>
+                        </td>
+                    </t>
+                    <t t-else="">
+                        <td>
+                            <strong name="tlinename" t-field="line.product_tmpl_id.display_name"/>
+                        </td>
+                    </t>
+                    <td t-if="o.show_standard_price" class="text-right">
+                        <span t-field="line.product_tmpl_id.product_variant_id.standard_price"/>
+                    </td>
+                    <td t-if="o.show_sale_price" class="text-right">
+                        <span t-field="line.product_tmpl_id.product_variant_id.list_price"/>
+                    </td>
+                    <td t-if="o.show_sale_wh_vat_price" class="text-right">
+                        <span name="subprice3" t-esc="price[3]" t-options="{'widget': 'monetary', 'display_currency': pricelist.currency_id}"/>
+                    </td>
+                    <td t-if="pricelist" class="text-right">
+                        <strong name="price3" t-esc="price[2]" t-options="{'widget': 'monetary', 'display_currency': pricelist.currency_id}"/>
                     </td>
                 </tr>
             </t>

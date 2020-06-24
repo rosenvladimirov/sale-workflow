@@ -25,7 +25,7 @@ class ProductSet(models.Model):
         for prod in self:
             if prod.product_prop_static_id:
                 prod.categ_ids = False
-                prod.prod.categ_ids = (6, False, [x.id for x in self.env['product.properties.category'].search([('applicability', '=', 'set')])])
+                prod.categ_ids = (6, False, [x.id for x in self.env['product.properties.category'].search([('applicability', '=', 'set')])])
                 prod._onchange_categ_ids()
 
     @api.onchange('categ_ids')

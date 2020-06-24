@@ -4,8 +4,7 @@
 from itertools import groupby
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
-import odoo.addons.decimal_precision as dp
+from functools import reduce
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -61,7 +60,7 @@ class ProductPricelistPrint(models.TransientModel):
                 if category_items and not product_items and not template_items:
                     res['categ_ids'] = [
                         (6, 0, category_items.mapped('categ_id').ids)]
-            _logger.info("SETS %s" % res)
+            #_logger.info("SETS %s" % res)
         return res
 
     @api.onchange('product_from_pricelist', 'pricelist_id')
@@ -71,12 +70,7 @@ class ProductPricelistPrint(models.TransientModel):
             if res.get('product_ids'):
                 self.product_ids = res['product_ids']
                 self.show_variants = True
-                if self.order_field == 'name':
-                    self.product_ids = self.product_ids.sorted(lambda x: x.name)
-                elif self.order_field == 'default_code':
-                    self.product_ids = self.product_ids.sorted(lambda x: x.default_code)
-                else:
-                    self.product_ids = self.product_ids.sorted(lambda x: x.product_tmpl_id.name)
+                self.product_ids = self.product_ids.sorted(lambda x: x.product_tmpl_id.id)
             if res.get('product_tmpl_ids'):
                 self.product_tmpl_ids = res['product_tmpl_ids']
             if res.get('categ_ids'):
@@ -90,7 +84,8 @@ class ProductPricelistPrint(models.TransientModel):
     def product_set_layouted(self, products, pricelist, date):
         self.ensure_one()
         product_set_obj = self.env['product.set']
-        pages = {product_set_obj: []}
+        pages = {product_set_obj: products.sorted(lambda r: r.product_tmpl_id.id)}
+        #pages[product_set_obj] = products.sorted(lambda r: r.product_tmpl_id.id)
         qty_set_products = {}
         all_set_products = self.env['product.product']
         for seto in self.product_set_ids:
@@ -105,7 +100,6 @@ class ProductPricelistPrint(models.TransientModel):
                 qty_set_products[seto][set_line.product_id] += set_line.quantity
             pages[seto] = seto.set_lines.mapped('product_id')
             all_set_products |= pages[seto]
-        pages[product_set_obj] = products
         #pages[product_set_obj] = products-all_set_products
         #_logger.info("SETS %s" % pages)
         report_pages = [[]]
@@ -138,19 +132,72 @@ class ProductPricelistPrint(models.TransientModel):
                 'tax': price_tax,
                 'price_subtotal': price_subtotal,
                 'pset': k,
+                'group': "-".join([k.mdgp_device and k.mdgp_device.code or "unknown", k.mdgp_anatomy and k.mdgp_anatomy.code or "unknown", k.mdgp_type and k.mdgp_type.name or 'unknown']),
+                'group_name': ", ".join([x for x in [k.mdgp_device and k.mdgp_device.name or 'unknown', k.mdgp_anatomy and k.mdgp_anatomy.name or 'unknown', k.mdgp_type and k.mdgp_type.name or 'unknown'] if x != 'unknown']),
+                'group_color': k.mdgp_anatomy.color,
+                'group_sort': "-".join([k.mdgp_device and k.mdgp_device.code or "unknown", k.mdgp_anatomy and k.mdgp_anatomy.code or "unknown", k.mdgp_type and k.mdgp_type.name or 'unknown', k.code and k.code or "", "unknown"]),
+                'codes': False,
                 }
                 report_pages[-1].append(values)
             else:
-                #_logger.info("SETS %s" % values)
-                values = {
-                'name': _('Uncategorized'),
-                'lines': v,
-                'qty': False,
-                'price': False,
-                'tax': False,
-                'price_subtotal': False,
-                'pset': False,
-                }
-                report_pages[-1].append(values)
-        #_logger.info("SETS %s" % report_pages[-1])
+                for category, lines in groupby(v, lambda l: l.product_tmpl_id):
+                    report_pages[-1].append({
+                        'name': category and category.display_name or _('Uncategorized'),
+                        'lines': list(lines),
+                        'qty': False,
+                        'price': False,
+                        'tax': False,
+                        'price_subtotal': False,
+                        'pset': False,
+                        'group': "-".join([category.vmdgp_device and category.vmdgp_device.code or "unknown", category.vmdgp_anatomy and category.vmdgp_anatomy.code or "unknown", category.mdgp_type and category.mdgp_type.name or 'unknown']),
+                        'group_name': ", ".join([x for x in [category.vmdgp_device and category.vmdgp_device.name or "unknown", category.vmdgp_anatomy and category.vmdgp_anatomy.name or "unknown", category.mdgp_type and category.mdgp_type.name or 'unknown'] if x != 'unknown']),
+                        'group_color': category.mdgp_anatomy.color,
+                        'group_sort': "-".join([category.vmdgp_device and category.vmdgp_device.code or "unknown", category.vmdgp_anatomy and category.vmdgp_anatomy.code or "unknown", category.mdgp_type and category.mdgp_type.name or 'unknown', "unknown", category.default_code and category.default_code or 'unknown']),
+                        'has_variant_with_price': category.product_variant_count > 1 and category.check_for_price(
+                            pricelist, date),
+                        'single_product': category.product_variant_count == 1,
+                        'codes': False,
+                    })
+
+        if len(report_pages[-1]) > 0:
+            for val in report_pages[-1]:
+                codes = {}
+                if val.get('pset'):
+                    pset = val['pset']
+                    if not codes.get(pset):
+                        codes[pset] = set([])
+                    val["codes"] = False
+                    for line in val['lines']:
+                        ctx = dict(self._context, pricelist=pricelist.id, product_set_id=pset.id)
+                        #_logger.info("CTX %s:%s" % (ctx, line.with_context(ctx).pricelist_code))
+                        if line.with_context(ctx).pricelist_code:
+                            codes[pset].update([line.with_context(ctx).pricelist_code])
+                    if codes:
+                        val["codes"] = list(set(reduce(lambda x, y: list(x)+list(y), list(codes.values()))))
+            #page = sorted(page, key=lambda x: x.get('pset') and str(x['pset'].code) or str(False), reverse=True)
+        report_pages[-1] = sorted(report_pages[-1], key=lambda x: x['group']+"-".join(map(str, [x['group_sort']])))
+        #_logger.info("SETS %s:%s" % (pricelist, report_pages[-1]))
         return report_pages
+
+    def _get_field_value(self, product, partner, pricelist, page):
+        res = super(ProductPricelistPrint, self)._get_field_value(product, partner, pricelist, page)
+        if res and page.get('pset'):
+            res['product_set_id'] = page['pset'].id
+        return res
+
+    def _get_key_value(self, partner_id, pricelist_id, product_tmpl_id, product_id, page):
+        key = super(ProductPricelistPrint, self)._get_key_value(partner_id, pricelist_id, product_tmpl_id, product_id, page)
+        if page.get('pset'):
+            key += "-%s" % page['pset'].id
+        else:
+            key += "-False"
+        return key
+
+    def _get_product_layouted(self, products, pricelist, date):
+        return self.product_set_layouted(products, pricelist, date)
+
+
+class ProductPricelistPrintLine(models.TransientModel):
+    _inherit = 'product.pricelist.print.line'
+
+    product_set_id = fields.Many2one('product.set', string='Product Set')

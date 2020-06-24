@@ -42,6 +42,38 @@ class ProductProperties(models.Model):
             elif not rec.model_obj_id and rec.type_field_model == 'product.set':
                 rec.model_obj_id = rec.product_set_id.id
 
+    @api.model
+    def set_all_print_properties(self, res, lines, mode='standard'):
+        print_properties = super(ProductProperties, self).set_all_print_properties(res, lines, mode=mode)
+
+        def add_set_exluded(x, ids):
+            ids.update([x])
+            return x
+
+        if res._name == 'stock.picking':
+            res_model_id = 'picking_id'
+        elif res._name == 'sale.order':
+            res_model_id = 'order_id'
+        elif res._name == 'account.invoice':
+            res_model_id = 'invoice_id'
+        elif res._name == 'res.partner':
+            res_model_id = 'partner_id'
+        else:
+            return False
+
+        for record in res:
+            print_ids = False
+            ids = set([])
+            for r in lines.mapped('product_set_id'):
+                if print_ids:
+                    print_ids |= r.product_properties_ids
+                else:
+                    print_ids = r.product_properties_ids
+            #_logger.info("PROPERTIES %s" % print_ids)
+            if print_ids:
+                print_properties = [(0, False, {'name': add_set_exluded(x.name.id, ids), res_model_id: record.id, 'print': True, 'sequence': x.sequence}) for x in print_ids if x.name and x.name.id not in list(ids)] + print_properties
+        return print_properties
+
 
 class ProductPropertiesType(models.Model):
     _inherit = "product.properties.type"
