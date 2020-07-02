@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="invoice_form" model="ir.ui.view">
+        <field name="name">related.pickings.account.invoice.form</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_form"/>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <field name="has_int_pick" invisible="1"/>
+                <page string="Int. Pickings" name="int_pickings" attrs="{'invisible': [('has_int_pick','=',False)]}">
+                    <field name="stock_int_picking_ids"/>
+                </page>
+            </notebook>
+        </field>
+    </record>
+    <record id="invoice_supplier_form" model="ir.ui.view">
+        <field name="name">account.invoice.supplier.form</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_supplier_form"/>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <field name="has_int_pick" invisible="1"/>
+                <page string="Int. Pickings" name="int_pickings" attrs="{'invisible': [('has_int_pick','=',False)]}">
+                    <field name="stock_int_picking_ids"/>
+                </page>
+            </notebook>
+        </field>
+    </record>
+</odoo>

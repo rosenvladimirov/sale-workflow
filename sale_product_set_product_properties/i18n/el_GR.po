@@ -1,0 +1,137 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* sale_product_set_product_properties
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 11.0+e-20191023\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-12-08 21:20+0000\n"
+"PO-Revision-Date: 2019-12-08 21:20+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: sale_product_set_product_properties
+#: model:ir.ui.view,arch_db:sale_product_set_product_properties.report_saleorder_set_html
+msgid "<strong>Subtotal: </strong>"
+msgstr "<strong>Μερικό σύνολο: </strong>"
+
+#. module: sale_product_set_product_properties
+#: model:ir.ui.view,arch_db:sale_product_set_product_properties.report_saleorder_set_html
+msgid "Amount"
+msgstr "Ποσό"
+
+#. module: sale_product_set_product_properties
+#: model:ir.model,name:sale_product_set_product_properties.model_product_properties_category
+msgid "Category Product properties"
+msgstr "Category Product properties"
+
+#. module: sale_product_set_product_properties
+#: model:ir.ui.view,arch_db:sale_product_set_product_properties.report_saleorder_set_html
+msgid "Description"
+msgstr "Περιγραφή"
+
+#. module: sale_product_set_product_properties
+#: model:ir.ui.view,arch_db:sale_product_set_product_properties.report_saleorder_set_html
+msgid "Disc.(%)"
+msgstr "Εκπτ.(%)"
+
+#. module: sale_product_set_product_properties
+#: model:ir.model.fields,field_description:sale_product_set_product_properties.field_product_set_categ_ids
+msgid "Global Category properties"
+msgstr "Global Category properties"
+
+#. module: sale_product_set_product_properties
+#: model:ir.model,name:sale_product_set_product_properties.model_account_invoice
+msgid "Invoice"
+msgstr "Τιμολόγιο"
+
+#. module: sale_product_set_product_properties
+#: model:ir.model.fields,field_description:sale_product_set_product_properties.field_product_set_massedit
+msgid "Massedit"
+msgstr "Massedit"
+
+#. module: sale_product_set_product_properties
+#: model:ir.ui.view,arch_db:sale_product_set_product_properties.view_order_form
+msgid "Prodcut Sets properties"
+msgstr "Χαρακτηρηστικά Προϊόντων"
+
+#. module: sale_product_set_product_properties
+#: model:ir.model.fields,field_description:sale_product_set_product_properties.field_product_properties_product_set_id
+msgid "Product Set"
+msgstr "ΣΕΤ Προϊόντων"
+
+#. module: sale_product_set_product_properties
+#: model:ir.ui.view,arch_db:sale_product_set_product_properties.product_set_form_view
+msgid "Product Sets Properties"
+msgstr "Ιδιότητες Σέτ Προϊόντων"
+
+#. module: sale_product_set_product_properties
+#: model:ir.model,name:sale_product_set_product_properties.model_product_properties
+msgid "Product properties"
+msgstr "Product properties"
+
+#. module: sale_product_set_product_properties
+#: model:ir.model,name:sale_product_set_product_properties.model_product_set
+msgid "Product set"
+msgstr "ΣΕΤ Προϊόντων"
+
+#. module: sale_product_set_product_properties
+#: model:ir.model.fields,field_description:sale_product_set_product_properties.field_product_set_product_properties_ids
+msgid "Product sets properties"
+msgstr "Ιδιότητες Σέτ Προϊόντων"
+
+#. module: sale_product_set_product_properties
+#: model:ir.model.fields,field_description:sale_product_set_product_properties.field_sale_order_products_set_properties
+msgid "Products properties"
+msgstr "Products properties"
+
+#. module: sale_product_set_product_properties
+#: model:ir.ui.view,arch_db:sale_product_set_product_properties.product_set_form_view
+msgid "Properties Category"
+msgstr "Ιδιότητες κατηγοριών"
+
+#. module: sale_product_set_product_properties
+#: model:ir.ui.view,arch_db:sale_product_set_product_properties.report_saleorder_set_html
+msgid "Quantity"
+msgstr "Ποσότητα"
+
+#. module: sale_product_set_product_properties
+#: model:ir.model,name:sale_product_set_product_properties.model_sale_order
+msgid "Quotation"
+msgstr "ΠΡΟΣΦΟΡΑ"
+
+#. module: sale_product_set_product_properties
+#: model:ir.model.fields,field_description:sale_product_set_product_properties.field_product_set_has_product_properties
+msgid "Sets Product properties"
+msgstr "Sets Product properties"
+
+#. module: sale_product_set_product_properties
+#: model:ir.ui.view,arch_db:sale_product_set_product_properties.report_saleorder_set_html
+msgid "Taxes"
+msgstr "Φόροι"
+
+#. module: sale_product_set_product_properties
+#: model:ir.model,name:sale_product_set_product_properties.model_product_properties_type
+msgid "The Properties types"
+msgstr "The Properties types"
+
+#. module: sale_product_set_product_properties
+#: model:ir.ui.view,arch_db:sale_product_set_product_properties.report_saleorder_set_html
+msgid "Total Price"
+msgstr "Συνολική Τιμή"
+
+#. module: sale_product_set_product_properties
+#: model:ir.ui.view,arch_db:sale_product_set_product_properties.report_saleorder_set_html
+msgid "Unit Price"
+msgstr "Τιμή Μονάδας"
+
+#. module: sale_product_set_product_properties
+#: model:ir.ui.view,arch_db:sale_product_set_product_properties.report_saleorder_set_html
+msgid "Unit measure"
+msgstr "ΜΜ"
+

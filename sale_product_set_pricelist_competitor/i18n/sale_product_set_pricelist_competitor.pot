@@ -1,0 +1,250 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* sale_product_set_pricelist_competitor
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 11.0+e-20190711\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-10-12 18:35+0000\n"
+"PO-Revision-Date: 2019-10-12 18:35+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.ui.view,arch_db:sale_product_set_pricelist_competitor.product_set_competitorinfo_search_view
+msgid "Active"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.ui.view,arch_db:sale_product_set_pricelist_competitor.product_set_competitorinfo_search_view
+msgid "Archived"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,help:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_sequence
+msgid "Assigns the priority to the list of product competitor."
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_company_id
+msgid "Company"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_name
+#: model:ir.ui.view,arch_db:sale_product_set_pricelist_competitor.product_set_competitorinfo_form_view
+#: model:ir.ui.view,arch_db:sale_product_set_pricelist_competitor.product_set_competitorinfo_search_view
+msgid "Competitor"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.ui.view,arch_db:sale_product_set_pricelist_competitor.product_set_competitorinfo_form_view
+#: model:ir.ui.view,arch_db:sale_product_set_pricelist_competitor.product_set_competitorinfo_tree_view
+msgid "Competitor Information"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.actions.act_window,name:sale_product_set_pricelist_competitor.product_set_competitorinfo_type_action
+msgid "Competitor Pricelists"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_product_code
+msgid "Competitor Product Code"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_product_name
+msgid "Competitor Product Name"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.ui.view,arch_db:sale_product_set_pricelist_competitor.product_set_form_view
+msgid "Competitor info prices"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,help:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_name
+msgid "Competitor of this product"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitor_ids
+#: model:ir.ui.view,arch_db:sale_product_set_pricelist_competitor.product_set_form_view
+msgid "Competitors"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_create_date
+msgid "Created on"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_partner_id
+msgid "Customer"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_date_end
+msgid "End Date"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,help:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_date_end
+msgid "End date for this competitor price"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.ui.view,arch_db:sale_product_set_pricelist_competitor.product_set_competitorinfo_search_view
+msgid "Group By"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_id
+msgid "ID"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,help:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_product_set_id
+msgid "If not set, the competitor price will apply to all variants of this products."
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model,name:sale_product_set_pricelist_competitor.model_product_set_competitorinfo
+msgid "Information about a product set competitor"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo___last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_min_qty
+msgid "Minimal Quantity"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.ui.view,arch_db:sale_product_set_pricelist_competitor.product_set_competitorinfo_form_view
+msgid "Other Information"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_price
+#: model:ir.ui.view,arch_db:sale_product_set_pricelist_competitor.product_set_competitorinfo_tree_view
+msgid "Price"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.ui.view,arch_db:sale_product_set_pricelist_competitor.product_set_competitorinfo_form_view
+msgid "Price List"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_pricelist_id
+msgid "Pricelist"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,help:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_pricelist_id
+msgid "Pricelist for current sales order."
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_product_set_id
+#: model:ir.ui.view,arch_db:sale_product_set_pricelist_competitor.product_set_competitorinfo_tree_view
+msgid "Product Set"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model,name:sale_product_set_pricelist_competitor.model_product_set
+#: model:ir.ui.view,arch_db:sale_product_set_pricelist_competitor.product_set_competitorinfo_form_view
+#: model:ir.ui.view,arch_db:sale_product_set_pricelist_competitor.product_set_competitorinfo_search_view
+msgid "Product set"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_price_stable
+msgid "Stable Price"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,field_description:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_date_start
+msgid "Start Date"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,help:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_date_start
+msgid "Start date for this competitor price"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,help:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_min_qty
+msgid "The minimal quantity to purchase from this competitor, expressed in the competitor Product Unit of Measure if not any, in the default unit of measure of the product otherwise."
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,help:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_price
+msgid "The price to purchase a product"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,help:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_price_stable
+msgid "The stable price to sell a product"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,help:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_product_code
+msgid "This competitor's product code will be used when printing a request for quotation. Keep empty to use the internal one."
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.model.fields,help:sale_product_set_pricelist_competitor.field_product_set_competitorinfo_product_name
+msgid "This competitor's product name will be used when printing a request for quotation. Keep empty to use the internal one."
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.ui.view,arch_db:sale_product_set_pricelist_competitor.product_set_competitorinfo_form_view
+msgid "Validity"
+msgstr ""
+
+#. module: sale_product_set_pricelist_competitor
+#: model:ir.ui.view,arch_db:sale_product_set_pricelist_competitor.product_set_competitorinfo_form_view
+msgid "to"
+msgstr ""
+

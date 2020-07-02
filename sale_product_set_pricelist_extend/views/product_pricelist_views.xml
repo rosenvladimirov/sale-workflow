@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="sale_product_set.product_pricelist_check_view" model="ir.ui.view">
+            <field name="name">product.pricelist.check.form</field>
+            <field name="model">product.pricelist</field>
+            <field name="inherit_id" ref="product.product_pricelist_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button name="check_pricelist" type="object"
+                            class="oe_stat_button" icon="fa fa-check" groups="sales_team.group_sale_manager">
+                        <field name="count_items" widget="statinfo" string="Items" help="Pricelist items"/>
+                    </button>
+                </xpath>
+            </field>
+        </record>
+        <record id="sale_product_set.product_pricelist_item_pset_tree_view" model="ir.ui.view">
+            <field name="name">product.pricelist.item.pset.tree</field>
+            <field name="model">product.pricelist.item</field>
+            <field name="inherit_id" ref="product.product_pricelist_item_tree_view" />
+            <field name="arch" type="xml">
+                <field name="categ_id" position="after">
+                    <field name="product_set_id" context="{'company_test': True}"/>
+                </field>
+            </field>
+        </record>
+        <record id="sale_product_set.product_pricelist_item_pset_form_view" model="ir.ui.view">
+            <field name="name">product.pricelist.item.pset.form</field>
+            <field name="model">product.pricelist.item</field>
+            <field name="inherit_id" ref="product.product_pricelist_item_form_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//group[1]" position="after">
+                    <separator string="Additional filters"/>
+                    <group name="filters">
+                        <group>
+                            <field name="product_set_id" context="{'company_test': True}"/>
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="sale_product_set.product_pricelist_item_view_search">
+            <field name="name">product.pricelist.item.search</field>
+            <field name="model">product.pricelist.item</field>
+            <field name="inherit_id" ref="product.product_pricelist_item_view_search" />
+            <field name="arch" type="xml">
+                 <xpath expr="//group" position="inside">
+                    <filter string="Product Set" name="groupby_product_set_id" domain="[]" context="{'group_by': 'product_set_id', 'company_test': True}"/>
+                 </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

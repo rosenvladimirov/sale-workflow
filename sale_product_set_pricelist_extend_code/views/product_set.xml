@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_product_set_form" model="ir.ui.view">
+        <field name="name">product.set.form</field>
+        <field name="model">product.set</field>
+        <field name="inherit_id" ref="sale_product_set_pricelist_extend.view_product_set_pricelist_extend_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='pricelist_item_ids']/tree/field[@name='pricelist_id']" position="after">
+                <field name="code"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
