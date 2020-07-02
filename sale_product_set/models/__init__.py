@@ -9,5 +9,5 @@ from . import stock_move
 from . import stock_move_line
 from . import product
 from . import stock_picking
-from . import product_pricelist
+#from . import product_pricelist # moved in sale_product_set_pricelist_extend
 from . import procurement

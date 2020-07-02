@@ -52,19 +52,23 @@ class ProductProperties(models.Model):
 
         if res._name == 'stock.picking':
             res_model_id = 'picking_id'
+            product_set_ids = lines.mapped('product_set_ids')
         elif res._name == 'sale.order':
             res_model_id = 'order_id'
+            product_set_ids = lines.mapped('product_set_id')
         elif res._name == 'account.invoice':
             res_model_id = 'invoice_id'
+            product_set_ids = lines.mapped('product_set_id')
         elif res._name == 'res.partner':
             res_model_id = 'partner_id'
+            product_set_ids = False
         else:
             return False
 
-        for record in res:
+        for record in res and product_set_ids:
             print_ids = False
             ids = set([])
-            for r in lines.mapped('product_set_id'):
+            for r in product_set_ids:
                 if print_ids:
                     print_ids |= r.product_properties_ids
                 else:

@@ -20,21 +20,20 @@ class Picking(models.Model):
     @api.multi
     def _compute_has_sets(self):
         for record in self:
-            record.has_sets = len([x.product_set_id.id for x in record.move_lines]) > 0
+            record.has_sets = len([x.id for x in record.move_line_ids if x.product_set_id]) > 0
 
     @api.multi
     def _compute_sets_line(self):
         for record in self:
             record.sets_line = False
-            sets_line = set([])
-            for line in record.move_lines:
-                sets_line.update(line.product_set_id)
-                if line.move_line_ids:
-                    for ml in line.move_line_ids:
-                        if ml.product_set_id != line.product_set_id:
-                            ml.product_set_id = line.product_set_id
-            #if sets_line:
-            #    record.sets_line = (6, False, [x for x in list(sets_line)])
+            sets_line = False
+            for line in record.move_line_ids:
+                if not sets_line:
+                    sets_line = line.product_set_id
+                else:
+                    sets_line |= line.product_set_id
+            if sets_line:
+                record.sets_line = sets_line
 
     def prepare_stock_move_line_pset_data(self, picking_id, set_lines, quantity, set):
         res = []
@@ -52,10 +51,11 @@ class Picking(models.Model):
                     'location_id': self.location_id.id,
                     'location_dest_id': self.location_dest_id.id,
                     'date': fields.datetime.now(),
+                    'product_set_id': set.id,
                 })
-                if not res_stock_move_line.get(quant.product_id):
-                    res_stock_move_line[quant.product_id] = []
-                res_stock_move_line[quant.product_id].append((0, 0, stock_move_line._convert_to_write(stock_move_line._cache)))
+                if not res_stock_move_line.get(line.product_id):
+                    res_stock_move_line[line.product_id] = []
+                res_stock_move_line[line.product_id].append((0, 0, stock_move_line._convert_to_write(stock_move_line._cache)))
                 #move['move_line_ids'] = (0, 0, stock_move_line._convert_to_write(stock_move_line._cache)),
                 #res.append((0, 0, move._convert_to_write(move._cache)))
                 #_logger.info("TEST BEFORE %s" % move['move_line_ids'])
@@ -85,6 +85,8 @@ class Picking(models.Model):
             'ordered_qty': qty+old_qty,
             'product_uom_qty': qty + old_qty,
             'product_uom': product.uom_id.id,
+            'product_set_id': set.id,
+            'company_id': self.company_id.id,
         })
         #line_values = stock_move._convert_to_write(stock_move._cache)
         #_logger.info("Stock move %s" % stock_move)
@@ -135,10 +137,13 @@ class Picking(models.Model):
                     if order_line.product_set_id and not pset.get(order_line.product_set_id):
                         pset[order_line.product_set_id] = order_line.pset_quantity
             if not pset:
-                for line in self.move_lines:
-                    qty = sum([x.quantity for x in line.product_set_id.set_lines.filtered(lambda r: r.product_id == line.product_id)])
-                    qty = qty == 0.0 and 1.0 or qty
-                    pset[line.product_set_id] = line.ordered_qty / qty
+                for line in self.move_line_ids:
+                    if not pset.get(line.product_set_id):
+                        qty = sum([x.quantity for x in
+                                   line.product_set_id.set_lines.filtered(lambda r: r.product_id == line.product_id)])
+                        qty = qty == 0.0 and 1.0 or qty
+                        pset[line.product_set_id] = line.move_id.ordered_qty / qty
+                        continue
 
             report_pages_sets = [[]]
             for category, lines in groupby(self.move_line_ids, lambda l: l.product_set_id):

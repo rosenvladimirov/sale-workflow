@@ -23,7 +23,7 @@
                             type="action"
                             name="%(act_open_wizard_product_set_add)d"
                             attrs="{'invisible': [('state','not in',('draft','sent'))]}"
-                            context="{'default_partner_id': partner_id, 'default_partner_shipping_id': dest_address_id, 'default_fiscal_position_id': fiscal_position_id, 'default_company_id': company_id, 'force_mode': 'purchase', 'company_test': True }"
+                            context="{'default_partner_id': partner_id, 'default_partner_shipping_id': dest_address_id, 'default_fiscal_position_id': fiscal_position_id, 'default_company_id': company_id, 'force_mode': 'purchase', 'company_test': True}"
                             string="Add set"/>
                     </div>
                 </div>

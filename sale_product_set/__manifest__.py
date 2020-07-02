@@ -7,7 +7,7 @@
     'category': 'Sale',
     'license': 'AGPL-3',
     'author': 'Rosen Vladimirov, dXFactory Ltd., Anybox, Odoo Community Association (OCA)',
-    'version': '11.0.3.0.0',
+    'version': '11.0.4.0.0',
     'website': 'https://github.com/rosenvladimirov/sale-workflow',
     'summary': "Sale product set",
     'depends': [
@@ -16,7 +16,7 @@
         'product',
         'purchase',
         'stock',
-        'product_pricelist_extend',
+        #'product_pricelist_extend', moved in sale_product_set_pricelist_extend
         'report_theming_properties',
     ],
     'data': [
@@ -31,7 +31,7 @@
         'views/account_invoice_view.xml',
         'views/stock_move_views.xml',
         'views/stock_picking_views.xml',
-        'views/product_pricelist_views.xml',
+        #'views/product_pricelist_views.xml', moved in sale_product_set_pricelist_extend
     ],
     'demo': [
         'demo/product_set.xml',

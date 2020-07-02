@@ -11,8 +11,8 @@
                             type="action"
                             name="%(act_open_wizard_product_set_add)d"
                             icon="fa fa-object-group"
-                            attrs="{'invisible': [('state','not in',('draft','sent')), ('has_sets', '=', True)]}"
-                            context="{'force_mode': 'picking' }"
+                            attrs="{'invisible': [('show_operations', '=', True), ('state','not in',('draft','sent')), ('has_sets', '=', True)]}"
+                            context="{'force_mode': 'picking', 'company_test': True}"
                             string="Add set"/>
                     <button
                             class="oe_stat_button"
@@ -20,16 +20,60 @@
                             string="Split by Sets"
                             type="object"
                             icon="fa fa-object-group"
-                            attrs="{'invisible': [('show_operations', '=', False), ('state','not in', ('assigned')), ('picking_type_code', 'in', ('internal', 'incoming'))]}"/>
+                            attrs="{'invisible': [('show_operations', '=', True), ('state','not in', ('assigned')), ('picking_type_code', 'in', ('internal', 'incoming'))]}"/>
             </xpath>
             <xpath expr="//notebook/page[3]" position="after">
-              <page name="pset" string="Product sets">
-                <field name="sets_line"/>
-              </page>
+                <page name="pset" string="Product sets" attrs="{'invisible': [('has_sets', '=', False)]}">
+                    <field name="sets_line"/>
+                </page>
             </xpath>
             <field name="result_package_id" position="after">
-                <field name="product_set_id"/>
+                <field name="mv_product_set_id" invisible="1"/>
+                <field name="product_set_id" context="{'company_test': True, 'default_product_set_id': mv_product_set_id}"/>
             </field>
+            <field name="is_quantity_done_editable" position="before">
+                <field name="product_set_ids" widget="many2many_tags" context="{'company_test': True}"/>
+                <field name="product_set_id" context="{'company_test': True}" invisible="1"/>
+            </field>
+            <xpath expr="//field[@name='move_line_ids']" position="attributes">
+                <attribute name="context">{'default_picking_id': id, 'default_location_id': location_id, 'default_location_dest_id': location_dest_id, 'default_product_set_id': product_set_id}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_show_details']" position="attributes">
+                <attribute name="context">{'default_product_set_id': product_set_id}</attribute>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_stock_move_operations" model="ir.ui.view">
+        <field name="name">stock.picking.form</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree" />
+        <field name="arch" type="xml">
+            <field name="result_package_id" position="after">
+                <field name="mv_product_set_id" invisible="1"/>
+                <field name="product_set_id" context="{'company_test': True, 'default_product_set_id': mv_product_set_id}"/>
+            </field>
+        </field>
+    </record>
+    <record id="view_picking_btn_form" model="ir.ui.view">
+        <field name="name">stock.picking.form</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock_autoprint.view_picking_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='buttons_picking']" position="inside">
+                <field name="has_sets" invisible="1"/>
+                <button class="btn btn-sm btn-default oe_highlight"
+                        type="action"
+                        name="%(act_open_wizard_product_set_add)d"
+                        attrs="{'invisible': [('show_operations', '=', False), ('state','not in',('draft','sent')), ('has_sets', '=', True)]}"
+                        context="{'force_mode': 'picking', 'company_test': True}"
+                        string="Add set"/>
+                <button
+                        class="btn btn-sm btn-default oe_highlight"
+                        name="action_split_pset_row"
+                        string="Split by Sets"
+                        type="object"
+                        attrs="{'invisible': [('show_operations', '=', False), ('state','not in', ('assigned')), ('picking_type_code', 'in', ('internal', 'incoming'))]}"/>
+            </xpath>
         </field>
     </record>
 </odoo>

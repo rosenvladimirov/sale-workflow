@@ -76,8 +76,8 @@ class ProductSet(models.Model):
                             ('purchase', 'Purchase'),
                             ],
                             track_visibility='onchange', default='boot', copy=False)
-    pricelist_item_ids = fields.One2many('product.pricelist.item', 'product_set_id', string='Pricelist Items', compute_sudo=True)
-    has_pricelist = fields.Boolean(string="Has pricelist", compute="_compute_has_pricelist")
+    #pricelist_item_ids = fields.One2many('product.pricelist.item', 'product_set_id', string='Pricelist Items', compute_sudo=True)
+    #has_pricelist = fields.Boolean(string="Has pricelist", compute="_compute_has_pricelist")
 
     # image: all image fields are base64 encoded and PIL-supported
     image = fields.Binary(
@@ -111,10 +111,10 @@ class ProductSet(models.Model):
         for pset in self:
             pset.display_name = "[%s] %s" % (pset.code, pset.name)
 
-    @api.multi
-    def _compute_has_pricelist(self):
-        for record in self:
-            record.has_pricelist = len(record.pricelist_item_ids.ids) > 0
+    #@api.multi
+    #def _compute_has_pricelist(self):
+    #    for record in self:
+    #        record.has_pricelist = len(record.pricelist_item_ids.ids) > 0
 
     @api.onchange('fiscal_position_id')
     def _compute_tax_id(self):

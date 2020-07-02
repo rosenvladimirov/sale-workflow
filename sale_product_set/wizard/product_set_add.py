@@ -1,6 +1,7 @@
 # Copyright 2015 Anybox S.A.S
 # Copyright 2016-2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
+
 from odoo import models, fields, api, _
 import odoo.addons.decimal_precision as dp
 from odoo.exceptions import UserError
