@@ -14,6 +14,8 @@
         'views/sale_views.xml',
         #'views/stock_picking_views.xml',
         'views/account_invoice_view.xml',
+        'views/report_invoice.xml',
+        'views/report_sale_templates.xml',
     ],
     'demo': [
     ],

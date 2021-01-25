@@ -16,6 +16,7 @@ Product set informations about Product properties
                 ],
     'data': [
             'views/sale_views.xml',
+            'views/stock_picking_views.xml',
             'views/product_set_views.xml',
             'views/product_properties_linename_templates.xml',
             'views/report_sale_templates.xml',

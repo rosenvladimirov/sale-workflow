@@ -71,10 +71,12 @@ class SaleOrder(models.Model):
         if not res:
             res = {}
         if (not self.partner_contact_id and self.partner_id) or (self.partner_contact_id and self.partner_id and self.partner_contact_id.parent_id != self.partner_id):
-            self.partner_contact_id = self.partner_id.child_ids and self.partner_id.mapped('child_ids')[0] or False
-            if self.partner_contact_id:
+            partner_contact_id = self.partner_id.child_ids and self.partner_id.mapped('child_ids')[0] or False
+            if partner_contact_id:
+                self.partner_contact_id = partner_contact_id
                 res.update({'domain': {'partner_contact_id': [('customer', '=', True), ('parent_id', '=', self.partner_id.id)]}})
             else:
+                self.partner_contact_id = self.partner_id
                 res.update({'domain': {'partner_contact_id': [('customer', '=', True), ('id', '=', self.partner_id.id)]}})
         return res
 

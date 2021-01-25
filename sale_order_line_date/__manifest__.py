@@ -19,9 +19,11 @@
     "license": "AGPL-3",
     "depends": [
         "sale_order_dates",
+        "datetime_formatter",
     ],
     "data": [
         "views/sale_order_view.xml",
+        'views/report_sale_templates.xml',
     ],
     "installable": True,
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_picking_print_set_form" model="ir.ui.view">
+        <field name="name">stock.picking.set.form</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="report_theming_properties.view_picking_print_user_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[@name='print_properties']" position="inside">
+                <separator name="staticproperties" string="Print expanded product set" groups="product_properties.group_properties_print"/>
+                <field name="print_sets_line" nolabel="1" domain="[('id', 'in', sets_line)]" context="{'company_test': True}" groups="product_properties.group_properties_print"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

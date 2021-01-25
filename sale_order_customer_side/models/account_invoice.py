@@ -21,6 +21,7 @@ class AccountInvoiceLine(models.Model):
     api.multi
     def _compute_customer_po_ids(self):
         for record in self:
-            record.customer_po_ids = False
+            values = []
             for order_line in self.sale_line_ids:
-                record.customer_po_ids |= order_line.customer_po_ids
+                values.append(order_line.sale_order_line_ids.ids)
+            record.customer_po_ids = (6, False, values)

@@ -12,6 +12,7 @@
             </field>
             <field name="partner_shipping_id" position="after">
                 <field name="stock_int_picking_ids" widget="many2many_tags" options="{'open_view': True}" domain="[('picking_type_code', '=', 'internal'), '|', '|', ('partner_id', 'in', [partner_id, partner_shipping_id]), ('location_id.out_partner_id', 'in', [partner_id, partner_shipping_id]), ('location_dest_id.out_partner_id', 'in', [partner_id, partner_shipping_id])]"/>
+                <button name="%(act_open_wizard_sale_order_picking_internal_import)d" type="action" string="Import pickings" icon="fa-download" context="{'default_partner_id': partner_id, 'default_partner_shipping_id': partner_shipping_id}"/>
             </field>
         </field>
     </record>

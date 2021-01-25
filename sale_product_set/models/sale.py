@@ -32,13 +32,18 @@ class SaleOrder(models.Model):
         self.ensure_one()
         if self.has_sets:
             report_pages_sets = [[]]
-            for category, lines in groupby(self.order_line, lambda l: l.product_set_id):
+            for category, lines in groupby(self.order_line.sorted(lambda r: r.product_set_id, reverse=True), lambda l: l.product_set_id):
                 #_logger.info("LINES %s" % list(lines))
                 # If last added category induced a pagebreak, this one will be on a new page
                 if report_pages_sets[-1] and report_pages_sets[-1][-1]['pagebreak']:
                     report_pages_sets.append([])
                 qty = sum(x.quantity for x in self.sets_line if x.product_set_id and category and x.product_set_id.id == category.id)
                 unit_price = qty > 0.0 and category.subtotal/qty or category.subtotal
+                split_sets = self.sets_line.filtered(lambda r: r.product_set_id == category)
+                if split_sets:
+                    split_sets = split_sets[0].split_sets
+                else:
+                    split_sets = False
                 # Append category to current report page
                 report_pages_sets[-1].append({
                         'name': category and category.print_name or _('Uncategorized'),
@@ -49,8 +54,9 @@ class SaleOrder(models.Model):
                         'lines': list(lines),
                         'vat':  ', '.join(map(lambda x: (x.description or x.name), [l.tax_id for l in list(lines)])),
                         'pset': category,
+                        'split_sets': split_sets,
                     })
-            _logger.info("LINES %s" % report_pages_sets)
+            #_logger.info("LINES %s" % report_pages_sets)
             return report_pages_sets
         else:
             report_pages_sets = [[]]
@@ -73,50 +79,6 @@ class SaleOrder(models.Model):
                     'pset': False,
                 })
             return report_pages_sets
-
-    @api.multi
-    def _set_cart_update(self, product_set_id=None, add_qty=0, set_qty=0, attributes=None, **kwargs):
-        """ Add or set product quantity, add_qty can be negative """
-        self.ensure_one()
-        SaleOrderLineSudo = self.env['sale.order.line'].sudo()
-        SetLinesSets = self.env['sale.order.sets'].sudo()
-        res_id = False
-        #_logger.info("Show _____________ %s:%s" % (product_set_id, set_qty))
-        try:
-            if set_qty:
-                quantity = float(set_qty)
-        except ValueError:
-            quantity = 1
-
-        if self.state != 'draft':
-            request.session['sale_order_id'] = None
-            raise UserError(_('It is forbidden to modify a sales order which is not in draft status'))
-
-        max_sequence = 0
-        if self.order_line:
-            max_sequence = max([line.sequence for line in self.order_line])
-
-        for set in self.env['product.set'].browse(product_set_id):
-            amount_untaxed = set.amount_untaxed
-            set_old = self.sets_line.search([('order_id', '=', self.id), ('product_set_id', '=', set.id)])
-            if set_old:
-                #_logger.info("Add set %s:%s" % (self.quantity, set_old.quantity))
-                set_old.write(self.prepare_sale_order_set_data(self.id, set, quantity+sum(ss.quantity for ss in set_old), sum(ss.amount_total for ss in set_old)+self.pricelist_id.currency_id.round(amount_untaxed)))
-                res_id = set_old.id
-            else:
-                res = SetLinesSets.create(self.prepare_sale_order_set_data(self.id, set, quantity, self.pricelist_id.currency_id.round(amount_untaxed)))
-                res_id = res.id
-            for set_line in set.set_lines:
-                line = self.sudo().order_line.search([('order_id', '=', self.id), ('product_id', '=', set_line.product_id.id), ('product_set_id', '=', set.id)], limit=1)
-                if line:
-                    line.write(self.prepare_sale_order_line_set_data(self.id, set, set_line, quantity, set_old.id, max_sequence=max_sequence, old_qty=line.product_uom_qty, old_pset_qty=line.pset_quantity))
-                else:
-                    line = SaleOrderLineSudo.create(self.prepare_sale_order_line_set_data(self.id, set, set_line, quantity, set_old.id, max_sequence=max_sequence))
-                price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
-                amount_untaxed += line.tax_id.compute_all(price, line.order_id.currency_id, line.product_uom_qty, product=line.product_id, partner=line.order_id.partner_shipping_id)['total_excluded']
-            set_old.write({'price_unit': amount_untaxed/self.quantity,
-                           'amount_total': amount_untaxed})
-        return {"set_line_id": res_id, "quantity": quantity}
 
     def prepare_sale_order_set_data(self, sale_order_id, set, qty, total, split_sets=False):
         set_lines = self.env['sale.order.sets'].new({
@@ -180,10 +142,110 @@ class SaleOrderLine(models.Model):
         # negative discounts (= surcharge) are included in the display price
         return max(base_price, final_price)
 
-    #@api.onchange('product_id', 'price_unit', 'product_uom', 'product_uom_qty', 'tax_id')
-    #def _onchange_discount(self):
-    #    self = self.with_context(dict(self._context, product_set_id=self.product_set_id.id))
-    #    super(SaleOrderLine, self)._onchange_discount()
+    @api.model
+    def create(self, vals):
+        res = super(SaleOrderLine, self).create(vals)
+        for record in res:
+            if 'product_set_id' in vals and not self._context.get('block_pset', False):
+                update = record.order_id.order_line.filtered(lambda r: r.product_set_id.id == vals['product_set_id'] and not r.set_id)
+                #_logger.info("PSET NEW %s:%s" % (update, vals))
+                if update:
+                    pset = {}
+                    for line in record.order_id.order_line:
+                        if line.product_set_id:
+                            qty = sum([x.quantity for x in
+                                       line.product_set_id.set_lines.filtered(lambda r: r.product_id == line.product_id)])
+                            qty = qty < 1 and 1.0 or line.product_uom_qty/qty
+                            if not pset.get(line.product_set_id):
+                                pset[line.product_set_id] = {'amount_total': 0.0, 'quantity': qty < 1 and 1.0 or qty}
+                            pset[line.product_set_id]['amount_total'] += line.price_subtotal
+                    if pset:
+                        for k, line in pset.items():
+                            set_line = record.order_id.sets_line.filtered(lambda r: r.product_set_id.id == k.id)
+                            if not set_line:
+                                record.order_id.sets_line = [(0, False, {'order_id': record.order_id.id,
+                                                                       'product_set_id': k.id,
+                                                                       'amount_total': line['amount_total'],
+                                                                       'quantity': line['quantity'],
+                                                                       'price_unit': line['amount_total'] / line['quantity']})]
+                                record.order_id.order_line.filtered(lambda r: r.product_set_id.id == k.id).write(
+                                    {'set_id': record.order_id.sets_line.filtered(lambda r: r.product_set_id.id == k.id)[0].id,
+                                     'pset_quantity': line['quantity']})
+                            else:
+                                set_line.write({'amount_total': line['amount_total'], 'quantity': line['quantity'],
+                                                 'price_unit': line['amount_total'] / line['quantity']})
+                                if update:
+                                    record.order_id.order_line.filtered(lambda r: r.product_set_id.id == k.id).write(
+                                        {'set_id': record.order_id.sets_line.filtered(lambda r: r.product_set_id.id == k.id)[0].id,
+                                         'pset_quantity': line['quantity']})
+        return res
+
+    @api.multi
+    def write(self, values):
+        result = super(SaleOrderLine, self).write(values)
+        #_logger.info("PSET %s" % values)
+        updated = True
+        if 'product_set_id' in values and not self._context.get('block_pset', False):
+            for record in self:
+                pset = {}
+                for line in record.order_id.order_line:
+                    if line.product_set_id:
+                        qty = sum([x.quantity for x in
+                                   line.product_set_id.set_lines.filtered(lambda r: r.product_id == line.product_id)])
+                        qty = qty < 1 and 1.0 or line.product_uom_qty/qty
+                        if not pset.get(line.product_set_id):
+                            pset[line.product_set_id] = {'amount_total': 0.0, 'quantity': qty < 1 and 1.0 or qty}
+                        pset[line.product_set_id]['amount_total'] += line.price_subtotal
+                if pset:
+                    updated = False
+                    for k, line in pset.items():
+                        set_line = record.order_id.sets_line.filtered(lambda r: r.product_set_id.id == k.id)
+                        if not set_line:
+                            record.order_id.sets_line = [(0, False, {'order_id': record.order_id.id,
+                                                                   'product_set_id': k.id,
+                                                                   'amount_total': line['amount_total'],
+                                                                   'quantity': line['quantity'],
+                                                                   'price_unit': line['amount_total'] / line['quantity']})]
+                            record.order_id.order_line.filtered(lambda r: r.product_set_id.id == k.id).write(
+                                {'set_id': record.order_id.sets_line.filtered(lambda r: r.product_set_id.id == k.id)[0].id})
+                        else:
+                            set_line.write({'amount_total': line['amount_total'], 'quantity': line['quantity'],
+                                             'price_unit': line['amount_total'] / line['quantity']})
+
+        if 'price_unit' in values and not self._context.get('block_pset', False) and updated:
+            for record in self:
+                pset = {}
+                for line in record.order_id.order_line:
+                    if line.product_set_id:
+                        qty = sum([x.quantity for x in
+                                   line.product_set_id.set_lines.filtered(lambda r: r.product_id == line.product_id)])
+                        qty = qty < 1 and 1.0 or line.product_uom_qty/qty
+                        if not pset.get(line.product_set_id):
+                            pset[line.product_set_id] = {'amount_total': 0.0, 'quantity': qty < 1 and 1.0 or qty}
+                        pset[line.product_set_id]['amount_total'] += line.price_subtotal
+                        #_logger.info("SUM %s" % pset[line.product_set_id])
+                #_logger.info("PSET %s" % pset)
+                if pset:
+                    for k, line in pset.items():
+                        set_lines = record.order_id.sets_line.filtered(lambda r: r.product_set_id.id == k.id)
+                        if not set_lines:
+                            record.order_id.sets_line = [(0, False, {'order_id': record.order_id.id,
+                                                                   'product_set_id': k.id,
+                                                                   'amount_total': line['amount_total'],
+                                                                   'quantity': line['quantity'],
+                                                                   'price_unit': line['amount_total'] / line['quantity']})]
+                            record.order_id.order_line.filtered(lambda r: r.product_set_id.id == k.id).write(
+                                {'set_id': record.order_id.sets_line.filtered(lambda r: r.product_set_id.id == k.id)[
+                                    0].id})
+                        else:
+                            for set_line in set_lines:
+                                qty = set_line.quantity > 0 and set_line.quantity or 1.0
+                                set_line.write({'amount_total': line['amount_total'],
+                                                'price_unit': line['amount_total'] / qty})
+                            if record.order_id.order_line.filtered(lambda r: r.product_set_id.id == k.id and not r.set_id):
+                                record.order_id.order_line.filtered(lambda r: r.product_set_id.id == k.id).write(
+                                    {'set_id': record.order_id.sets_line.filtered(lambda r: r.product_set_id.id == k.id)[0].id})
+        return result
 
     @api.multi
     def _prepare_procurement_values(self, group_id=False):
@@ -212,6 +274,24 @@ class SaleOrderSets(models.Model):
     split_sets = fields.Boolean("Splited set")
     set_lines = fields.One2many('sale.order.line', 'set_id', string='Sele order lines', ondelete="cascade")
 
+    @api.model
+    def create(self, vals):
+        result = super(SaleOrderSets, self).create(vals)
+        if 'amount_total' not in vals:
+            order_obj = self.env['sale.order'].sudo()
+            sale_order_line = self.env['sale.order.line'].sudo()
+            product_set = self.env['product.set'].browse(vals['product_set_id'])
+            for set in product_set:
+                amount_untaxed = 0.0
+                for set_line in product_set.set_lines:
+                    line = sale_order_line.with_context(dict(self._context, block_pset=True)).create(order_obj.prepare_sale_order_line_set_data(vals['order_id'], set, set_line, self.quantity, result.id))
+                    price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
+                    amount_untaxed += \
+                    line.tax_id.compute_all(price, line.order_id.currency_id, line.product_uom_qty, product=line.product_id,
+                                            partner=line.order_id.partner_shipping_id)['total_excluded']
+                result.write({'amount_total': amount_untaxed, 'price_unit': amount_untaxed/result.quantity})
+        return result
+
     @api.multi
     def unlink(self):
         sale = self.env['sale.order'].browse([self.order_id.id])
@@ -219,6 +299,13 @@ class SaleOrderSets(models.Model):
         sale_lines.unlink()
         sale.order_line.invalidate_cache()
         return super(SaleOrderSets, self).unlink()
+
+    @api.depends('product_set_id', 'order_id')
+    def name_get(self):
+        res = []
+        for ref in self:
+            res.append((ref.id, "%s/%s" % (ref.order_id.name, ref.product_set_id and ref.product_set_id.display_name or 'not sets')))
+        return res
 
     #@api.onchange('quantity')
     #def onchange_quantity(self):

@@ -15,6 +15,7 @@ class Picking(models.Model):
                                           'picking_line_id', 'so_line_id', string='Linked SO ref.')
     stock_int_picking_ids = fields.Many2many('stock.picking', compute="_compute_stock_int_picking_ids", string='Internal Transfers ref.')
     has_int_pick = fields.Boolean(compute="_compute_has_int_pick")
+    color = fields.Integer(compute="_compute_color")
 
     @api.multi
     def _compute_has_int_pick(self):
@@ -28,3 +29,9 @@ class Picking(models.Model):
             for line in record.move_lines:
                 for order_line in line.sale_line_id:
                     record.stock_int_picking_ids |= order_line.stock_int_picking_ids
+
+    @api.multi
+    def _compute_color(self):
+        for picking in self:
+            picking.color = len(picking.mapped(
+                'move_lines.move_orig_ids').ids) == 0 and 1 or 10

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sale_order_line_price_history_view_form" model="ir.ui.view">
+        <field name="name">sale.order.line.price.history.view.form</field>
+        <field name="model">sale.order.line.price.history</field>
+        <field name="inherit_id" ref="sale_order_line_price_history.sale_order_line_price_history_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[1]" position="before">
+                <page name="moves" string="Stock move history">
+                    <field name="move_line_ids" nolabel="1" readonly="1" options="{'no_create': True}" context="{'default_sale_history_id': parent.id}">
+                        <form>
+                            <group>
+                                <field name="sale_history_id" invisible="1"/>
+                                <field name="stock_move_line_id" invisible="1"/>
+                                <field name="history_purchase_order_line_id" invisible="1"/>
+                                <field name="history_sale_order_line_id" invisible="1"/>
+                                <field name="picking_id"/>
+                                <field name="partner_id"/>
+                                <field name="purchase_id"/>
+                                <field name="stock_move_order_date_order"/>
+                                <field name="lot_id"/>
+                                <field name="qty_done"/>
+                                <field name="price_unit" string="Price unit from move"/>
+                                <field name="sale_price_unit" string="Recalculated price unit"/>
+                                <field name="custom_price_unit" widget="monetary"/>
+                                <!-- <field name="purchase_price_unit" string="Purchase price unit"/> -->
+                                <!-- <field name="purchase_currency_id" string="Purchase currency"/> -->
+                            </group>
+                            <footer>
+                                <button class="oe_highlight"
+                                        string="Set price"
+                                        type="object"
+                                        name="action_set_purchase_price_in_sale"
+                                        icon="fa-check"/>
+                                <button special="cancel" string="Cancel" class="oe_link"/>
+                            </footer>
+                        </form>
+                        <tree>
+                            <field name="sale_history_id" invisible="1"/>
+                            <field name="stock_move_line_id" invisible="1"/>
+                            <field name="history_purchase_order_line_id" invisible="1"/>
+                            <field name="history_sale_order_line_id" invisible="1"/>
+                            <field name="picking_id"/>
+                            <field name="partner_id"/>
+                            <field name="purchase_id"/>
+                            <field name="stock_move_order_date_order"/>
+                            <field name="lot_id"/>
+                            <field name="qty_done"/>
+                            <field name="price_unit"/>
+                            <field name="sale_price_unit"/>
+                            <!-- <field name="purchase_price_unit" string="Purchase price unit"/> -->
+                            <!-- <field name="purchase_currency_id" string="Purchase currency"/> -->
+                        </tree>
+                    </field>
+                </page>
+                <page name="purchase" string="Purchase history">
+                    <field name="purchase_line_ids" nolabel="1" readonly="1" options="{'no_create': True}">
+                        <form>
+                            <group>
+                                <field name="purchase_order_line_id" invisible="1"/>
+                                <field name="history_purchase_order_line_id" invisible="1"/>
+                                <field name="history_sale_order_line_id" invisible="1"/>
+                                <field name="order_id"/>
+                                <field name="partner_id"/>
+                                <field name="purchase_order_date_order"/>
+                                <field name="product_qty"/>
+                                <field name="price_unit"/>
+                                <field name="currency_id"/>
+                            </group>
+                            <footer>
+                                <button class="oe_highlight"
+                                        string="Set price"
+                                        type="object"
+                                        name="action_set_price_in_sale"
+                                        icon="fa-check"/>
+                                <button special="cancel" string="Cancel" class="oe_link"/>
+                            </footer>
+                        </form>
+                        <tree>
+                            <field name="purchase_order_line_id" invisible="1"/>
+                            <field name="history_purchase_order_line_id" invisible="1"/>
+                            <field name="history_sale_order_line_id" invisible="1"/>
+                            <field name="order_id"/>
+                            <field name="partner_id"/>
+                            <field name="purchase_order_date_order"/>
+                            <field name="product_qty"/>
+                            <field name="price_unit"/>
+                            <field name="currency_id"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

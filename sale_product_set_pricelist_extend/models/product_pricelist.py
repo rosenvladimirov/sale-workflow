@@ -25,10 +25,10 @@ class Pricelist(models.Model):
 
     def filter(self, product, qty, partner, rule):
         res = super(Pricelist, self).filter(product, qty, partner, rule)
-        if res != None:
-            return res
         if rule.product_set_id:
             return rule.product_set_id.id != self._context.get("product_set_id", False)
+        if res != None:
+            return res
         return None
 
     def check_pricelist(self):

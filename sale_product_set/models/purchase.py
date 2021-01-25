@@ -28,7 +28,7 @@ class PurchaseOrder(models.Model):
         self.ensure_one()
         if self.has_sets:
             report_pages_sets = [[]]
-            for category, lines in groupby(self.order_line, lambda l: l.product_set_id):
+            for category, lines in groupby(self.order_line.sorted(lambda r: r.product_set_id, reverse=True), lambda l: l.product_set_id):
                 # If last added category induced a pagebreak, this one will be on a new page
                 if report_pages_sets[-1] and report_pages_sets[-1][-1]['pagebreak']:
                     report_pages_sets.append([])
@@ -48,7 +48,7 @@ class PurchaseOrder(models.Model):
         return False
 
     def prepare_purchase_order_set_data(self, purchase_order_id, set, qty, total, split_sets=False):
-        _logger.info("LINE SET %s" % qty)
+        #_logger.info("LINE SET %s" % qty)
         set_lines = self.env['purchase.order.sets'].new({
             'order_id': purchase_order_id,
             'product_set_id': set.id,
@@ -77,7 +77,7 @@ class PurchaseOrder(models.Model):
         purchase_line.onchange_product_id()
         purchase_line.update({'product_qty': (set_line.quantity * qty)+old_qty})
         line_values = purchase_line._convert_to_write(purchase_line._cache)
-        _logger.info("SET LIENE END %s" % line_values)
+        #_logger.info("SET LIENE END %s" % line_values)
         return line_values
 
 class PurchaseOrderLine(models.Model):
@@ -89,6 +89,63 @@ class PurchaseOrderLine(models.Model):
     set_id = fields.Many2one('purchase.order.sets', string='Product Sets', change_default=True, copy=True)
     split_sets = fields.Boolean("Splited set")
     pset_quantity = fields.Float(string='PSET Quantity', digits=dp.get_precision('Product Unit of Measure'), default=1.0)
+
+    @api.model
+    def _get_group_keys(self, order, line, picking=False):
+        """Define the key that will be used to group. The key should be
+        defined as a tuple of dictionaries, with each element containing a
+        dictionary element with the field that you want to group by. This
+        method is designed for extensibility, so that other modules can add
+        additional keys or replace them by others."""
+        key = ({'product_set_id': line.product_set_id},)
+        return key
+
+    @api.model
+    def _first_picking_copy_vals(self, key, lines):
+        """The data to be copied to new pickings is updated with data from the
+        grouping key.  This method is designed for extensibility, so that
+        other modules can store more data based on new keys."""
+        vals = {'move_lines': []}
+        for key_element in key:
+            if 'product_set_id' in key_element.keys():
+                vals['product_set_id'] = key_element['product_set_id'].id
+        return vals
+
+    @api.multi
+    def _create_stock_moves(self, picking):
+        """Group the receptions in one picking per group key"""
+        moves = self.env['stock.move']
+        # Group the order lines by group key
+        order_lines = sorted(self, key=lambda l: l.product_set_id)
+        product_set_groups = groupby(order_lines, lambda l: self._get_group_keys(l.order_id, l, picking=picking))
+
+        first_picking = False
+        # If a picking is provided, use it for the first group only
+        if picking:
+            first_picking = picking
+            key, lines = next(product_set_groups)
+            po_lines = self.env['purchase.order.line']
+            for line in list(lines):
+                po_lines += line
+            moves += super(PurchaseOrderLine, po_lines)._create_stock_moves(first_picking)
+
+        for key, lines in product_set_groups:
+            # If a picking is provided, clone it for each key for modularity
+            if picking:
+                copy_vals = self._first_picking_copy_vals(key, lines)
+                picking = first_picking.copy(copy_vals)
+            po_lines = self.env['purchase.order.line']
+            for line in list(lines):
+                po_lines += line
+            moves += super(PurchaseOrderLine, po_lines)._create_stock_moves(picking)
+        return moves
+
+    @api.multi
+    def _prepare_stock_moves(self, picking):
+        res = super(PurchaseOrderLine, self)._prepare_stock_moves(picking)
+        for re in res:
+            re['product_set_id'] = self.product_set_id.id
+        return res
 
     @api.multi
     def write(self, values):

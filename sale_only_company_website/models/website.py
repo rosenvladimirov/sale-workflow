@@ -57,8 +57,7 @@ class Website(models.Model):
             # TODO cache partner_id session
             pricelist = self.env['product.pricelist'].browse(pricelist_id).sudo()
             so_data = self._prepare_sale_order_values(force_parent or partner, pricelist)
-            if force_parent:
-                so_data.update({'partner_contact_id': partner.id})
+            so_data.update({'partner_contact_id': partner.id})
             #_logger.info("Create _________________ %s:%s:%s:%s" % (so_data,partner.id,partner.name,force_parent))
             sale_order = self.env['sale.order'].sudo().create(so_data)
 

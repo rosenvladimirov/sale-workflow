@@ -1,6 +1,8 @@
 # Copyright 2019 Tecnativa - Ernesto Tejeda
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 from odoo import api, fields, models, _
+from odoo.addons import decimal_precision as dp
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -31,7 +33,7 @@ class SaleOrderLinePriceHistory(models.TransientModel):
     )
     line_ids = fields.One2many(
         comodel_name="sale.order.line.price.history.line",
-        inverse_name="history_id",
+        inverse_name="sale_history_id",
         string="History line",
         readonly=True,
     )
@@ -48,8 +50,16 @@ class SaleOrderLinePriceHistory(models.TransientModel):
         comodel_name='product.pricelist',
         string='Pricelist',
         compute_sudo=True,
-        help="Pricelist for current sales order."
+        help="Pricelist for current sales order.",
+        default=lambda self: self.env.context.get('default_pricelist_id'),
     )
+    product_uom_qty = fields.Float(
+        string='Quantity',
+        digits=dp.get_precision('Product Unit of Measure'),
+        help="Ordered qty from SO",
+        default=lambda self: self.env.context.get('default_product_uom_qty'),
+    )
+    custom_price_unit = fields.Float('For update')
 
     @api.onchange("partner_id", "include_quotations",
                   "include_commercial_partner")
@@ -62,7 +72,7 @@ class SaleOrderLinePriceHistory(models.TransientModel):
             ("product_id", "=", self.product_id.id),
             ("state", "in", states),
         ]
-        if self.partner_id:
+        if self.partner_id and not self._context.get('force_remove_partner'):
             if self.include_commercial_partner:
                 domain += [("order_partner_id", "child_of",
                             self.partner_id.commercial_partner_id.ids)]
@@ -80,12 +90,17 @@ class SaleOrderLinePriceHistory(models.TransientModel):
             }))
         self.line_ids = vals
 
+    @api.multi
+    def action_set_price(self):
+        self.ensure_one()
+        self.history_sale_order_line_id.price_unit = self.custom_price_unit
+
 
 class SaleOrderLinePriceHistoryline(models.TransientModel):
     _name = "sale.order.line.price.history.line"
     _description = "Sale order line price history line"
 
-    history_id = fields.Many2one(
+    sale_history_id = fields.Many2one(
         comodel_name="sale.order.line.price.history",
         string="History",
     )

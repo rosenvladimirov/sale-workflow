@@ -94,3 +94,9 @@ class ProductPropertiesCategory(models.Model):
 
     applicability = fields.Selection(selection_add=[
             ('set', 'Product Set')])
+
+
+class ProductPropertiesStatic(models.Model):
+    _inherit = "product.properties.static"
+
+    sets_line = fields.Many2many('product.set', string='Add product set', help='Add product set to expand on printing')

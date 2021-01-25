@@ -153,3 +153,11 @@ class ProductSet(models.Model):
                 if ret:
                     vals['product_properties_ids'] = ret
         return super(ProductSet, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        for record in self:
+            record.product_prop_static_id.unlink()
+            for line in record.product_properties_ids:
+                line.unlink()
+        return super(ProductSet, self).unlink()

@@ -12,44 +12,42 @@
                     <field name="product_id"/>
                     <field name="include_commercial_partner"/>
                     <field name="include_quotations"/>
+                    <field name="custom_price_unit"/>
                     <field name="pricelist_id" invisible="1"/>
+                    <field name="product_uom_qty" invisible="1"/>
                 </group>
-                <group string="Sale history">
-                    <field name="line_ids" nolabel="1" readonly="1">
-                        <form>
-                            <div class="oe_button_box" name="button_box">
-                                <button class="oe_stat_button"
-                                        name="save_in_pricelist"
-                                        string="Save in pricelist"
-                                        type="object"
-                                        icon="fa fa-floppy-o"/>
-                                <button class="oe_stat_button"
-                                        string="Set price"
-                                        type="object"
-                                        name="action_set_price"
-                                        icon="fa-check"/>
-                            </div>
-                            <group>
-                                <field name="sale_order_line_id" invisible="1"/>
-                                <field name="history_sale_order_line_id" invisible="1"/>
+                <notebook>
+                    <page name="sale" string="Sale history">
+                        <field name="line_ids" nolabel="1" readonly="1">
+                            <form>
+                                <group>
+                                    <field name="sale_order_line_id" invisible="1"/>
+                                    <field name="history_sale_order_line_id" invisible="1"/>
+                                    <field name="order_id"/>
+                                    <field name="partner_id"/>
+                                    <field name="sale_order_date_order"/>
+                                    <field name="product_uom_qty"/>
+                                    <field name="price_unit"/>
+                                </group>
+                                <footer>
+                                    <button class="oe_highlight" string="Set price" type="object" name="action_set_price" icon="fa-check"/>
+                                    <button class="oe_highlight" string="Save in pricelist" type="object" name="save_in_pricelist" icon="fa-floppy-o"/>
+                                    <button special="cancel" string="Cancel" class="oe_link"/>
+                                </footer>
+                            </form>
+                            <tree>
                                 <field name="order_id"/>
                                 <field name="partner_id"/>
                                 <field name="sale_order_date_order"/>
                                 <field name="product_uom_qty"/>
                                 <field name="price_unit"/>
-                            </group>
-                        </form>
-                        <tree>
-                            <field name="order_id"/>
-                            <field name="partner_id"/>
-                            <field name="sale_order_date_order"/>
-                            <field name="product_uom_qty"/>
-                            <field name="price_unit"/>
-                        </tree>
-                    </field>
-                </group>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
                 <field name="sale_order_line_id" invisible="1"/>
                 <footer>
+                    <button class="oe_highlight" string="Set price" type="object" name="action_set_price" icon="fa-check"/>
                     <button special="cancel" string="Close"/>
                 </footer>
             </form>

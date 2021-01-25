@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="l10n_bg_report_invoice_document_properties" inherit_id="l10n_bg_extend.report_invoice_document">
+            <xpath expr="//td[@name='description']" position="replace">
+                <td name="description">
+                    <span t-if="l.discount==0.0">
+                        <span t-field="l.name"/>
+                    </span>
+                    <span t-if="l.discount &gt; 0.0">
+                        <span t-field="l.name"/>   (<span t-esc="l.discount * 100"/><span>%)</span>
+                    </span>
+                    <t t-if="lots">
+                        <span>(Lot/SN: </span><span t-esc="'&#59; '.join(map(lambda lot: lot.lot_id and lot.lot_id.name or '', l.move_lines.filtered(lambda r: r.lot_id != False)))"/><span>)</span>
+                    </t>
+                    <t t-if="has_hscode">
+                        <t t-if="l.local_code">
+                            <span>(H.S.Intrastat Code: </span><span t-field="l.local_code"/><span>::</span>
+                            <span>Oring: </span><span t-esc="l.product_id.origin_country_id.name"/><span>)</span>
+                        </t>
+                    </t>
+                    <t t-if="l.has_customer_po">
+                        <br/>
+                        <span>Date Req.:</span><span t-field="l.customer_po_ids"/>
+                    </t>
+                </td>
+            </xpath>
+        </template>
+    </data>
+</odoo>

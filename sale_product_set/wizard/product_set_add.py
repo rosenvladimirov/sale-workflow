@@ -138,16 +138,16 @@ class ProductSetAdd(models.TransientModel):
                     #_logger.info("Sale line %s:%s" % (so_id, set_line.set_lines))
                     line = sale_order_line.search([('product_id', '=', set_line.product_id.id), ('product_set_id', '=', set_line.product_set_id.id), ('id', 'in', [x[1] for x in self._context.get('set_line_ids')])], limit=1)
                     if line:
-                        line.write(order_obj.prepare_sale_order_line_set_data(line.order_id.id, set, set_line, self.quantity, set_old.id,
+                        line.with_context(dict(self._context, block_pset=True)).write(order_obj.prepare_sale_order_line_set_data(line.order_id.id, set, set_line, self.quantity, set_old.id,
                                                                               max_sequence=max_sequence,
                                                                               split_sets=self.split_sets))
                     else:
-                        line = sale_order_line.create(order_obj.prepare_sale_order_line_set_data(so_id, set, set_line, self.quantity, set_old.id,
+                        line = sale_order_line.with_context(dict(self._context, block_pset=True)).create(order_obj.prepare_sale_order_line_set_data(so_id, set, set_line, self.quantity, set_old.id,
                                                                               max_sequence=max_sequence, 
                                                                               split_sets=self.split_sets))
 
                 else:
-                    line = sale_order_line.create(order_obj.prepare_sale_order_line_set_data(so_id, set, set_line, self.quantity, set_old.id, max_sequence=max_sequence, split_sets=self.split_sets))
+                    line = sale_order_line.with_context(dict(self._context, block_pset=True)).create(order_obj.prepare_sale_order_line_set_data(so_id, set, set_line, self.quantity, set_old.id, max_sequence=max_sequence, split_sets=self.split_sets))
                 price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
                 amount_untaxed += \
                 line.tax_id.compute_all(price, line.order_id.currency_id, line.product_uom_qty, product=line.product_id,
@@ -220,7 +220,7 @@ class ProductSetAdd(models.TransientModel):
         picking = picking.sudo()
         #for set in self.product_set_id:
             #for set_line in self.set_lines:
-        picking.move_lines = picking.with_context(dict(self._context, force_validate=True)).prepare_stock_move_line_pset_data(picking_id, self.set_lines, self.quantity, self.product_set_id)
+        picking.move_lines = picking.with_context(dict(self._context, force_validate=False, do_not_unreserve=True)).prepare_stock_move_line_pset_data(picking_id, self.set_lines, self.quantity, self.product_set_id)
         picking.action_confirm()
         picking.action_assign()
 

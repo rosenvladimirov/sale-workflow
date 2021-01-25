@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <field name="product_id" position="after">
                 <field name="product_set_id" invisible="1"/>
-                <field name="product_set_ids" context="{'company_test': True}"/>
+                <field name="product_set_ids" context="{'company_test': True}" widget="many2many_tags" options="{'open_view': True}"/>
             </field>
         </field>
     </record>

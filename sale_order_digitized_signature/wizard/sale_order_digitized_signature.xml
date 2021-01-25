@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record id="view_order_form_sign" model="ir.ui.view">
+        <field name="name">view.sale.order.sign.form</field>
+        <field name="model">sale.order.sign</field>
+        <field name="arch" type="xml">
+            <form string="Add set in sale order line">
+                <group colspan="4">
+                    <field name="state" options="{'horizontal': true}" class="oe_edit_only" widget="radio"/>
+                    <field name="report_sign" domain="[('model', '=', model_type)]"/>
+                    <field name="picking_id" domain="[('sale_id', '=', order_id)]" attrs="{'invisible': [('model_type', '!=', 'stock.picking')]}"/>
+                    <field name="invoice_ids" widget="many2one" attrs="{'invisible': [('model_type', '!=', 'account.invoice')]}"/>
+                    <field name="order_id" attrs="{'invisible': [('model_type', '!=', 'sale.order')], 'readonly': True}"/>
+                    <field name="model" invisible="1"/>
+                    <field name="model_type" invisible="1"/>
+                </group>
+                <field name="customer_sign" nolabel="1" colspan="4"/>
+                <div class="oe_clear"/>
+                <field name="customer_signature" widget="signature" colspan="4" style="position: sickly; bottom: 0;"/>
+                <footer>
+                    <button name="sale_sign_print" string="Print" type="object" class="oe_highlight"/>
+                    <button name="sale_sign_save" string="Save" type="object"/>
+                    <button special="cancel" string="Cancel" class="oe_link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="act_open_wizard_order_form_sign" model="ir.actions.act_window">
+        <field name="name">Sign sale order</field>
+        <field name="res_model">sale.order.sign</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="flags">{'form': {'action_buttons': False}}</field>
+        <field name="view_id" ref="view_order_form_sign"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

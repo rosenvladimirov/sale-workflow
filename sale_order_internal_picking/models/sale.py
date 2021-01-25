@@ -7,7 +7,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-class SaleOrderLine(models.Model):
+class SaleOrder(models.Model):
     _inherit = "sale.order"
 
     stock_int_picking_ids = fields.One2many('stock.picking', compute="_compute_stock_int_picking_ids", inverse="_set_stock_int_picking_ids", search='_search_stock_int_picking_ids', string='Internal Transfers ref.')
@@ -58,6 +58,31 @@ class SaleOrderLine(models.Model):
     #        'stock_int_picking_ids': self.stock_int_picking_ids.ids,
     #    })
     #    return invoice_vals
+
+    def _prepare_sale_order_line_picking_data(self, line, picking):
+        return {
+            'order_id': self.id,
+            'product_id': line.product_id.id,
+            'product_uom': line.product_uom.id,
+            'product_uom_qty': line.product_qty,
+            'stock_int_picking_ids': [picking.id],
+        }
+
+    def prepare_sale_order_line_picking_data(self, pickings):
+        order_line = []
+        for picking in pickings:
+            for line in picking.move_lines:
+                sale_order_line = self.env['sale.order.line'].new(self._prepare_sale_order_line_picking_data(line, picking))
+                sale_order_line = sale_order_line._convert_to_write(sale_order_line._cache)
+                order_line.append((0, 0, sale_order_line))
+            #_logger.info("LINE FOR PUT %s" % order_line)
+            return False, order_line
+
+    @api.multi
+    def action_import_picking(self):
+        for record in self:
+            if record.stock_int_picking_ids:
+                record.order_line.update(record.prepare_sale_order_line_picking_data())
 
 
 class SaleOrderLine(models.Model):

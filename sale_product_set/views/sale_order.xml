@@ -38,6 +38,7 @@
                                 <field name="order_partner_id" invisible="1"/>
                                 <field name="company_id" invisible="1" readonly="1"/>
                                 <field name="product_set_id" domain="['|', ('partner_id', '=', order_partner_id), ('partner_id', '=', company_id)]"/>
+                                <field name="split_sets"/>
                                 <field name="quantity"/>
                                 <field name="amount_total" string="Unit price"/>
                                 <field name="currency_id" invisible="1"/>
@@ -50,18 +51,19 @@
                             <field name="product_set_id"
                                 domain="['|', ('partner_id', '=', order_partner_id), ('partner_id', '=', company_id)]"
                                 force_save="1"/>
-                                <field name="quantity" readonly="1"/>
-                                <field name="price_unit" readonly="1"/>
-                                <field name="amount_total" string="Subtotal" sum="Setsubtotal" readonly="1"/>
-                                <field name="currency_id" invisible="1"/>
-                                <field name="set_lines" invisible="1"/>
-                                <button name="%(act_open_wizard_product_set_edit)d"
-                                        type="action"
-                                        string="Modify Sets"
-                                        icon="fa-th"
-                                        class="oe_edit_only"
-                                        context="{'default_product_set_id': product_set_id, 'default_edit_sets': 1, 'set_line_ids': set_lines, 'order_id': parent.id, 'force_mode': 'editsale', 'company_test': True}"
-                                />
+                            <field name="split_sets"/>
+                            <field name="quantity" readonly="1"/>
+                            <field name="price_unit" readonly="1" force_save="1"/>
+                            <field name="amount_total" string="Subtotal" sum="Setsubtotal" readonly="1" force_save="1"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="set_lines" invisible="1"/>
+                            <button name="%(act_open_wizard_product_set_edit)d"
+                                    type="action"
+                                    string="Modify Sets"
+                                    icon="fa-th"
+                                    class="oe_edit_only"
+                                    context="{'default_product_set_id': product_set_id, 'default_edit_sets': 1, 'set_line_ids': set_lines, 'order_id': parent.id, 'force_mode': 'editsale', 'company_test': True}"
+                            />
                         </tree>
                         <kanban class="o_kanban_mobile">
                             <field name="product_set_id"/>
@@ -126,7 +128,7 @@
               <field name="product_set_id"/>
             </xpath>
             <xpath expr="//field[@name='order_line']/form/group/group/field[@name='tax_id']" position="before">
-              <field name="product_set_id" readonly="1"/>
+              <field name="product_set_id" readonly="0"/>
             </xpath>
         </field>
     </record>

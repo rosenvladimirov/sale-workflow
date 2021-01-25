@@ -41,6 +41,12 @@ class SaleOrderLine(models.Model):
 
     customer_po_ids = fields.Many2many('sale.order.customer', 'sale_order_line_cust_po_rel',
                                         'so_line_id', 'customer_so_line_id', string='Customer PO ref.')
+    has_customer_po = fields.Boolean(compute="_compute_has_customer_po")
+
+    @api.multi
+    def _compute_has_customer_po(self):
+        for record in self:
+            record.has_customer_po = len([x.id for x in record.customer_po_ids]) > 0
 
     @api.multi
     def _prepare_procurement_values(self, group_id=False):
@@ -56,7 +62,7 @@ class SaleOrderCustomer(models.Model):
 
     sale_order_line_ids = fields.Many2many('sale.order.customer', 'sale_order_line_cust_po_rel',
                                             'customer_so_line_id', 'so_line_id', string='Customer PO ref.')
-    date_po = fields.Date('Date PO')
+    date_po = fields.Datetime('Date PO')
     name = fields.Char('Name PO')
     description = fields.Text('Description')
     partner_id = fields.Many2one('res.partner', 'Customer')
@@ -65,5 +71,8 @@ class SaleOrderCustomer(models.Model):
     def name_get(self):
         res = []
         for ref in self:
-            res.append((ref.id, "[%s] %s" % (ref.date_po, ref.name)))
+            if ref.name:
+                res.append((ref.id, "%s/%s" % (ref.date_po, ref.name)))
+            else:
+                res.append((ref.id, "%s" % (ref.date_po)))
         return res

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record model="ir.ui.view" id="view_order_stock_form">
+        <field name="name">sale.order.form.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="button_picking_validate" attrs="{'invisible': [('picking_show_validate', '=', False)]}" string="Validate Picking" groups="stock.group_stock_user" type="object" class="oe_highlight"/>
+                <field name="picking_show_validate" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree" position="inside">
+                <button name="%(stock_quant_manual_assign.assign_manual_quants_action)d" type="action" icon="fa-tags"
+                        string="Manual Quants" options='{"warn": true}'
+                        attrs="{'invisible':['|',('picking_code','=','incoming'),('move_state','not in',('confirmed','assigned','partially_available'))]}"
+                        context="{'owner_id': parent.partner_id, 'default_product_set_id': product_set_id, 'sale_move_ids': move_id}"/>
+                <field name="picking_code" invisible="1"/>
+                <field name="move_state" invisible="1"/>
+                <field name="move_id" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/form/group/group/field[@name='tax_id']" position="before">
+                <field name="lot_ids" readonly="1" widget="many2many_tags"/>
+            </xpath>
+            <xpath expr="//notebook/page[1]" position="after">
+                <page string="Detailed Operations" attrs="{'invisible': [('has_move_line_ids', '=', False)]}">
+                    <field name="move_line_ids" attrs="{'readonly': ['&amp;', ('picking_state', '=', 'done'), ('picking_is_locked', '=', True)]}" context="{'default_picking_id': picking_id and picking_id[0] or False, 'default_location_id': location_id, 'default_location_dest_id': location_dest_id}">
+                        <tree editable="bottom" decoration-muted="(state == 'done' and is_locked == True)" decoration-danger="qty_done&gt;product_uom_qty and state!='done'" decoration-success="qty_done==product_uom_qty and state!='done' and not result_package_id">
+                            <field name="product_id" required="1" attrs="{'readonly': ['|', ('state', '=', 'done'), ('move_id', '!=', False)]}"/>
+                            <field name="move_id" invisible="1"/>
+                            <field name="in_entire_package" invisible="1"/>
+                            <field name="product_uom_id" force_save="1" attrs="{'readonly': [('state', '!=', 'draft')]}" groups="product.group_uom"/>
+                            <field name="package_id" attrs="{'readonly': [('in_entire_package', '=', True)]}" groups="stock.group_tracking_lot" domain="[('location_id', '=', location_id)]"/>
+                            <field name="location_id" attrs="{'readonly': [('in_entire_package', '=', True)]}" groups="stock.group_stock_multi_locations,stock.group_tracking_lot" domain="[('id', 'child_of', parent.location_id)]"/>
+                            <field name="location_dest_id" attrs="{'readonly': [('in_entire_package', '=', True)]}" groups="stock.group_stock_multi_locations,stock.group_tracking_lot" domain="[('id', 'child_of', parent.location_dest_id)]"/>
+                            <field name="result_package_id" attrs="{'readonly': [('in_entire_package', '=', True)]}" groups="stock.group_tracking_lot" domain="['|', '|', ('location_id', '=', False), ('location_id', '=', location_dest_id), ('id', '=', package_id)]"/>
+                            <field name="lots_visible" invisible="1"/>
+                            <field name="owner_id" groups="stock.group_tracking_owner"/>
+                            <field name="state" invisible="1"/>
+                            <field name="lot_id" groups="stock.group_production_lot" attrs="{'column_invisible': [('parent.show_lots_text', '=', True)], 'invisible': [('lots_visible', '=', False)], 'readonly': [('in_entire_package', '=', True)]}" domain="[('product_id', '=', product_id)]" context="{'default_product_id': product_id}"/>
+                            <field name="lot_name" groups="stock.group_production_lot" attrs="{'column_invisible': [('parent.show_lots_text', '=', False)], 'invisible': [('lots_visible', '=', False)], 'readonly': [('in_entire_package', '=', True)]}" context="{'default_product_id': product_id}"/>
+                            <field name="is_initial_demand_editable" invisible="1"/>
+                            <field name="product_uom_qty" readonly="1"/>
+                            <field name="is_locked" invisible="1"/>
+                            <field name="qty_done" attrs="{'readonly': ['|', ('state', 'in', ('done', 'cancel')), ('is_locked', '=', True), ('in_entire_package', '=', True)]}" force_save="1"/>
+                            <field name="picking_id" invisible="1" force_save="1"/>
+                        </tree>
+                    </field>
+                    <field name="entire_package_detail_ids" context="{'picking_id': picking_id, 'tree_view_ref': 'stock.view_quant_package_picking_tree'}" attrs="{'invisible': [('picking_type_entire_packs', '=', False)]}" readonly="0"/>
+                    <button class="oe_highlight" name="put_in_pack" type="object" string="Put in Pack" attrs="{'invisible': [('picking_state', 'in', ('done', 'cancel'))]}" groups="stock.group_tracking_lot"/>
+                    <field name="has_move_line_ids" invisible="1"/>
+                    <field name="location_id" invisible="1"/>
+                    <field name="location_dest_id" invisible="1"/>
+                    <field name="picking_state" invisible="1"/>
+                    <field name="picking_is_locked" invisible="1"/>
+                    <field name="picking_type_entire_packs" invisible="1"/>
+                    <field name="show_lots_text" invisible="1"/>
+                    <separator/>
+                    <field name="picking_id" invisible="0" readonly="1"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

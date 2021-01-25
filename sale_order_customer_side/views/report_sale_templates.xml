@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_saleorder_document" inherit_id="report_theming.report_invoice_document">
+        <xpath expr="//td[@name='linename']" position="replace">
+            <span t-field="l.name"/>
+            <t t-if="has_hscode">
+                <t t-if="l.local_code">
+                    <span>(H.S.Intrastat Code: </span><span t-field="l.local_code"/><span>::</span>
+                    <t t-if="l.product_id.origin_country_id">
+                        <span>Origin: </span><span t-esc="l.product_id.origin_country_id.name"/><span>)</span>
+                    </t>
+                </t>
+            </t>
+            <t t-if="l.has_customer_po">
+                <br/>
+                <span>Date Req.:</span><span t-field="l.customer_po_ids"/>
+            </t>
+        </xpath>
+    </template>
+</odoo>

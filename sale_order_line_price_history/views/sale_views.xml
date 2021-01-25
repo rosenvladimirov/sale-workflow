@@ -12,7 +12,7 @@
                         string="Price history"
                         type="action"
                         icon="fa-clock-o"
-                        context="{'default_pricelist_id': parent.pricelist_id}"/>
+                        context="{'default_pricelist_id': parent.pricelist_id, 'default_product_uom_qty': product_uom_qty}"/>
             </xpath>
         </field>
     </record>

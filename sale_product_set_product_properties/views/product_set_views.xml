@@ -6,7 +6,7 @@
             <field name="model">product.set</field>
             <field name="inherit_id" ref="sale_product_set.view_product_set_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//page[@name='products']" position="after">
+                <xpath expr="//notebook" position="inside">
                     <page string="Product Sets Properties" name="properties">
                         <group colspan="4">
                             <label for="categ_ids" string="Properties Category" col="1"/>
