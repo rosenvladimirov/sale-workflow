@@ -6,7 +6,7 @@
             <field name="model">product.set</field>
             <field name="inherit_id" ref="sale_product_set.view_product_set_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//page[@name='products']" position="after">
+                <xpath expr="//page[@name='general_information']" position="after">
                     <page string="Product Sets Loyalty points" name="loyalty">
                         <field name="loyalty_item_ids" nolabel="1" colspan="4" context="{'default_product_set_id': active_id, 'search_default_product_set_id': active_id}">
                             <tree string="Rules">

@@ -231,7 +231,7 @@ class Picking(models.Model):
                         if order_line.product_set_id and not pset.get(order_line.product_set_id):
                             pset[order_line.product_set_id] = order_line.pset_quantity
                 if not pset:
-                    for p_set, lines in groupby(moves, lambda l: l.product_set_id):
+                    for p_set, lines in groupby(moves.sorted(lambda r: r.product_set_id, reverse=True), lambda l: l.product_set_id):
                         lines_copy = list(lines)
                         p_set = p_set.sudo()
                         if p_set and p_set.set_lines and not pset.get(p_set):
@@ -257,7 +257,7 @@ class Picking(models.Model):
                     #        qty = qty < 1.0 and 1.0 or qty
                     #        pset[line.product_set_id] = line.ordered_qty / qty
                     #        continue
-                for category, lines in groupby(moves, lambda l: l.product_set_id):
+                for category, lines in groupby(moves.sorted(lambda r: r.product_set_id, reverse=True), lambda l: l.product_set_id):
                     # If last added category induced a pagebreak, this one will be on a new page
                     #if report_pages_sets[-1] and report_pages_sets[-1][-1]['pagebreak']:
                     #    report_pages_sets.append([])

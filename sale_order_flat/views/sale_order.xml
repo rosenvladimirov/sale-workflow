@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Sales Orders Kanban View  -->
+    <record model="ir.ui.view" id="view_sale_order_flat_kanban">
+        <field name="name">sale.order.kanban</field>
+        <field name="model">sale.order</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="amount_total"/>
+                <field name="date_order"/>
+                <field name="state"/>
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top mb16">
+                                <div class="o_kanban_record_headings mt4">
+                                    <strong class="o_kanban_record_title"><span><t t-esc="record.partner_id.value"/></span></strong>
+                                </div>
+                                <strong><field name="amount_total" widget="monetary"/></strong>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left text-muted">
+                                    <span><t t-esc="record.name.value"/> <t t-esc="record.date_order.value"/></span>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <field name="state" widget="label_selection" options="{'classes': {'draft': 'default', 'cancel': 'default', 'done': 'success'}}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    <record id="view_order_flat_form" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="arch" type="xml">
+            <form string="Sales">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,sent,sale"/>
+                </header>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <!-- Tabs nav -->
+                        <div class="vertical-tab" role="tabpanel">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active">
+                                    <a href="#v-company" aria-controls="company" role="tab" data-toggle="tab">
+                                        <i class="fa fa-building-o fa-fw"></i><span class="font-weight-bold small text-uppercase">Company information</span></a>
+                                </li>
+                                <li role="presentation">
+                                    <a href="#v-patient" aria-controls="patient" role="tab" data-toggle="tab">
+                                        <i class="fa fa-user-circle-o fa-fw"></i><span class="font-weight-bold small text-uppercase">Patient information</span></a>
+                                </li>
+                                <li role="presentation">
+                                    <a href="#v-pset" aria-controls="pset" role="tab" data-toggle="tab">
+                                        <i class="fa fa-cubes fa-fw"></i><span class="font-weight-bold small text-uppercase">Product Set</span></a>
+                                </li>
+                                <li role="presentation">
+                                    <a href="#v-lines" aria-controls="lines" role="tab" data-toggle="tab">
+                                        <i class="fa fa-list fa-fw"></i><span class="font-weight-bold small text-uppercase">Detail information</span></a>
+                                </li>
+                            </ul>
+                            <div class="tab-content tabs">
+                                <!-- Tabs content -->
+                                <div role="tabpanel" class="tab-pane fade in active" id="v-company">
+                                    <form string="Partner" class="o_sale_order">
+                                        <div class="oe_title">
+                                            <h1>
+                                                <field name="name" readonly="1"/>
+                                            </h1>
+                                        </div>
+                                        <group>
+                                            <group>
+                                                <field name="partner_id" domain="[('customer','=',True)]" context="{'search_default_customer':1, 'show_address': 1}" options='{"always_reload": True}'/>
+                                                <field name="partner_invoice_id" groups="sale.group_delivery_invoice_address" context="{'default_type':'invoice'}" options='{"always_reload": True}'/>
+                                                <field name="partner_shipping_id" groups="sale.group_delivery_invoice_address" context="{'default_type':'delivery'}" options='{"always_reload": True}'/>
+                                            </group>
+                                            <group>
+                                                <field name="validity_date" attrs="{'invisible': [('state', 'in', ['sale', 'done'])]}"/>
+                                                <field name="confirmation_date" attrs="{'invisible': [('state', 'in', ['draft', 'sent', 'cancel'])]}"/>
+                                                <field name="pricelist_id" groups="product.group_sale_pricelist"/>
+                                                <field name="currency_id" invisible="1"/>
+                                                <field name="payment_term_id" options="{'no_create': True}"/>
+                                            </group>
+                                        </group>
+                                    </form>
+                                </div>
+                                <div role="tabpanel" class="tab-pane fade" id="v-patient">
+                                    <form string="Patient" class="o_sale_order">
+                                        <group name="patient">
+                                            <group name="data">
+                                                <field name="company_id" invisible="1"/>
+                                                <field name="partner_patient_id" context="{'default_customer': False, 'default_supplier': False, 'default_patient': True, 'default_type': 'patient'}" domain="[('patient', '=', True)]"/>
+                                                <field name="patient_clinical_case_number"/>
+                                                <field name="patient_name"/>
+                                                <field name="patient_data_file_id" domain="[('partner_patient_id', '=', partner_patient_id)]" context="{'default_order_ids': [active_id], 'default_company_id': company_id, 'default_patient_name': patient_name, 'default_patient_date_of_birth': patient_date_of_birth, 'default_patient_clinical_case_number': patient_clinical_case_number, 'default_partner_patient_id': partner_patient_id, 'default_partner_id': partner_id, 'default_customer':0, 'default_patient':1, 'search_default_patient': 1, 'from_order': True}" groups="base.group_no_one"/>
+                                                <field name="patient_date_of_birth"/>
+                                                <field name="icd11_id"/>
+                                                <field name="patient_clinical_path_ref"/>
+                                            </group>
+                                            <group name="dataoth">
+                                                <field name="patient_material_aquisition"/>
+                                                <field name="patient_incident_nr"/>
+                                                <field name="patient_fund_confirmation"/>
+                                                <field name="patient_ada"/>
+                                                <field name="patient_tender"/>
+                                                <field name="patient_surgery_date"/>
+                                                <field name="ct_mri_url" widget="url"/>
+                                            </group>
+                                            <separator string="Description"/>
+                                            <field name="patient_note"/>
+                                        </group>
+                                    </form>
+                                </div>
+                                <div role="tabpanel" class="tab-pane fade" id="v-pset">
+                                    <form string="Product set">
+                                        <field name="sets_line" mode="kanban" attrs="{'readonly': [('state', 'in', ('done','cancel'))]}">
+                                            <kanban class="o_kanban_mobile" js_class="sale_product_set.product_set_add_form_view">
+                                                <field name="product_set_id"/>
+                                                <field name="amount_total"/>
+                                                <field name="quantity"/>
+                                                <field name="price_unit"/>
+                                                <templates>
+                                                    <t t-name="kanban-box">
+                                                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                                            <div class="o_kanban_image">
+                                                                <img t-att-src="kanban_image('product.set', 'image_small', record.product_set_id.raw_value)"/>
+                                                            </div>
+                                                            <div class="oe_kanban_details">
+                                                                <div class="row">
+                                                                    <div class="col-xs-8">
+                                                                        <strong><span><t t-esc="record.product_set_id.value"/></span></strong>
+                                                                    </div>
+                                                                    <div class="col-xs-4">
+                                                                        <strong><span class="pull-right text-right">
+                                                                        <t t-esc="record.amount_total.value"/></span></strong>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-xs-12 text-muted">
+                                                                        <span>Quantity: <t t-esc="record.quantity.value"/></span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-xs-12 text-muted">
+                                                                        <span>Unit Price: <t t-esc="record.price_unit.value"/></span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </t>
+                                                </templates>
+                                            </kanban>
+                                        </field>
+                                    </form>
+                                </div>
+                                <div role="tabpanel" class="tab-pane fade" id="v-lines">
+                                    <form string="Detail">
+                                        <field name="order_line" mode="kanban" attrs="{'readonly': [('state', 'in', ('done','cancel'))]}">
+                                            <kanban class="o_kanban_mobile">
+                                                <field name="product_id"/>
+                                                <field name="product_uom_qty"/>
+                                                <field name="product_uom" groups="product.group_uom"/>
+                                                <field name="price_subtotal"/>
+                                                <field name="price_tax" invisible="1"/>
+                                                <field name="price_total" invisible="1"/>
+                                                <field name="price_unit"/>
+                                                <templates>
+                                                    <t t-name="kanban-box">
+                                                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                                            <div class="o_kanban_image">
+                                                                <img t-att-src="kanban_image('product.product', 'image_small', record.product_id.raw_value)"/>
+                                                            </div>
+                                                            <div class="oe_kanban_details">
+                                                                <div class="row">
+                                                                    <div class="col-xs-8">
+                                                                        <strong><span><t t-esc="record.product_id.value"/></span></strong>
+                                                                    </div>
+                                                                    <div class="col-xs-4">
+                                                                        <strong><span class="pull-right text-right">
+                                                                        <t t-esc="record.price_subtotal.value"/></span></strong>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-xs-12 text-muted">
+                                                                        <span>Quantity: <t t-esc="record.product_uom_qty.value"/> <t t-esc="record.product_uom.value"/></span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-xs-12 text-muted">
+                                                                        <span>Unit Price: <t t-esc="record.price_unit.value"/></span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </t>
+                                                </templates>
+                                            </kanban>
+                                        </field>
+                                        <separator/>
+                                        <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                                            <field name="amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                            <field name="amount_tax" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                            <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                                <label for="amount_total" />
+                                            </div>
+                                            <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                        </group>
+                                        <field name="note" class="oe_inline" placeholder="Setup default terms and conditions in your sales settings ..."/>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="action_flat_orders" model="ir.actions.act_window">
+        <field name="name">Sales Orders</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">kanban,form</field>
+        <field name="search_view_id" ref="sale.sale_order_view_search_inherit_sale"/>
+        <field name="view_ids" eval="[
+            (5, 0, 0),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_sale_order_flat_kanban')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_order_flat_form')})]"/>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Create a Quotation, the first step of a new sale.
+            </p><p>
+                Once the quotation is confirmed, it becomes a sales order.
+                You'll be able to invoice it and collect payments.
+                From the <i>Sales Orders</i> menu, you can track delivery
+                orders or services.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_sale_order_flat"
+        name="Sale Orders"
+        action="action_flat_orders"
+        parent="sale.sale_order_menu"
+        sequence="6" groups="sales_team.group_sale_salesman"/>
+</odoo>

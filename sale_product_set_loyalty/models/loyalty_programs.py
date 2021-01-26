@@ -22,18 +22,17 @@ class LoyaltyRule(models.Model):
             return True, force_break
         if kwargs.get('product_set'):
             for record in self:
+                #_logger.info("LOYALTY ROW %s:%s:%s:%s:%s:%s" % ( kwargs.get('product_set'),
+                #                                              record.product_set_id,
+                #                                              product,
+                #                                              record.product_set_id == kwargs['product_set'],
+                #                                              record.product_id and (record.product_id == product),
+                #                                              record.product_tmpl_id and (record.product_tmpl_id == product.product_tmpl_id)))
                 if record.product_set_id != kwargs['product_set']:
                     return False, True
                 #_logger.info("EXT %s:%s:%s:%s" % (kwargs, self.product_set_id.name, self.product_set_id == kwargs['product_set'], self.product_id == product))
                 if (record.product_set_id == kwargs['product_set']) \
                     and ((record.product_id == product) or (record.product_tmpl_id == product.product_tmpl_id)):
-                    #_logger.info("LOYALTY ROW %s:%s:%s:%s:%s:%s" % (kwargs.get('product_set'),
-                    #                                                record.product_set_id,
-                    #                                                product,
-                    #                                                record.product_set_id == kwargs['product_set'],
-                    #                                                record.product_id and (
-                    #                                                record.product_id == product),
-                    #                                                record.product_tmpl_id and (
-                    #                                                record.product_tmpl_id == product.product_tmpl_id)))
+                    _logger.info("LOYALTY last %s" % self.product_set_id)
                     return True, True
         return False, False

@@ -13,7 +13,7 @@ class SaleOrderLine(models.Model):
     @api.multi
     def calculate_loyalty_points(self, product, qty, price, **kwargs):
         kwargs.update(dict(product_set=self.product_set_id))
-        _logger.info("SALE LOIALTY %s" % kwargs)
+        #_logger.info("SALE LOIALTY %s:%s" % (product.name, kwargs))
         return self.order_id.loyalty_program_id.calculate_loyalty_points(product, qty, price, **kwargs)
 
     @api.onchange('product_set_id')

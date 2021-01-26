@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="assets_common_sale_order_flat" name="sale_order_flat" inherit_id="web.assets_common">
+        <xpath expr="." position="inside">
+            <link href="/sale_order_flat/static/src/less/slae_order_flat.less" rel="stylesheet" type="text/less"/>
+        </xpath>
+    </template>
+</odoo>
