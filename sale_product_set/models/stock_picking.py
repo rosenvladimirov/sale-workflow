@@ -222,7 +222,8 @@ class Picking(models.Model):
         #self.ensure_one()
         report_pages_sets = [[]]
         for picking in self:
-            moves = picking.move_line_ids.sorted(lambda r: r.product_set_id, reverse=True)
+            moves = picking.move_line_ids.sorted(lambda r: r.product_set_id.id, reverse=True)
+            _logger.info("MOVE %s" % [r.product_set_id for r in moves])
             if picking.has_sets:
                 pset = {}
                 for line in picking.move_lines:
@@ -231,7 +232,7 @@ class Picking(models.Model):
                         if order_line.product_set_id and not pset.get(order_line.product_set_id):
                             pset[order_line.product_set_id] = order_line.pset_quantity
                 if not pset:
-                    for p_set, lines in groupby(moves.sorted(lambda r: r.product_set_id, reverse=True), lambda l: l.product_set_id):
+                    for p_set, lines in groupby(moves, lambda l: l.product_set_id):
                         lines_copy = list(lines)
                         p_set = p_set.sudo()
                         if p_set and p_set.set_lines and not pset.get(p_set):
@@ -250,17 +251,7 @@ class Picking(models.Model):
                                     break
                             #_logger.info("PSET %s:%s:%s:%s:%s:%s" % (p_set, pset[p_set], p_set.set_lines[0], picking_pset_qty/pset_qty, picking_pset_qty, pset_qty))
 
-                    #for line in moves.filtered(lambda r: r.product_set_id):
-                    #    if not pset.get(line.product_set_id):
-                    #        qty = sum([x.quantity for x in
-                    #                   line.product_set_id.set_lines.filtered(lambda r: r.product_id == line.product_id)])
-                    #        qty = qty < 1.0 and 1.0 or qty
-                    #        pset[line.product_set_id] = line.ordered_qty / qty
-                    #        continue
-                for category, lines in groupby(moves.sorted(lambda r: r.product_set_id, reverse=True), lambda l: l.product_set_id):
-                    # If last added category induced a pagebreak, this one will be on a new page
-                    #if report_pages_sets[-1] and report_pages_sets[-1][-1]['pagebreak']:
-                    #    report_pages_sets.append([])
+                for category, lines in groupby(moves, lambda l: l.product_set_id):
                     # Append category to current report page
                     report_pages_sets[-1].append({
                         'name': category and category.display_name or _('Uncategorized'),
@@ -269,7 +260,7 @@ class Picking(models.Model):
                         'pset': category and category or False,
                         'codes': False,
                     })
-                #_logger.info("Category %s" % report_pages_sets)
+                _logger.info("Category %s" % report_pages_sets)
                 return report_pages_sets
             else:
                 for category, lines in groupby(moves, lambda l: l.product_id):
