@@ -6,8 +6,12 @@
     'name': 'Sale product set',
     'category': 'Sale',
     'license': 'AGPL-3',
-    'author': 'Rosen Vladimirov, dXFactory Ltd., Anybox, Odoo Community Association (OCA)',
-    'version': '11.0.4.0.0',
+    'author': 'Rosen Vladimirov, '
+              'BioPrint Ltd., '
+              'dXFactory Ltd., '
+              'Anybox, '
+              'Odoo Community Association (OCA)',
+    'version': '11.0.4.1.0',
     'website': 'https://github.com/rosenvladimirov/sale-workflow',
     'summary': "Sale product set",
     'depends': [

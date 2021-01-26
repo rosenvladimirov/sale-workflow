@@ -32,7 +32,7 @@ class AccountInvoice(models.Model):
         report_pages_sets = [[]]
         for inv in self:
             if inv.has_sets:
-                for category, lines in groupby(inv.invoice_line_ids.sorted(lambda r: r.product_set_id, reverse=True), lambda l: l.product_set_id):
+                for category, lines in groupby(inv.invoice_line_ids.sorted(lambda r: r.product_set_id.id, reverse=True), lambda l: l.product_set_id):
                     # If last added category induced a pagebreak, this one will be on a new page
                     if report_pages_sets[-1] and report_pages_sets[-1][-1]['pagebreak']:
                         report_pages_sets.append([])
