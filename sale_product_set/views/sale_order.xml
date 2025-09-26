@@ -6,15 +6,48 @@
         <field name="inherit_id" ref="sale.view_order_form" />
         <field name="arch" type="xml">
             <xpath expr="//button[@name='action_add_from_catalog']" position="before">
-                <button
-                    class="px-2 btn-link"
-                    type="action"
-                    name="%(act_open_wizard_product_set_add_from_order)d"
-                    invisible="state not in ('draft', 'sent')"
-                    groups="base.group_user"
-                    string="Add set"
-                    context="{'order_id': parent.id}"
-                />
+                <button name="%(act_open_wizard_product_set_add_from_order)d"
+                        class="px-2 btn-link"
+                        type="action"
+                        invisible="state not in ('draft', 'sent')"
+                        groups="base.group_user"
+                        string="Add set"
+                        context="{'default_order_id': parent.id, 'default_partner_id': parent.partner_id, 'active_id': parent.id, 'active_model': 'sale.order'}"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Product sets" name="product_sets" invisible="not product_set_ids">
+                    <div class="o_row">
+                        <button
+                            name="action_set_sections"
+                            type="object"
+                            string="Update set sections"
+                            help="Re-order sections for set in lines"
+                            class="btn-link mb-1 px-0"
+                            icon="fa-refresh"
+                            confirm="This will update all sequences in lines and recreate the sections."
+                            invisible="not product_set_ids or state in ['sale', 'cancel']"
+                        />
+                    </div>
+                    <field name="product_set_ids" mode="list">
+                        <list>
+                            <field name="order_id" invisible="1"/>
+                            <field name="product_set_id"/>
+                            <field name="quantity"/>
+                            <field name="price_unit"/>
+                            <field name="price_subtotal"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list" position="inside">
+                <field name="product_set_id"
+                       options='{"no_create": True}'
+                       optional="hide"/>
+                <field name="product_set_line_id"
+                       optional="hide"
+                       context="{'search_default_product_set_id': product_set_id, 'default_product_set_id': product_set_id}"/>
+                <field name="product_set_qty" invisible="1"/>
+                <field name="product_set_price_subtotal" invisible="1"/>
             </xpath>
         </field>
     </record>

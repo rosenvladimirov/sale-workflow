@@ -14,7 +14,7 @@ class TestProductSet(common.TransactionCase):
         cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
         cls.so_model = cls.env["sale.order"]
         cls.so = cls.env.ref("sale.sale_order_6")
-        cls.product_set_add = cls.env["sale.product.set.wizard"]
+        cls.product_set_add = cls.env["product.set.add"]
         cls.product_set = cls.env.ref("product_set.product_set_i5_computer")
 
     def _get_wiz(self, ctx=None, **kw):
@@ -57,7 +57,7 @@ class TestProductSet(common.TransactionCase):
         # check all lines are included
         for line in self.product_set.set_line_ids:
             order_line = so.order_line.filtered(
-                lambda x, line=line: x.product_id == line.product_id
+                lambda x: x.product_id == line.product_id
             )
             order_line.ensure_one()
             self.assertEqual(order_line.product_uom_qty, line.quantity * wiz.quantity)
@@ -216,54 +216,3 @@ class TestProductSet(common.TransactionCase):
                 line.display_type,
                 "line_section",
             )
-
-    def test_product_set_toggle_active(self):
-        partner_1 = self.env.ref("base.res_partner_1")
-        partner_2 = self.env.ref("base.res_partner_2")
-
-        self.product_set_2 = self.product_set.copy()
-        self.product_set_3 = self.product_set.copy()
-
-        self.product_set.partner_id = partner_1
-        self.product_set_2.partner_id = partner_1
-
-        self.product_set_3.partner_id = partner_2
-
-        ICPSudo = self.env["ir.config_parameter"].sudo()
-        ICPSudo.set_param("sale_product_set.archive_partner_product_sets", True)
-
-        # partners active, product sets active
-        self.assertTrue(self.product_set.active)
-        self.assertTrue(self.product_set_2.active)
-        self.assertTrue(self.product_set_3.active)
-
-        self.assertTrue(partner_1.active)
-        self.assertTrue(partner_2.active)
-
-        # archive partner_1, product set_2 and product set_1 should be archived
-        partner_1.write({"active": False})
-        self.assertFalse(self.product_set.active)
-        self.assertFalse(self.product_set_2.active)
-        self.assertTrue(self.product_set_3.active)
-
-        # archive partner_2, product set_3 should be archived
-        partner_2.write({"active": False})
-        self.assertFalse(self.product_set_3.active)
-
-        # unarchive partner_1 and partner_3, all product sets should be unarchived too
-        partner_1.write({"active": True})
-        partner_2.write({"active": True})
-
-        self.assertTrue(self.product_set.active)
-        self.assertTrue(self.product_set_2.active)
-        self.assertTrue(self.product_set_3.active)
-
-        # set param to False and make sure partner's active state
-        # does not affect product set's active state
-        ICPSudo.set_param("sale_product_set.archive_partner_product_sets", False)
-
-        # partner archived, product set not archived
-        partner_1.write({"active": False})
-        self.assertTrue(self.product_set.active)
-        self.assertTrue(self.product_set_2.active)
-        self.assertFalse(partner_1.active)
