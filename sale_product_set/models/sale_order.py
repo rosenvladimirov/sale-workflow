@@ -1,8 +1,7 @@
 #  Part of Odoo. See LICENSE file for full copyright and licensing details.
 import logging
 
-from odoo import api, fields, models, SUPERUSER_ID, _, Command
-from odoo.tests import savepoint_seq
+from odoo import api, fields, models, _
 from odoo.tools import groupby
 
 _logger = logging.getLogger(__name__)
