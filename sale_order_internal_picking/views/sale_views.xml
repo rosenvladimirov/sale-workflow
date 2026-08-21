@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2026 Rosen Vladimirov, BioPrint Ltd.
+     License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="view_order_cust_form" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+<!--            <xpath expr="//button[@name='action_view_invoice']" position="before">-->
+<!--                <button type="object"-->
+<!--                    name="action_view_int_delivery"-->
+<!--                    class="oe_stat_button"-->
+<!--                    icon="fa-truck"-->
+<!--                    style="color: #bd1c1c !important;"-->
+<!--                    groups="stock.group_stock_user">-->
+<!--                    <field name="int_delivery_count" widget="statinfo" string="Int Delivery"/>-->
+<!--                </button>-->
+<!--            </xpath>-->
+<!--            attrs="{'invisible':[('int_delivery_count', '=', 0)]}"-->
+            <xpath expr="//page[@name='other_information']" position="inside">
+                <field name="int_delivery_count" invisible="1"/>
+                <group string="Internal pickings">
+                    <field name="stock_int_picking_ids" widget="many2many_tags" options="{'open': True}"/>
+                </group>
+            </xpath>
+            <!-- 🚨 Некфалифицираното `<field name="product_id" position="after">`
+                 хваща първото съвпадение, а в сглобената форма на 19.0
+                 `product_id` се среща ЧЕТИРИ пъти — попадението беше случайно.
+                 Уточнено до реда на поръчката, където е едно. -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_id']" position="after">
+                <field name="order_partner_id" invisible="1"/>
+                <field name="order_partner_shipping_id" invisible="1"/>
+                <field name="stock_int_picking_ids"
+                       widget="many2many_tags"
+                       optional="hide"
+                       domain="[('picking_type_code', '=', 'internal'), '|', '|', ('partner_id', 'in', [order_partner_id, order_partner_shipping_id]), ('location_id.out_partner_id', 'in', [order_partner_id, order_partner_shipping_id]), ('location_dest_id.out_partner_id', 'in', [order_partner_id, order_partner_shipping_id])]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
