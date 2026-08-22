@@ -29,8 +29,15 @@
                  `product_id` се среща ЧЕТИРИ пъти — попадението беше случайно.
                  Уточнено до реда на поръчката, където е едно. -->
             <xpath expr="//field[@name='order_line']/list/field[@name='product_id']" position="after">
-                <field name="order_partner_id" invisible="1"/>
-                <field name="order_partner_shipping_id" invisible="1"/>
+                <!-- 🚨 `column_invisible`, НЕ `invisible`. Вътре в `<list>`
+                     `invisible` крие само СЪДЪРЖАНИЕТО на клетката, а колоната
+                     със заглавието остава — така в реда на поръчката излизаха
+                     две празни колони, „контакт" и „адрес на контакта", които
+                     никой не е искал. Двете полета трябва да СЪЩЕСТВУВАТ в
+                     изгледа, защото домейнът на `stock_int_picking_ids`
+                     по-долу ги чете, но не бива да се виждат. -->
+                <field name="order_partner_id" column_invisible="1"/>
+                <field name="order_partner_shipping_id" column_invisible="1"/>
                 <field name="stock_int_picking_ids"
                        widget="many2many_tags"
                        optional="hide"
