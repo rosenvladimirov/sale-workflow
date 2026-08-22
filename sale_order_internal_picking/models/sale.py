@@ -145,5 +145,10 @@ class SaleOrderLine(models.Model):
         "picking_line_id",
         string="Internal Transfers ref.",
     )
+    # 🚩 Етикетът беше „Customer" — копиран от оригинала. Ядрото вече има
+    # `order_partner_id` със същия етикет, тъй че в реда излизаха ДВЕ полета
+    # „Клиент" и никой не разбираше кое какво е. Това поле носи адреса за
+    # ДОСТАВКА, не клиента.
     order_partner_shipping_id = fields.Many2one(
-        related="order_id.partner_shipping_id", store=True, string="Customer")
+        related="order_id.partner_shipping_id", store=True,
+        string="Delivery Address")
